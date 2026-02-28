@@ -1,50 +1,130 @@
 /**
  * Portfolio Authentication Module
- * SHA-256 şifre doğrulama — Web Crypto API
+ * Email OTP doğrulama — EmailJS ile
  */
 
 const PortfolioAuth = (() => {
-    const HASH_KEY = 'portfolio_admin_hash';
     const SESSION_KEY = 'portfolio_session';
+    const ADMIN_EMAIL = 'me@cmldlr.dev';
 
-    // SHA-256 hash
-    async function hashPassword(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password + '_portfolio_salt_cd2026');
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+    // ============ DEMO MODE ============
+    // true = EmailJS olmadan çalışır, kod konsola yazılır, '000000' ile giriş yapılabilir
+    // Yayına alırken false yap!
+    const DEMO_MODE = true;
 
-    // İlk kez şifre var mı?
-    function isPasswordSet() {
-        return !!localStorage.getItem(HASH_KEY);
-    }
+    // ============ EmailJS Config ============
+    // EmailJS hesabından alınacak değerler:
+    const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';   // TODO: EmailJS Public Key
+    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';   // TODO: EmailJS Service ID
+    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // TODO: EmailJS Template ID
 
-    // Şifre oluştur
-    async function setPassword(password) {
-        if (password.length < 4) {
-            throw new Error('Şifre en az 4 karakter olmalıdır');
+    // ============ OTP State ============
+    let currentOTP = null;
+    let otpExpiry = null;
+    const OTP_LENGTH = 6;
+    const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 dakika
+    const COOLDOWN_MS = 60 * 1000;       // 1 dk tekrar gönderim bekleme
+    let lastSentAt = 0;
+
+    // 6 haneli rastgele kod üret
+    function generateOTP() {
+        const digits = '0123456789';
+        let otp = '';
+        const arr = new Uint32Array(OTP_LENGTH);
+        crypto.getRandomValues(arr);
+        for (let i = 0; i < OTP_LENGTH; i++) {
+            otp += digits[arr[i] % 10];
         }
-        const hash = await hashPassword(password);
-        localStorage.setItem(HASH_KEY, hash);
-        sessionStorage.setItem(SESSION_KEY, 'authenticated');
-        return true;
+        return otp;
     }
 
-    // Şifre doğrula
-    async function verifyPassword(password) {
-        const storedHash = localStorage.getItem(HASH_KEY);
-        if (!storedHash) return false;
-        const hash = await hashPassword(password);
-        return hash === storedHash;
+    // Masked email göster
+    function getMaskedEmail() {
+        const [user, domain] = ADMIN_EMAIL.split('@');
+        return user[0] + '•••' + user.slice(-1) + '@' + domain;
     }
 
-    // Giriş yap
-    async function login(password) {
-        const valid = await verifyPassword(password);
-        if (valid) {
+    // Kalan cooldown süresi (saniye)
+    function getCooldownRemaining() {
+        const elapsed = Date.now() - lastSentAt;
+        if (elapsed >= COOLDOWN_MS) return 0;
+        return Math.ceil((COOLDOWN_MS - elapsed) / 1000);
+    }
+
+    // OTP süresi doldu mu?
+    function isOTPExpired() {
+        if (!otpExpiry) return true;
+        return Date.now() > otpExpiry;
+    }
+
+    // OTP süresinin kaç saniyesi kaldı
+    function getOTPTimeRemaining() {
+        if (!otpExpiry) return 0;
+        return Math.max(0, Math.ceil((otpExpiry - Date.now()) / 1000));
+    }
+
+    // EmailJS ile OTP gönder
+    async function sendOTP() {
+        // Cooldown kontrolü
+        const cooldown = getCooldownRemaining();
+        if (cooldown > 0) {
+            throw new Error(`Lütfen ${cooldown} saniye bekleyin.`);
+        }
+
+        // OTP oluştur
+        currentOTP = generateOTP();
+        otpExpiry = Date.now() + OTP_EXPIRY_MS;
+        lastSentAt = Date.now();
+
+        // Demo mode: EmailJS atla, konsola yaz
+        if (DEMO_MODE) {
+            console.log(`🔑 DEMO OTP Kodu: ${currentOTP}`);
+            console.log(`💡 Veya "000000" girerek giriş yapabilirsiniz.`);
+            return true;
+        }
+
+        // EmailJS ile gönder
+        if (typeof emailjs === 'undefined') {
+            throw new Error('Email servisi yüklenemedi. Sayfayı yenileyin.');
+        }
+
+        try {
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                to_email: ADMIN_EMAIL,
+                otp_code: currentOTP,
+                expiry_minutes: '5'
+            });
+            return true;
+        } catch (err) {
+            currentOTP = null;
+            otpExpiry = null;
+            console.error('EmailJS error:', err);
+            throw new Error('Kod gönderilemedi. Lütfen tekrar deneyin.');
+        }
+    }
+
+    // OTP doğrula
+    function verifyOTP(code) {
+        if (!code) return false;
+
+        // Demo mode: 000000 her zaman geçerli
+        if (DEMO_MODE && code.trim() === '000000') {
             sessionStorage.setItem(SESSION_KEY, 'authenticated');
+            currentOTP = null;
+            otpExpiry = null;
+            return true;
+        }
+
+        if (!currentOTP) return false;
+        if (isOTPExpired()) {
+            currentOTP = null;
+            otpExpiry = null;
+            return false;
+        }
+        if (code.trim() === currentOTP) {
+            sessionStorage.setItem(SESSION_KEY, 'authenticated');
+            currentOTP = null;
+            otpExpiry = null;
             return true;
         }
         return false;
@@ -58,29 +138,20 @@ const PortfolioAuth = (() => {
     // Çıkış
     function logout() {
         sessionStorage.removeItem(SESSION_KEY);
-    }
-
-    // Şifre değiştir
-    async function changePassword(currentPassword, newPassword) {
-        const valid = await verifyPassword(currentPassword);
-        if (!valid) {
-            throw new Error('Mevcut şifre yanlış');
-        }
-        if (newPassword.length < 4) {
-            throw new Error('Yeni şifre en az 4 karakter olmalıdır');
-        }
-        const hash = await hashPassword(newPassword);
-        localStorage.setItem(HASH_KEY, hash);
-        return true;
+        currentOTP = null;
+        otpExpiry = null;
     }
 
     return {
-        isPasswordSet,
-        setPassword,
-        verifyPassword,
-        login,
+        ADMIN_EMAIL,
+        getMaskedEmail,
+        generateOTP,
+        sendOTP,
+        verifyOTP,
+        isOTPExpired,
+        getOTPTimeRemaining,
+        getCooldownRemaining,
         isAuthenticated,
-        logout,
-        changePassword
+        logout
     };
 })();

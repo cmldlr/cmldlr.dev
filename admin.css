@@ -223,6 +223,133 @@ body.show-admin .admin-panel {
     color: var(--accent-secondary);
 }
 
+/* ========== OTP STYLES ========== */
+.otp-step {
+    margin-bottom: 20px;
+}
+
+.otp-email-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    font-weight: 600;
+}
+
+.otp-email-display i {
+    font-size: 1.2rem;
+    color: var(--accent-primary);
+}
+
+.otp-sent-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--green);
+    margin-bottom: 24px;
+    padding: 10px;
+    background: rgba(74, 222, 128, 0.06);
+    border: 1px solid rgba(74, 222, 128, 0.15);
+    border-radius: var(--radius-sm);
+}
+
+.otp-sent-info i {
+    font-size: 1.1rem;
+}
+
+.otp-input-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.otp-digit {
+    width: 48px;
+    height: 56px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: var(--transition-fast);
+    caret-color: var(--accent-primary);
+}
+
+.otp-digit:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    background: rgba(108, 99, 255, 0.05);
+}
+
+.otp-digit:not(:placeholder-shown) {
+    border-color: var(--accent-secondary);
+}
+
+.otp-timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.otp-resend {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    font-size: 0.85rem;
+    color: var(--accent-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 10px;
+    margin-top: 12px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.otp-resend:hover:not(:disabled) {
+    background: var(--accent-glow);
+}
+
+.otp-resend:disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    .otp-digit {
+        width: 40px;
+        height: 48px;
+        font-size: 1.2rem;
+    }
+
+    .otp-input-group {
+        gap: 6px;
+    }
+}
+
 /* ========== BUTTONS ========== */
 .btn {
     display: inline-flex;

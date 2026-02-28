@@ -286,33 +286,54 @@
                 <span class="logo-text">CD</span>
                 <span class="logo-bracket">}</span>
             </div>
-            <h1 class="login-title" id="loginTitle">Admin Girişi</h1>
-            <p class="login-subtitle" id="loginSubtitle">Portfolyo yönetim paneline erişmek için şifrenizi girin.</p>
-            <form class="login-form" id="loginForm">
-                <div class="form-group">
-                    <label for="loginPassword">Şifre</label>
-                    <div class="input-wrapper">
-                        <i class="ph ph-lock-key"></i>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required
-                            autocomplete="current-password">
-                        <button type="button" class="toggle-password" id="togglePassword">
-                            <i class="ph ph-eye"></i>
-                        </button>
-                    </div>
+            <h1 class="login-title">Admin Girişi</h1>
+            <p class="login-subtitle">Doğrulama kodu e-posta adresinize gönderilecektir.</p>
+
+            <!-- Step 1: Send OTP -->
+            <div class="otp-step" id="otpStep1">
+                <div class="otp-email-display">
+                    <i class="ph ph-envelope-simple"></i>
+                    <span id="otpEmailDisplay">me@cmldlr.dev</span>
                 </div>
-                <div class="form-group" id="confirmGroup" style="display:none">
-                    <label for="confirmPassword">Şifre Tekrar</label>
-                    <div class="input-wrapper">
-                        <i class="ph ph-lock-key"></i>
-                        <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="new-password">
-                    </div>
-                </div>
-                <div class="login-error" id="loginError"></div>
-                <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
-                    <i class="ph ph-sign-in"></i>
-                    <span>Giriş Yap</span>
+                <button class="btn btn-primary btn-full" id="sendOtpBtn">
+                    <i class="ph ph-paper-plane-right"></i>
+                    <span>Doğrulama Kodu Gönder</span>
                 </button>
-            </form>
+                <div class="login-error" id="sendError"></div>
+            </div>
+
+            <!-- Step 2: Verify OTP -->
+            <div class="otp-step" id="otpStep2" style="display:none">
+                <p class="otp-sent-info">
+                    <i class="ph ph-check-circle"></i>
+                    <span id="otpSentEmail">me@cmldlr.dev</span> adresine kod gönderildi
+                </p>
+                <form id="verifyOtpForm">
+                    <div class="otp-input-group" id="otpInputGroup">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="0" inputmode="numeric"
+                            autocomplete="one-time-code">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="1" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="2" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="3" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="4" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-digit" data-index="5" inputmode="numeric">
+                    </div>
+                    <div class="otp-timer" id="otpTimer">
+                        <i class="ph ph-clock"></i>
+                        <span id="otpCountdown">5:00</span>
+                    </div>
+                    <div class="login-error" id="verifyError"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="verifyOtpBtn">
+                        <i class="ph ph-sign-in"></i>
+                        <span>Doğrula ve Giriş Yap</span>
+                    </button>
+                </form>
+                <button class="otp-resend" id="resendOtpBtn" disabled>
+                    <i class="ph ph-arrow-clockwise"></i>
+                    Tekrar Gönder (<span id="resendCooldown">60</span>s)
+                </button>
+            </div>
+
             <button class="login-back" id="loginBackBtn">
                 <i class="ph ph-arrow-left"></i>
                 Portfolyoya Dön
@@ -437,17 +458,12 @@
                     </div>
                     <div class="settings-content">
                         <div class="settings-card">
-                            <h4><i class="ph ph-key"></i> Şifre Değiştir</h4>
-                            <form id="changePasswordForm">
-                                <div class="form-group"><label>Mevcut Şifre</label><input type="password"
-                                        id="currentPass" required></div>
-                                <div class="form-group"><label>Yeni Şifre</label><input type="password" id="newPass"
-                                        required></div>
-                                <div class="form-group"><label>Yeni Şifre Tekrar</label><input type="password"
-                                        id="newPassConfirm" required></div>
-                                <button type="submit" class="btn btn-primary btn-sm"><i class="ph ph-check"></i>
-                                    Güncelle</button>
-                            </form>
+                            <h4><i class="ph ph-shield-check"></i> Kimlik Doğrulama</h4>
+                            <p class="settings-desc">Admin girişi e-posta doğrulama kodu ile yapılmaktadır.</p>
+                            <div class="otp-email-display" style="margin-top:12px">
+                                <i class="ph ph-envelope-simple"></i>
+                                <span>me@cmldlr.dev</span>
+                            </div>
                         </div>
                         <div class="settings-card">
                             <h4><i class="ph ph-download"></i> Veri Yedekleme</h4>
@@ -488,6 +504,15 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script src="data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        // EmailJS init — public key auth.js'den alınıyor
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init({ publicKey: 'YOUR_PUBLIC_KEY' }); // TODO: EmailJS Public Key
+            }
+        });
+    </script>
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script src="admin.js"></script>

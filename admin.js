@@ -8,15 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Elements
     // =============================
     const body = document.body;
-    const loginForm = document.getElementById('loginForm');
-    const loginPassword = document.getElementById('loginPassword');
-    const confirmPassword = document.getElementById('confirmPassword');
-    const confirmGroup = document.getElementById('confirmGroup');
-    const loginError = document.getElementById('loginError');
-    const loginTitle = document.getElementById('loginTitle');
-    const loginSubtitle = document.getElementById('loginSubtitle');
-    const loginBtn = document.getElementById('loginBtn');
-    const togglePasswordBtn = document.getElementById('togglePassword');
+    const otpStep1 = document.getElementById('otpStep1');
+    const otpStep2 = document.getElementById('otpStep2');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const sendError = document.getElementById('sendError');
+    const verifyOtpForm = document.getElementById('verifyOtpForm');
+    const verifyError = document.getElementById('verifyError');
+    const otpDigits = document.querySelectorAll('.otp-digit');
+    const otpCountdown = document.getElementById('otpCountdown');
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+    const resendCooldown = document.getElementById('resendCooldown');
+
+    let otpTimerInterval = null;
+    let cooldownInterval = null;
 
     // =============================
     // 1. View Transitions
@@ -26,28 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showLogin = function () {
         body.classList.remove('show-admin');
         body.classList.add('show-login');
-
-        // Check if first time
-        if (!PortfolioAuth.isPasswordSet()) {
-            loginTitle.textContent = 'Şifre Oluştur';
-            loginSubtitle.textContent = 'Admin paneline erişmek için bir şifre belirleyin.';
-            loginBtn.querySelector('span').textContent = 'Oluştur';
-            confirmGroup.style.display = 'block';
-        } else {
-            loginTitle.textContent = 'Admin Girişi';
-            loginSubtitle.textContent = 'Portfolyo yönetim paneline erişmek için şifrenizi girin.';
-            loginBtn.querySelector('span').textContent = 'Giriş Yap';
-            confirmGroup.style.display = 'none';
-        }
-        loginPassword.value = '';
-        loginError.textContent = '';
-        setTimeout(() => loginPassword.focus(), 400);
+        // Reset to step 1
+        otpStep1.style.display = 'block';
+        otpStep2.style.display = 'none';
+        sendError.textContent = '';
+        verifyError.textContent = '';
+        otpDigits.forEach(d => d.value = '');
     };
 
     // Show admin panel (slide from right)
     window.showAdmin = function () {
         body.classList.remove('show-login');
         body.classList.add('show-admin');
+        clearTimers();
         renderCurrentPage();
     };
 
@@ -55,11 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showPortfolio = function () {
         body.classList.remove('show-login');
         body.classList.remove('show-admin');
-        // Re-render portfolio data in case of changes
+        clearTimers();
         if (typeof window.refreshPortfolio === 'function') {
             window.refreshPortfolio();
         }
     };
+
+    function clearTimers() {
+        if (otpTimerInterval) { clearInterval(otpTimerInterval); otpTimerInterval = null; }
+        if (cooldownInterval) { clearInterval(cooldownInterval); cooldownInterval = null; }
+    }
 
     // Check if already authenticated — if URL has #admin, go directly
     if (window.location.hash === '#admin') {
@@ -71,41 +71,147 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =============================
-    // 2. Login Flow
+    // 2. OTP Login Flow
     // =============================
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loginError.textContent = '';
 
-        const password = loginPassword.value;
+    // Step 1: Send OTP
+    sendOtpBtn.addEventListener('click', async () => {
+        sendError.textContent = '';
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.querySelector('span').textContent = 'Gönderiliyor...';
 
-        if (!PortfolioAuth.isPasswordSet()) {
-            if (password !== confirmPassword.value) {
-                loginError.textContent = 'Şifreler eşleşmiyor!';
-                return;
-            }
-            try {
-                await PortfolioAuth.setPassword(password);
-                showAdmin();
-            } catch (err) {
-                loginError.textContent = err.message;
-            }
-        } else {
-            const success = await PortfolioAuth.login(password);
-            if (success) {
-                showAdmin();
-            } else {
-                loginError.textContent = 'Şifre yanlış!';
-                loginPassword.value = '';
-            }
+        try {
+            await PortfolioAuth.sendOTP();
+            // Move to step 2
+            otpStep1.style.display = 'none';
+            otpStep2.style.display = 'block';
+            otpDigits[0].focus();
+            startOtpTimer();
+            startCooldownTimer();
+        } catch (err) {
+            sendError.textContent = err.message;
+        } finally {
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.querySelector('span').textContent = 'Doğrulama Kodu Gönder';
         }
     });
 
-    togglePasswordBtn.addEventListener('click', () => {
-        const type = loginPassword.type === 'password' ? 'text' : 'password';
-        loginPassword.type = type;
-        togglePasswordBtn.querySelector('i').className = type === 'password' ? 'ph ph-eye' : 'ph ph-eye-slash';
+    // Step 2: OTP digit inputs — auto-advance, paste, backspace
+    otpDigits.forEach((input, i) => {
+        input.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = val;
+            if (val && i < otpDigits.length - 1) {
+                otpDigits[i + 1].focus();
+            }
+            // Auto-submit when all filled
+            if (getOtpValue().length === 6) {
+                verifyOtpForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && i > 0) {
+                otpDigits[i - 1].focus();
+                otpDigits[i - 1].value = '';
+            }
+        });
+
+        // Handle paste
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6);
+            paste.split('').forEach((ch, idx) => {
+                if (otpDigits[idx]) otpDigits[idx].value = ch;
+            });
+            if (paste.length === 6) {
+                otpDigits[5].focus();
+                verifyOtpForm.dispatchEvent(new Event('submit'));
+            } else if (paste.length > 0) {
+                otpDigits[Math.min(paste.length, 5)].focus();
+            }
+        });
     });
+
+    function getOtpValue() {
+        return Array.from(otpDigits).map(d => d.value).join('');
+    }
+
+    // Submit OTP
+    verifyOtpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        verifyError.textContent = '';
+        const code = getOtpValue();
+
+        if (code.length !== 6) {
+            verifyError.textContent = 'Lütfen 6 haneli kodu girin.';
+            return;
+        }
+
+        if (PortfolioAuth.isOTPExpired()) {
+            verifyError.textContent = 'Kodun süresi doldu. Yeni kod gönderin.';
+            return;
+        }
+
+        const success = PortfolioAuth.verifyOTP(code);
+        if (success) {
+            showAdmin();
+            toast('Giriş başarılı', 'success');
+        } else {
+            verifyError.textContent = 'Geçersiz kod. Tekrar deneyin.';
+            otpDigits.forEach(d => d.value = '');
+            otpDigits[0].focus();
+        }
+    });
+
+    // Resend OTP
+    resendOtpBtn.addEventListener('click', async () => {
+        if (PortfolioAuth.getCooldownRemaining() > 0) return;
+        verifyError.textContent = '';
+        resendOtpBtn.disabled = true;
+
+        try {
+            await PortfolioAuth.sendOTP();
+            otpDigits.forEach(d => d.value = '');
+            otpDigits[0].focus();
+            startOtpTimer();
+            startCooldownTimer();
+            toast('Yeni kod gönderildi', 'success');
+        } catch (err) {
+            verifyError.textContent = err.message;
+        }
+    });
+
+    // OTP expiry countdown timer (5 min)
+    function startOtpTimer() {
+        if (otpTimerInterval) clearInterval(otpTimerInterval);
+        otpTimerInterval = setInterval(() => {
+            const rem = PortfolioAuth.getOTPTimeRemaining();
+            const min = Math.floor(rem / 60);
+            const sec = rem % 60;
+            otpCountdown.textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+            if (rem <= 0) {
+                clearInterval(otpTimerInterval);
+                otpCountdown.textContent = 'Süre doldu';
+                otpCountdown.parentElement.style.color = 'var(--red, #ff5f57)';
+            }
+        }, 1000);
+    }
+
+    // Resend cooldown timer (60s)
+    function startCooldownTimer() {
+        resendOtpBtn.disabled = true;
+        if (cooldownInterval) clearInterval(cooldownInterval);
+        cooldownInterval = setInterval(() => {
+            const rem = PortfolioAuth.getCooldownRemaining();
+            resendCooldown.textContent = rem;
+            if (rem <= 0) {
+                clearInterval(cooldownInterval);
+                resendOtpBtn.disabled = false;
+                resendOtpBtn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Tekrar Gönder';
+            }
+        }, 1000);
+    }
 
     // Login back button
     document.getElementById('loginBackBtn').addEventListener('click', () => showPortfolio());
@@ -528,16 +634,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     // 10. Settings
     // =============================
-    document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const c = document.getElementById('currentPass').value;
-        const n = document.getElementById('newPass').value;
-        const nc = document.getElementById('newPassConfirm').value;
-        if (n !== nc) { toast('Şifreler eşleşmiyor', 'error'); return; }
-        try { await PortfolioAuth.changePassword(c, n); toast('Şifre değiştirildi', 'success'); e.target.reset(); }
-        catch (err) { toast(err.message, 'error'); }
-    });
-
     document.getElementById('exportBtn').addEventListener('click', () => { PortfolioData.exportToJSON(); toast('Dışa aktarıldı', 'success'); });
     document.getElementById('importFile').addEventListener('change', async (e) => {
         const f = e.target.files[0]; if (!f) return;
