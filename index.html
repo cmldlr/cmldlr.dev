@@ -1,28 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cemil Dalar — Software Engineer</title>
-    <meta name="description" content="Portfolio of Cemil Dalar — Software Engineer specializing in Full-Stack Development, IoT, and Cloud-Native Architectures.">
-    <meta name="keywords" content="Cemil Dalar, Software Engineer, Full-Stack Developer, IoT, C#, Java, JavaScript, Python">
+    <meta name="description"
+        content="Portfolio of Cemil Dalar — Software Engineer specializing in Full-Stack Development, IoT, and Cloud-Native Architectures.">
+    <meta name="keywords"
+        content="Cemil Dalar, Software Engineer, Full-Stack Developer, IoT, C#, Java, JavaScript, Python">
     <meta name="author" content="Cemil Dalar">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Cemil Dalar — Software Engineer">
-    <meta property="og:description" content="Full-Stack Developer specializing in IoT, Cloud-Native Architectures, and Industrial Systems.">
+    <meta property="og:description"
+        content="Full-Stack Developer specializing in IoT, Cloud-Native Architectures, and Industrial Systems.">
     <meta property="og:type" content="website">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
 
     <!-- Phosphor Icons -->
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
 </head>
+
 <body>
     <!-- Cursor Glow -->
     <div class="cursor-glow" id="cursorGlow"></div>
@@ -31,83 +39,71 @@
     <div class="bg-grid"></div>
     <div class="bg-noise"></div>
 
-    <!-- Navigation -->
-    <nav class="nav" id="nav">
-        <div class="nav-inner">
-            <a href="#" class="nav-logo">
-                <span class="logo-bracket">{</span>
-                <span class="logo-text">CD</span>
-                <span class="logo-bracket">}</span>
-            </a>
-            <div class="nav-links" id="navLinks">
-                <a href="#about" class="nav-link" data-section="about">Hakkımda</a>
-                <a href="#skills" class="nav-link" data-section="skills">Yetenekler</a>
-                <a href="#projects" class="nav-link" data-section="projects">Projeler</a>
-                <a href="#experience" class="nav-link" data-section="experience">Deneyim</a>
-                <a href="#contact" class="nav-link" data-section="contact">İletişim</a>
-            </div>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
+    <!-- ================================================================
+         PORTFOLIO VIEW
+         ================================================================ -->
+    <div class="portfolio-view" id="portfolioView">
 
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <span class="badge-dot"></span>
-                <span>Çalışmaya Açık</span>
-            </div>
-            <h1 class="hero-title">
-                <span class="hero-greeting">Merhaba, ben</span>
-                <span class="hero-name">Cemil Dalar</span>
-                <span class="hero-role" id="heroRole"></span>
-            </h1>
-            <p class="hero-desc">
-                IoT, bulut tabanlı mimariler ve endüstriyel sistemler konusunda uzmanlaşmış 
-                <strong>Yazılım Mühendisi</strong>. MQTT, Kafka, TimescaleDB ve modern web 
-                teknolojileri ile ölçeklenebilir çözümler geliştiriyorum.
-            </p>
-            <div class="hero-actions">
-                <a href="#projects" class="btn btn-primary">
-                    <i class="ph ph-folder-open"></i>
-                    Projelerimi Gör
+        <!-- Navigation -->
+        <nav class="nav" id="nav">
+            <div class="nav-inner">
+                <a href="#" class="nav-logo" id="navLogo">
+                    <span class="logo-bracket">{</span>
+                    <span class="logo-text">CD</span>
+                    <span class="logo-bracket">}</span>
                 </a>
-                <a href="#contact" class="btn btn-outline">
-                    <i class="ph ph-envelope"></i>
-                    İletişime Geç
-                </a>
+                <div class="nav-links" id="navLinks">
+                    <a href="#about" class="nav-link" data-section="about">Hakkımda</a>
+                    <a href="#skills" class="nav-link" data-section="skills">Yetenekler</a>
+                    <a href="#projects" class="nav-link" data-section="projects">Projeler</a>
+                    <a href="#experience" class="nav-link" data-section="experience">Deneyim</a>
+                    <a href="#contact" class="nav-link" data-section="contact">İletişim</a>
+                </div>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
-            <div class="hero-stats">
-                <div class="stat">
-                    <span class="stat-number" data-count="21">0</span>
-                    <span class="stat-label">Açık Kaynak Proje</span>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <div class="hero-badge" id="heroBadge">
+                    <span class="badge-dot"></span>
+                    <span>Çalışmaya Açık</span>
                 </div>
-                <div class="stat">
-                    <span class="stat-number" data-count="6">0</span>
-                    <span class="stat-label">Programlama Dili</span>
+                <h1 class="hero-title">
+                    <span class="hero-greeting" id="heroGreeting">Merhaba, ben</span>
+                    <span class="hero-name" id="heroName">Cemil Dalar</span>
+                    <span class="hero-role" id="heroRole"></span>
+                </h1>
+                <p class="hero-desc" id="heroDesc"></p>
+                <div class="hero-actions">
+                    <a href="#projects" class="btn btn-primary">
+                        <i class="ph ph-folder-open"></i>
+                        Projelerimi Gör
+                    </a>
+                    <a href="#contact" class="btn btn-outline">
+                        <i class="ph ph-envelope"></i>
+                        İletişime Geç
+                    </a>
                 </div>
-                <div class="stat">
-                    <span class="stat-number" data-count="3">0</span>
-                    <span class="stat-label">Yıl Deneyim</span>
-                </div>
+                <div class="hero-stats" id="heroStats"></div>
             </div>
-        </div>
-        <div class="hero-visual">
-            <div class="code-window">
-                <div class="code-header">
-                    <div class="code-dots">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
+            <div class="hero-visual">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="code-title">cemil.ts</span>
                     </div>
-                    <span class="code-title">cemil.ts</span>
-                </div>
-                <div class="code-body">
-                    <pre><code><span class="code-keyword">const</span> <span class="code-var">developer</span> = {
+                    <div class="code-body">
+                        <pre><code><span class="code-keyword">const</span> <span class="code-var">developer</span> = {
   <span class="code-key">name</span>: <span class="code-string">"Cemil Dalar"</span>,
   <span class="code-key">title</span>: <span class="code-string">"Software Engineer"</span>,
   <span class="code-key">skills</span>: [
@@ -117,531 +113,384 @@
   <span class="code-key">passion</span>: <span class="code-string">"Building scalable systems"</span>,
   <span class="code-key">coffee</span>: <span class="code-boolean">true</span> <span class="code-comment">// ☕ always</span>
 };</code></pre>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="hero-scroll">
-            <div class="scroll-indicator">
-                <div class="scroll-line"></div>
+            <div class="hero-scroll">
+                <div class="scroll-indicator">
+                    <div class="scroll-line"></div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- About Section -->
-    <section class="section" id="about">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">// 01</span>
-                <h2 class="section-title">Hakkımda</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>
-                        Bilgisayar Mühendisliği geçmişine sahip bir <strong>Yazılım Mühendisi</strong>yim. 
-                        Endüstriyel IoT platformları, gerçek zamanlı veri işleme sistemleri ve modern web 
-                        uygulamaları geliştirme konusunda deneyimliyim.
-                    </p>
-                    <p>
-                        Profesyonel olarak MQTT-Kafka köprüleri, TimescaleDB ile zaman serisi veri yönetimi, 
-                        mikroservis mimarileri ve Next.js tabanlı dashboard'lar üzerinde çalışıyorum. 
-                        Her projemde temiz kod, ölçeklenebilirlik ve performans önceliğimdir.
-                    </p>
-                    <p>
-                        Akademik çalışmalarımda makine öğrenmesi ile güç kesintisi analizi, 
-                        çeşitli Java/C#/Python projeleri ve veri yapıları üzerine projeler geliştirdim.
-                    </p>
+        <!-- About Section -->
+        <section class="section" id="about">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// 01</span>
+                    <h2 class="section-title">Hakkımda</h2>
+                    <div class="section-line"></div>
                 </div>
-                <div class="about-details">
-                    <div class="detail-card">
-                        <i class="ph ph-map-pin"></i>
-                        <div>
-                            <span class="detail-label">Konum</span>
-                            <span class="detail-value">Türkiye</span>
-                        </div>
-                    </div>
-                    <div class="detail-card">
-                        <i class="ph ph-graduation-cap"></i>
-                        <div>
-                            <span class="detail-label">Eğitim</span>
-                            <span class="detail-value">Bilgisayar Mühendisliği</span>
-                        </div>
-                    </div>
-                    <div class="detail-card">
-                        <i class="ph ph-briefcase"></i>
-                        <div>
-                            <span class="detail-label">Pozisyon</span>
-                            <span class="detail-value">Yazılım Mühendisi</span>
-                        </div>
-                    </div>
-                    <div class="detail-card">
-                        <i class="ph ph-translate"></i>
-                        <div>
-                            <span class="detail-label">Diller</span>
-                            <span class="detail-value">Türkçe, İngilizce</span>
-                        </div>
-                    </div>
+                <div class="about-grid">
+                    <div class="about-text" id="aboutText"></div>
+                    <div class="about-details" id="aboutDetails"></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Skills Section -->
-    <section class="section section-alt" id="skills">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">// 02</span>
-                <h2 class="section-title">Yetenekler</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <div class="skill-category-header">
-                        <i class="ph ph-code"></i>
-                        <h3>Programlama Dilleri</h3>
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag" data-level="advanced">C#</span>
-                        <span class="skill-tag" data-level="advanced">Java</span>
-                        <span class="skill-tag" data-level="advanced">JavaScript</span>
-                        <span class="skill-tag" data-level="intermediate">TypeScript</span>
-                        <span class="skill-tag" data-level="intermediate">Python</span>
-                        <span class="skill-tag" data-level="intermediate">PHP</span>
-                        <span class="skill-tag" data-level="beginner">SQL</span>
-                    </div>
+        <!-- GitHub Contributions Section -->
+        <section class="section section-alt" id="github-activity">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// GitHub</span>
+                    <h2 class="section-title">Katkı Grafiği</h2>
+                    <div class="section-line"></div>
                 </div>
-                <div class="skill-category">
-                    <div class="skill-category-header">
-                        <i class="ph ph-globe"></i>
-                        <h3>Frontend</h3>
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag" data-level="advanced">Next.js</span>
-                        <span class="skill-tag" data-level="advanced">React</span>
-                        <span class="skill-tag" data-level="advanced">HTML5 / CSS3</span>
-                        <span class="skill-tag" data-level="intermediate">TailwindCSS</span>
-                        <span class="skill-tag" data-level="intermediate">DevExpress</span>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <div class="skill-category-header">
-                        <i class="ph ph-database"></i>
-                        <h3>Backend & Veri</h3>
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag" data-level="advanced">.NET / ASP.NET</span>
-                        <span class="skill-tag" data-level="advanced">TimescaleDB</span>
-                        <span class="skill-tag" data-level="advanced">PostgreSQL</span>
-                        <span class="skill-tag" data-level="intermediate">REST API</span>
-                        <span class="skill-tag" data-level="intermediate">SignalR</span>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <div class="skill-category-header">
-                        <i class="ph ph-cloud"></i>
-                        <h3>DevOps & IoT</h3>
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag" data-level="advanced">Docker</span>
-                        <span class="skill-tag" data-level="advanced">Apache Kafka</span>
-                        <span class="skill-tag" data-level="advanced">MQTT</span>
-                        <span class="skill-tag" data-level="intermediate">Git / GitHub</span>
-                        <span class="skill-tag" data-level="intermediate">Linux</span>
-                        <span class="skill-tag" data-level="intermediate">Microservices</span>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <div class="skill-category-header">
-                        <i class="ph ph-brain"></i>
-                        <h3>Diğer</h3>
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag" data-level="intermediate">Machine Learning</span>
-                        <span class="skill-tag" data-level="intermediate">Data Analysis</span>
-                        <span class="skill-tag" data-level="intermediate">Agile / Scrum</span>
-                        <span class="skill-tag" data-level="beginner">CI/CD</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="section" id="projects">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">// 03</span>
-                <h2 class="section-title">Projeler</h2>
-                <div class="section-line"></div>
-            </div>
-
-            <!-- Project Filters -->
-            <div class="project-filters">
-                <button class="filter-btn active" data-filter="all">Tümü</button>
-                <button class="filter-btn" data-filter="featured">Öne Çıkan</button>
-                <button class="filter-btn" data-filter="java">Java</button>
-                <button class="filter-btn" data-filter="csharp">C#</button>
-                <button class="filter-btn" data-filter="python">Python</button>
-                <button class="filter-btn" data-filter="web">Web</button>
-            </div>
-
-            <div class="projects-grid" id="projectsGrid">
-                <!-- Featured Project -->
-                <div class="project-card project-featured" data-tags="featured,web">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-factory"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr" target="_blank" rel="noopener" class="project-link" title="GitHub">
+                <div class="contrib-wrapper">
+                    <div class="contrib-card">
+                        <div class="contrib-header">
+                            <div class="contrib-header-left">
                                 <i class="ph ph-github-logo"></i>
+                                <div>
+                                    <span class="contrib-total" id="contribTotal">—</span>
+                                    <span class="contrib-label">son 1 yılda katkı</span>
+                                </div>
+                            </div>
+                            <a href="https://github.com/cmldlr" target="_blank" rel="noopener"
+                                class="contrib-profile-link">
+                                <span>@cmldlr</span>
+                                <i class="ph ph-arrow-up-right"></i>
                             </a>
                         </div>
-                    </div>
-                    <h3 class="project-title">IoT Data Platform</h3>
-                    <p class="project-desc">
-                        MQTT → Kafka → TimescaleDB veri pipeline'ı ile endüstriyel IoT verileri toplama, 
-                        işleme ve görselleştirme platformu. Mikroservis mimarisi, gerçek zamanlı dashboard 
-                        ve alarm sistemi içerir.
-                    </p>
-                    <div class="project-tech">
-                        <span>C#</span>
-                        <span>.NET</span>
-                        <span>Kafka</span>
-                        <span>MQTT</span>
-                        <span>TimescaleDB</span>
-                        <span>Next.js</span>
-                        <span>Docker</span>
+                        <div class="contrib-months" id="contribMonths"></div>
+                        <div class="contrib-body">
+                            <div class="contrib-days-labels">
+                                <span></span>
+                                <span>Pzt</span>
+                                <span></span>
+                                <span>Çar</span>
+                                <span></span>
+                                <span>Cum</span>
+                                <span></span>
+                            </div>
+                            <div class="contrib-graph" id="contribGraph">
+                                <div class="contrib-loading"><i class="ph ph-spinner"></i> Yükleniyor...</div>
+                            </div>
+                        </div>
+                        <div class="contrib-footer">
+                            <a href="https://github.com/cmldlr" target="_blank" rel="noopener"
+                                class="contrib-learn">GitHub profilini ziyaret et</a>
+                            <div class="contrib-legend">
+                                <span class="contrib-legend-label">Az</span>
+                                <span class="contrib-cell" data-level="0"></span>
+                                <span class="contrib-cell" data-level="1"></span>
+                                <span class="contrib-cell" data-level="2"></span>
+                                <span class="contrib-cell" data-level="3"></span>
+                                <span class="contrib-cell" data-level="4"></span>
+                                <span class="contrib-legend-label">Çok</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="project-card" data-tags="featured,web">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-chart-line-up"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/Progressio" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">Progressio</h3>
-                    <p class="project-desc">
-                        İlerleme takip ve yönetim uygulaması. Kullanıcı dostu arayüz ile 
-                        hedef belirleme ve performans izleme özellikleri sunar.
-                    </p>
-                    <div class="project-tech">
-                        <span>JavaScript</span>
-                        <span>Web App</span>
-                    </div>
-                </div>
-
-                <div class="project-card" data-tags="java">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-game-controller"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/Number-Maze" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">Number Maze</h3>
-                    <p class="project-desc">
-                        Sayı tabanlı labirent oyunu. Algoritmik düşünme ve problem çözme
-                        becerilerini geliştirmeye yönelik tasarlanmış interaktif oyun.
-                    </p>
-                    <div class="project-tech">
-                        <span>Java</span>
-                        <span>Game Dev</span>
-                    </div>
-                </div>
-
-                <div class="project-card" data-tags="python,featured">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-lightning"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/Analysis-power-outage-data-with-using-machine-learning" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">Güç Kesintisi Analizi</h3>
-                    <p class="project-desc">
-                        Makine öğrenmesi teknikleri ile güç kesintisi verilerinin analizi. 
-                        Veri ön işleme, model eğitimi ve performans değerlendirmesi içerir.
-                    </p>
-                    <div class="project-tech">
-                        <span>Python</span>
-                        <span>Machine Learning</span>
-                        <span>Jupyter</span>
-                    </div>
-                </div>
-
-                <div class="project-card" data-tags="python,featured">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-robot"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/IBM-AI-Engineering" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">IBM AI Engineering</h3>
-                    <p class="project-desc">
-                        IBM AI Engineering sertifika programı kapsamında geliştirilen yapay zeka 
-                        ve derin öğrenme projeleri koleksiyonu.
-                    </p>
-                    <div class="project-tech">
-                        <span>Python</span>
-                        <span>AI / Deep Learning</span>
-                        <span>Jupyter</span>
-                    </div>
-                </div>
-
-                <div class="project-card" data-tags="web">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-car"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/Rent-A-Car-Management-System" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">Araç Kiralama Yönetim Sistemi</h3>
-                    <p class="project-desc">
-                        Kapsamlı araç kiralama yönetim sistemi. Araç takibi, müşteri yönetimi 
-                        ve kiralama işlemleri modüllerini içerir.
-                    </p>
-                    <div class="project-tech">
-                        <span>PHP</span>
-                        <span>Web</span>
-                    </div>
-                </div>
-
-                <div class="project-card" data-tags="csharp">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-matrix-logo"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/The-Matrix" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">The Matrix</h3>
-                    <p class="project-desc">
-                        C# ile geliştirilmiş matris işlemleri kütüphanesi. Toplama, çarpma,
-                        determinant ve ters matris hesaplama gibi temel lineer cebir operasyonlarını destekler.
-                    </p>
-                    <div class="project-tech">
-                        <span>C#</span>
-                        <span>.NET</span>
-                    </div>
-                </div>
-
-                <div class="project-card" data-tags="java">
-                    <div class="project-card-glow"></div>
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="ph ph-text-aa"></i>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/cmldlr/Ceng-Editor" target="_blank" rel="noopener" class="project-link" title="GitHub">
-                                <i class="ph ph-github-logo"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <h3 class="project-title">Ceng Editor</h3>
-                    <p class="project-desc">
-                        Java ile geliştirilmiş metin editörü. Sözdizimi vurgulama, dosya yönetimi 
-                        ve temel düzenleme özellikleri sunar.
-                    </p>
-                    <div class="project-tech">
-                        <span>Java</span>
-                        <span>Swing</span>
-                    </div>
-                </div>
+                <div class="contrib-tooltip" id="contribTooltip"></div>
             </div>
+        </section>
 
-            <div class="projects-cta">
-                <a href="https://github.com/cmldlr?tab=repositories" target="_blank" rel="noopener" class="btn btn-outline">
-                    <i class="ph ph-github-logo"></i>
-                    Tüm Projeleri Gör
-                </a>
+        <!-- Skills Section -->
+        <section class="section" id="skills">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// 02</span>
+                    <h2 class="section-title">Yetenekler</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="skills-grid" id="skillsGrid"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Experience Section -->
-    <section class="section section-alt" id="experience">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">// 04</span>
-                <h2 class="section-title">Deneyim</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <h3>Yazılım Mühendisi</h3>
-                            <span class="timeline-date">2024 — Günümüz</span>
-                        </div>
-                        <p class="timeline-company">Naviras</p>
-                        <p class="timeline-desc">
-                            Endüstriyel IoT platformu geliştirme. MQTT-Kafka köprüsü, TimescaleDB ile zaman serisi 
-                            veri yönetimi, C# mikroservisler, Next.js dashboard ve DevExpress raporlama araçları 
-                            üzerinde çalışma.
-                        </p>
-                        <div class="timeline-tech">
-                            <span>C#</span>
-                            <span>Kafka</span>
-                            <span>MQTT</span>
-                            <span>TimescaleDB</span>
-                            <span>Next.js</span>
-                            <span>Docker</span>
-                        </div>
-                    </div>
+        <!-- Projects Section -->
+        <section class="section" id="projects">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// 03</span>
+                    <h2 class="section-title">Projeler</h2>
+                    <div class="section-line"></div>
                 </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <h3>Bilgisayar Mühendisliği</h3>
-                            <span class="timeline-date">2020 — 2024</span>
-                        </div>
-                        <p class="timeline-company">Üniversite</p>
-                        <p class="timeline-desc">
-                            Algoritma ve programlama, veri yapıları, bilgisayar mimarisi, bilgisayar ağları, 
-                            veritabanı yönetimi, programlama dilleri kavramları üzerine kapsamlı eğitim. 
-                            Proje tabanlı öğrenme ile çeşitli yazılım projeleri geliştirme.
-                        </p>
-                        <div class="timeline-tech">
-                            <span>C#</span>
-                            <span>Java</span>
-                            <span>Python</span>
-                            <span>Data Structures</span>
-                            <span>Algorithms</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <h3>IBM AI Engineering Sertifikası</h3>
-                            <span class="timeline-date">2025</span>
-                        </div>
-                        <p class="timeline-company">IBM / Coursera</p>
-                        <p class="timeline-desc">
-                            Yapay zeka ve derin öğrenme konularında IBM sertifika programı. 
-                            TensorFlow, Keras ve PyTorch ile model geliştirme.
-                        </p>
-                        <div class="timeline-tech">
-                            <span>Python</span>
-                            <span>TensorFlow</span>
-                            <span>Deep Learning</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="section" id="contact">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">// 05</span>
-                <h2 class="section-title">İletişim</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="contact-grid">
-                <div class="contact-text">
-                    <h3>Birlikte çalışalım!</h3>
-                    <p>
-                        Yeni projeler, iş fırsatları veya sadece merhaba demek için 
-                        benimle iletişime geçmekten çekinmeyin.
-                    </p>
-                </div>
-                <div class="contact-links">
-                    <a href="https://github.com/cmldlr" target="_blank" rel="noopener" class="contact-card" id="github-link">
-                        <div class="contact-card-icon">
-                            <i class="ph ph-github-logo"></i>
-                        </div>
-                        <div class="contact-card-info">
-                            <span class="contact-card-label">GitHub</span>
-                            <span class="contact-card-value">@cmldlr</span>
-                        </div>
-                        <i class="ph ph-arrow-up-right contact-card-arrow"></i>
-                    </a>
-                    <a href="https://linkedin.com/in/cmldlr" target="_blank" rel="noopener" class="contact-card" id="linkedin-link">
-                        <div class="contact-card-icon">
-                            <i class="ph ph-linkedin-logo"></i>
-                        </div>
-                        <div class="contact-card-info">
-                            <span class="contact-card-label">LinkedIn</span>
-                            <span class="contact-card-value">@cmldlr</span>
-                        </div>
-                        <i class="ph ph-arrow-up-right contact-card-arrow"></i>
-                    </a>
-                    <a href="mailto:cemildalar@outlook.com" class="contact-card" id="email-link">
-                        <div class="contact-card-icon">
-                            <i class="ph ph-envelope"></i>
-                        </div>
-                        <div class="contact-card-info">
-                            <span class="contact-card-label">E-posta</span>
-                            <span class="contact-card-value">cemildalar@outlook.com</span>
-                        </div>
-                        <i class="ph ph-arrow-up-right contact-card-arrow"></i>
+                <div class="project-filters" id="projectFilters"></div>
+                <div class="projects-grid" id="projectsGrid"></div>
+                <div class="projects-cta">
+                    <a href="https://github.com/cmldlr?tab=repositories" target="_blank" rel="noopener"
+                        class="btn btn-outline">
+                        <i class="ph ph-github-logo"></i>
+                        Tüm Projeleri Gör
                     </a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
+        <!-- Experience Section -->
+        <section class="section section-alt" id="experience">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// 04</span>
+                    <h2 class="section-title">Deneyim</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="timeline" id="timeline"></div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section" id="contact">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// 05</span>
+                    <h2 class="section-title">İletişim</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-text" id="contactText"></div>
+                    <div class="contact-links" id="contactLinks"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <span class="logo-bracket">{</span>
+                        <span class="logo-text">CD</span>
+                        <span class="logo-bracket">}</span>
+                    </div>
+                    <p class="footer-text">Tasarım & Geliştirme — Cemil Dalar © 2026</p>
+                    <div class="footer-socials">
+                        <a href="https://github.com/cmldlr" target="_blank" rel="noopener" aria-label="GitHub"><i
+                                class="ph ph-github-logo"></i></a>
+                        <a href="https://linkedin.com/in/cmldlr" target="_blank" rel="noopener" aria-label="LinkedIn"><i
+                                class="ph ph-linkedin-logo"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ================================================================
+         LOGIN OVERLAY (between portfolio and admin)
+         ================================================================ -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-logo">
+                <span class="logo-bracket">{</span>
+                <span class="logo-text">CD</span>
+                <span class="logo-bracket">}</span>
+            </div>
+            <h1 class="login-title" id="loginTitle">Admin Girişi</h1>
+            <p class="login-subtitle" id="loginSubtitle">Portfolyo yönetim paneline erişmek için şifrenizi girin.</p>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="loginPassword">Şifre</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-lock-key"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required
+                            autocomplete="current-password">
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="ph ph-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group" id="confirmGroup" style="display:none">
+                    <label for="confirmPassword">Şifre Tekrar</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-lock-key"></i>
+                        <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="login-error" id="loginError"></div>
+                <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                    <i class="ph ph-sign-in"></i>
+                    <span>Giriş Yap</span>
+                </button>
+            </form>
+            <button class="login-back" id="loginBackBtn">
+                <i class="ph ph-arrow-left"></i>
+                Portfolyoya Dön
+            </button>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         ADMIN PANEL (slides in from right)
+         ================================================================ -->
+    <div class="admin-panel" id="adminPanel">
+        <!-- Admin Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="sidebar-logo" id="adminBackBtn" title="Portfolyoya dön">
                     <span class="logo-bracket">{</span>
                     <span class="logo-text">CD</span>
                     <span class="logo-bracket">}</span>
+                </button>
+                <span class="sidebar-badge">Admin</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="sidebar-link active" data-page="projects">
+                    <i class="ph ph-folder-open"></i><span>Projeler</span>
+                </button>
+                <button class="sidebar-link" data-page="skills">
+                    <i class="ph ph-code"></i><span>Yetenekler</span>
+                </button>
+                <button class="sidebar-link" data-page="experience">
+                    <i class="ph ph-clock-counter-clockwise"></i><span>Deneyim</span>
+                </button>
+                <button class="sidebar-link" data-page="about">
+                    <i class="ph ph-user"></i><span>Hakkımda</span>
+                </button>
+                <button class="sidebar-link" data-page="hero">
+                    <i class="ph ph-star"></i><span>Hero</span>
+                </button>
+                <button class="sidebar-link" data-page="contact">
+                    <i class="ph ph-envelope"></i><span>İletişim</span>
+                </button>
+                <div class="sidebar-divider"></div>
+                <button class="sidebar-link" data-page="settings">
+                    <i class="ph ph-gear"></i><span>Ayarlar</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="sidebar-link" id="logoutBtn">
+                    <i class="ph ph-sign-out"></i><span>Çıkış</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Admin Main -->
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <button class="sidebar-toggle" id="sidebarToggle"><i class="ph ph-list"></i></button>
+                <h2 class="topbar-title" id="topbarTitle">Projeler</h2>
+                <div class="topbar-actions">
+                    <button class="btn btn-outline btn-sm" id="previewBtn" title="Portfolyoya dön">
+                        <i class="ph ph-eye"></i><span>Önizle</span>
+                    </button>
                 </div>
-                <p class="footer-text">
-                    Tasarım & Geliştirme — Cemil Dalar © 2026
-                </p>
-                <div class="footer-socials">
-                    <a href="https://github.com/cmldlr" target="_blank" rel="noopener" aria-label="GitHub">
-                        <i class="ph ph-github-logo"></i>
-                    </a>
-                    <a href="https://linkedin.com/in/cmldlr" target="_blank" rel="noopener" aria-label="LinkedIn">
-                        <i class="ph ph-linkedin-logo"></i>
-                    </a>
+            </header>
+
+            <div class="admin-content" id="adminContent">
+                <!-- PROJECTS -->
+                <div class="admin-page active" id="page-projects">
+                    <div class="page-header">
+                        <h3>Proje Yönetimi</h3>
+                        <div class="page-header-actions">
+                            <button class="btn btn-outline btn-sm" id="fetchGithubBtn"><i class="ph ph-github-logo"></i>
+                                GitHub'dan Çek</button>
+                            <button class="btn btn-primary btn-sm" id="addProjectBtn"><i class="ph ph-plus"></i> Yeni
+                                Proje</button>
+                        </div>
+                    </div>
+                    <div class="projects-list" id="projectsList"></div>
+                </div>
+                <!-- SKILLS -->
+                <div class="admin-page" id="page-skills">
+                    <div class="page-header">
+                        <h3>Yetenek Yönetimi</h3>
+                        <button class="btn btn-primary btn-sm" id="addSkillCategoryBtn"><i class="ph ph-plus"></i> Yeni
+                            Kategori</button>
+                    </div>
+                    <div class="skills-list" id="skillsList"></div>
+                </div>
+                <!-- EXPERIENCE -->
+                <div class="admin-page" id="page-experience">
+                    <div class="page-header">
+                        <h3>Deneyim Yönetimi</h3>
+                        <button class="btn btn-primary btn-sm" id="addExperienceBtn"><i class="ph ph-plus"></i> Yeni
+                            Deneyim</button>
+                    </div>
+                    <div class="experience-list" id="experienceList"></div>
+                </div>
+                <!-- ABOUT -->
+                <div class="admin-page" id="page-about">
+                    <div class="page-header">
+                        <h3>Hakkımda Düzenle</h3>
+                    </div>
+                    <div class="about-editor" id="aboutEditor"></div>
+                </div>
+                <!-- HERO -->
+                <div class="admin-page" id="page-hero">
+                    <div class="page-header">
+                        <h3>Hero Bölümü</h3>
+                    </div>
+                    <div class="hero-editor" id="heroEditor"></div>
+                </div>
+                <!-- CONTACT -->
+                <div class="admin-page" id="page-contact">
+                    <div class="page-header">
+                        <h3>İletişim Bilgileri</h3>
+                    </div>
+                    <div class="contact-editor" id="contactEditor"></div>
+                </div>
+                <!-- SETTINGS -->
+                <div class="admin-page" id="page-settings">
+                    <div class="page-header">
+                        <h3>Ayarlar</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-card">
+                            <h4><i class="ph ph-key"></i> Şifre Değiştir</h4>
+                            <form id="changePasswordForm">
+                                <div class="form-group"><label>Mevcut Şifre</label><input type="password"
+                                        id="currentPass" required></div>
+                                <div class="form-group"><label>Yeni Şifre</label><input type="password" id="newPass"
+                                        required></div>
+                                <div class="form-group"><label>Yeni Şifre Tekrar</label><input type="password"
+                                        id="newPassConfirm" required></div>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="ph ph-check"></i>
+                                    Güncelle</button>
+                            </form>
+                        </div>
+                        <div class="settings-card">
+                            <h4><i class="ph ph-download"></i> Veri Yedekleme</h4>
+                            <p class="settings-desc">Tüm portfolyo verilerinizi JSON olarak dışa aktarın veya içe
+                                aktarın.</p>
+                            <div class="settings-actions">
+                                <button class="btn btn-outline btn-sm" id="exportBtn"><i class="ph ph-export"></i> Dışa
+                                    Aktar</button>
+                                <label class="btn btn-outline btn-sm" for="importFile"><i class="ph ph-upload"></i> İçe
+                                    Aktar</label>
+                                <input type="file" id="importFile" accept=".json" style="display:none">
+                            </div>
+                        </div>
+                        <div class="settings-card settings-danger">
+                            <h4><i class="ph ph-warning"></i> Tehlikeli Bölge</h4>
+                            <p class="settings-desc">Tüm verileri varsayılana sıfırlar. Bu işlem geri alınamaz!</p>
+                            <button class="btn btn-danger btn-sm" id="resetBtn"><i class="ph ph-trash"></i>
+                                Sıfırla</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </main>
+    </div>
 
+    <!-- ========== MODAL ========== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal</h3>
+                <button class="modal-close" id="modalClose"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- ========== TOAST ========== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="data.js"></script>
+    <script src="auth.js"></script>
     <script src="script.js"></script>
+    <script src="admin.js"></script>
 </body>
+
 </html>
