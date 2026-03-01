@@ -5,8 +5,41 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // =============================
-    // 0. Initial Render
+    // 0. Preloader
     // =============================
+    const preloader = document.getElementById('preloader');
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            preloader.classList.add('fade-out');
+            setTimeout(() => preloader.style.display = 'none', 600);
+        }, 800);
+    });
+
+    // =============================
+    // 0b. Language Toggle
+    // =============================
+    const langToggle = document.getElementById('langToggle');
+    const langLabel = document.getElementById('langLabel');
+
+    function updateLangButton() {
+        const lang = I18n.getLang();
+        langLabel.textContent = lang === 'tr' ? 'EN' : 'TR';
+    }
+    updateLangButton();
+
+    langToggle.addEventListener('click', () => {
+        const current = I18n.getLang();
+        const next = current === 'tr' ? 'en' : 'tr';
+        I18n.setLang(next);
+        updateLangButton();
+        I18n.applyToDOM();
+        renderAll();
+    });
+
+    // =============================
+    // 1. Initial Render
+    // =============================
+    I18n.applyToDOM();
     renderAll();
 
     function renderAll() {
@@ -39,6 +72,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('heroDesc').innerHTML = hero.description;
         document.getElementById('heroBadge').querySelector('span:last-child').textContent = hero.badge;
 
+        // Apply i18n data translations if available
+        const heroT = I18n.getDataTranslation('hero');
+        if (heroT) {
+            document.getElementById('heroGreeting').textContent = heroT.greeting || hero.greeting;
+            document.getElementById('heroDesc').innerHTML = heroT.description || hero.description;
+            document.getElementById('heroBadge').querySelector('span:last-child').textContent = heroT.badge || hero.badge;
+        }
+
         // CV Download button
         const actionsEl = document.querySelector('.hero-actions');
         const existingCvBtn = document.getElementById('heroCvBtn');
@@ -50,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cvBtn.target = '_blank';
             cvBtn.rel = 'noopener';
             cvBtn.className = 'btn btn-outline';
-            cvBtn.innerHTML = '<i class="ph ph-file-pdf"></i> CV İndir';
+            cvBtn.innerHTML = `<i class="ph ph-file-pdf"></i> ${I18n.t('hero.cta.cv')}`;
             actionsEl.appendChild(cvBtn);
         }
 
@@ -65,8 +106,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAbout(about) {
-        document.getElementById('aboutText').innerHTML = about.paragraphs.map(p => `<p>${p}</p>`).join('');
-        document.getElementById('aboutDetails').innerHTML = about.details.map(d => `
+        // Apply i18n translations
+        const aboutT = I18n.getDataTranslation('about');
+        const paragraphs = aboutT?.paragraphs || about.paragraphs;
+        const details = about.details.map((d, i) => {
+            if (aboutT?.details?.[i]) {
+                return { ...d, label: aboutT.details[i].label, value: aboutT.details[i].value };
+            }
+            return d;
+        });
+        document.getElementById('aboutText').innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+        document.getElementById('aboutDetails').innerHTML = details.map(d => `
             <div class="detail-card">
                 <i class="ph ${d.icon}"></i>
                 <div>
@@ -95,10 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const visible = projects.filter(p => p.visible);
         const allTags = new Set();
         visible.forEach(p => p.tags.forEach(t => allTags.add(t)));
-        const labels = { featured: 'Öne Çıkan', web: 'Web', java: 'Java', csharp: 'C#', python: 'Python' };
+        const labels = {
+            featured: I18n.t('filter.featured'), web: I18n.t('filter.web'),
+            java: I18n.t('filter.java'), csharp: I18n.t('filter.csharp'), python: I18n.t('filter.python')
+        };
 
         // Filters
-        let fhtml = '<button class="filter-btn active" data-filter="all">Tümü</button>';
+        let fhtml = `<button class="filter-btn active" data-filter="all">${I18n.t('projects.all')}</button>`;
         allTags.forEach(t => { fhtml += `<button class="filter-btn" data-filter="${t}">${labels[t] || t}</button>`; });
         document.getElementById('projectFilters').innerHTML = fhtml;
 
@@ -169,7 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderContact(contact) {
-        document.getElementById('contactText').innerHTML = `<h3>${esc(contact.heading)}</h3><p>${esc(contact.description)}</p>`;
+        const contactT = I18n.getDataTranslation('contact');
+        const heading = contactT?.heading || contact.heading;
+        const description = contactT?.description || contact.description;
+        document.getElementById('contactText').innerHTML = `<h3>${esc(heading)}</h3><p>${esc(description)}</p>`;
         document.getElementById('contactLinks').innerHTML = contact.links.map(l => `
             <a href="${esc(l.url)}" ${l.url.startsWith('mailto:') ? '' : 'target="_blank" rel="noopener"'} class="contact-card">
                 <div class="contact-card-icon"><i class="ph ${l.icon}"></i></div>
@@ -240,9 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Month labels
-        const monthNames = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
-        const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
-        const fullMonthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        const monthNames = I18n.t('github.months');
+        const dayNames = I18n.t('github.dayNames');
+        const fullMonthNames = I18n.t('github.fullMonths');
 
         // Calculate month label positions
         let monthHtml = '';
@@ -286,7 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayName = dayNames[date.getDay()];
             const monthName = fullMonthNames[date.getMonth()];
 
-            tooltip.innerHTML = `<strong>${count}</strong> katkı — ${dayName}, ${date.getDate()} ${monthName} ${date.getFullYear()}`;
+            const tooltipTemplate = I18n.t('github.tooltip');
+            tooltip.innerHTML = tooltipTemplate
+                .replace('{count}', `<strong>${count}</strong>`)
+                .replace('{day}', dayName)
+                .replace('{date}', date.getDate())
+                .replace('{month}', monthName)
+                .replace('{year}', date.getFullYear());
             tooltip.classList.add('visible');
 
             const rect = cell.getBoundingClientRect();
