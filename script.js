@@ -37,6 +37,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================
+    // 0c. Theme Toggle
+    // =============================
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const THEME_KEY = 'portfolio_theme';
+
+    function getTheme() {
+        return localStorage.getItem(THEME_KEY) || 'dark';
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeIcon.className = theme === 'dark' ? 'ph ph-moon' : 'ph ph-sun';
+        localStorage.setItem(THEME_KEY, theme);
+    }
+
+    applyTheme(getTheme());
+
+    themeToggle.addEventListener('click', () => {
+        const next = getTheme() === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+    });
+
+    // =============================
     // 1. Initial Render
     // =============================
     I18n.applyToDOM();
