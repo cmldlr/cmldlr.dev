@@ -57,6 +57,7 @@
                     <a href="#skills" class="nav-link" data-section="skills">Yetenekler</a>
                     <a href="#projects" class="nav-link" data-section="projects">Projeler</a>
                     <a href="#experience" class="nav-link" data-section="experience">Deneyim</a>
+                    <a href="#certificates" class="nav-link" data-section="certificates">Sertifikalar</a>
                     <a href="#contact" class="nav-link" data-section="contact">İletişim</a>
                 </div>
                 <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
@@ -69,6 +70,7 @@
 
         <!-- Hero Section -->
         <section class="hero" id="hero">
+            <canvas id="particleCanvas"></canvas>
             <div class="hero-content">
                 <div class="hero-badge" id="heroBadge">
                     <span class="badge-dot"></span>
@@ -240,11 +242,23 @@
             </div>
         </section>
 
+        <!-- Certificates Section -->
+        <section class="section" id="certificates">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">// 05</span>
+                    <h2 class="section-title">Sertifikalar</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="certificates-grid" id="certificatesGrid"></div>
+            </div>
+        </section>
+
         <!-- Contact Section -->
         <section class="section" id="contact">
             <div class="container">
                 <div class="section-header">
-                    <span class="section-tag">// 05</span>
+                    <span class="section-tag">// 06</span>
                     <h2 class="section-title">İletişim</h2>
                     <div class="section-line"></div>
                 </div>
@@ -374,6 +388,9 @@
                 <button class="sidebar-link" data-page="contact">
                     <i class="ph ph-envelope"></i><span>İletişim</span>
                 </button>
+                <button class="sidebar-link" data-page="certificates">
+                    <i class="ph ph-certificate"></i><span>Sertifikalar</span>
+                </button>
                 <div class="sidebar-divider"></div>
                 <button class="sidebar-link" data-page="settings">
                     <i class="ph ph-gear"></i><span>Ayarlar</span>
@@ -484,6 +501,15 @@
                                 Sıfırla</button>
                         </div>
                     </div>
+                </div>
+                <!-- CERTIFICATES -->
+                <div class="admin-page" id="page-certificates">
+                    <div class="page-header">
+                        <h3>Sertifika Yönetimi</h3>
+                        <button class="btn btn-primary btn-sm" id="addCertificateBtn"><i class="ph ph-plus"></i> Yeni
+                            Sertifika</button>
+                    </div>
+                    <div class="certificates-list" id="certificatesList"></div>
                 </div>
             </div>
         </main>

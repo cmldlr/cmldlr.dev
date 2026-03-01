@@ -20,7 +20,8 @@ const PortfolioData = (() => {
                 { number: 21, label: 'Açık Kaynak Proje' },
                 { number: 6, label: 'Programlama Dili' },
                 { number: 3, label: 'Yıl Deneyim' }
-            ]
+            ],
+            cvUrl: ''
         },
         about: {
             paragraphs: [
@@ -223,6 +224,28 @@ const PortfolioData = (() => {
                 tech: ['Python', 'TensorFlow', 'Deep Learning']
             }
         ],
+        certificates: [
+            {
+                id: 'ibm-ai-cert',
+                title: 'IBM AI Engineering',
+                issuer: 'IBM / Coursera',
+                date: '2025',
+                description: 'Yapay zeka ve derin öğrenme konularında profesyonel sertifika. TensorFlow, Keras, PyTorch ile model geliştirme.',
+                icon: 'ph-robot',
+                credential: '',
+                tech: ['Python', 'TensorFlow', 'PyTorch', 'Deep Learning']
+            },
+            {
+                id: 'google-it',
+                title: 'Google IT Support',
+                issuer: 'Google / Coursera',
+                date: '2023',
+                description: 'IT destek, ağ yönetimi, güvenlik ve sistem yönetimi konularında profesyonel sertifika.',
+                icon: 'ph-shield-check',
+                credential: '',
+                tech: ['Networking', 'Security', 'Linux', 'Troubleshooting']
+            }
+        ],
         contact: {
             heading: 'Birlikte çalışalım!',
             description: 'Yeni projeler, iş fırsatları veya sadece merhaba demek için benimle iletişime geçmekten çekinmeyin.',
@@ -384,6 +407,45 @@ const PortfolioData = (() => {
     }
 
     // =============================
+    // Certificate Helpers
+    // =============================
+
+    function addCertificate(cert) {
+        const data = getData();
+        if (!data.certificates) data.certificates = [];
+        if (!cert.id) {
+            cert.id = cert.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        }
+        const existing = data.certificates.findIndex(c => c.id === cert.id);
+        if (existing >= 0) {
+            data.certificates[existing] = { ...data.certificates[existing], ...cert };
+        } else {
+            data.certificates.push(cert);
+        }
+        saveData(data);
+        return data;
+    }
+
+    function updateCertificate(certId, updates) {
+        const data = getData();
+        if (!data.certificates) return data;
+        const idx = data.certificates.findIndex(c => c.id === certId);
+        if (idx >= 0) {
+            data.certificates[idx] = { ...data.certificates[idx], ...updates };
+            saveData(data);
+        }
+        return data;
+    }
+
+    function removeCertificate(certId) {
+        const data = getData();
+        if (!data.certificates) return data;
+        data.certificates = data.certificates.filter(c => c.id !== certId);
+        saveData(data);
+        return data;
+    }
+
+    // =============================
     // Utility
     // =============================
 
@@ -420,6 +482,9 @@ const PortfolioData = (() => {
         addProject,
         updateProject,
         removeProject,
-        reorderProjects
+        reorderProjects,
+        addCertificate,
+        updateCertificate,
+        removeCertificate
     };
 })();

@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSkills(data.skills);
         renderProjects(data.projects);
         renderExperience(data.experience);
+        renderCertificates(data.certificates || []);
         renderContact(data.contact);
         initRevealAnimations();
         initStagger();
@@ -37,6 +38,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('heroName').textContent = hero.name;
         document.getElementById('heroDesc').innerHTML = hero.description;
         document.getElementById('heroBadge').querySelector('span:last-child').textContent = hero.badge;
+
+        // CV Download button
+        const actionsEl = document.querySelector('.hero-actions');
+        const existingCvBtn = document.getElementById('heroCvBtn');
+        if (existingCvBtn) existingCvBtn.remove();
+        if (hero.cvUrl && hero.cvUrl.trim()) {
+            const cvBtn = document.createElement('a');
+            cvBtn.id = 'heroCvBtn';
+            cvBtn.href = hero.cvUrl;
+            cvBtn.target = '_blank';
+            cvBtn.rel = 'noopener';
+            cvBtn.className = 'btn btn-outline';
+            cvBtn.innerHTML = '<i class="ph ph-file-pdf"></i> CV İndir';
+            actionsEl.appendChild(cvBtn);
+        }
 
         document.getElementById('heroStats').innerHTML = hero.stats.map(s => `
             <div class="stat">
@@ -119,6 +135,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="timeline-desc">${esc(e.description)}</p>
                     <div class="timeline-tech">${e.tech.map(t => `<span>${esc(t)}</span>`).join('')}</div>
                 </div>
+            </div>
+        `).join('');
+    }
+
+    // =============================
+    // Certificates
+    // =============================
+    function renderCertificates(certificates) {
+        const grid = document.getElementById('certificatesGrid');
+        if (!grid) return;
+        if (!certificates || certificates.length === 0) {
+            grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">Henüz sertifika eklenmedi.</p>';
+            return;
+        }
+        grid.innerHTML = certificates.map(c => `
+            <div class="cert-card">
+                <div class="cert-card-glow"></div>
+                <div class="cert-icon"><i class="ph ${c.icon}"></i></div>
+                <div class="cert-info">
+                    <h3 class="cert-title">${esc(c.title)}</h3>
+                    <div class="cert-issuer">
+                        <i class="ph ph-buildings"></i>
+                        <span>${esc(c.issuer)}</span>
+                    </div>
+                    <span class="cert-date"><i class="ph ph-calendar-blank"></i> ${esc(c.date)}</span>
+                    <p class="cert-desc">${esc(c.description)}</p>
+                    <div class="cert-tech">${(c.tech || []).map(t => `<span>${esc(t)}</span>`).join('')}</div>
+                </div>
+                ${c.credential ? `<a href="${esc(c.credential)}" target="_blank" rel="noopener" class="cert-link"><i class="ph ph-arrow-up-right"></i> Görüntüle</a>` : ''}
             </div>
         `).join('');
     }
@@ -267,6 +312,101 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.addEventListener('mouseleave', () => cursorGlow.classList.remove('active'));
 
+    // =============================
+    // Particle System
+    // =============================
+    const particleCanvas = document.getElementById('particleCanvas');
+    if (particleCanvas) {
+        const ctx = particleCanvas.getContext('2d');
+        let particles = [];
+        let mouseX = -1000, mouseY = -1000;
+        const PARTICLE_COUNT = 70;
+        const CONNECTION_DIST = 120;
+        const MOUSE_DIST = 150;
+
+        function resizeCanvas() {
+            const hero = document.getElementById('hero');
+            particleCanvas.width = hero.offsetWidth;
+            particleCanvas.height = hero.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * particleCanvas.width;
+                this.y = Math.random() * particleCanvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
+                // Mouse repulsion
+                const dx = this.x - mouseX, dy = this.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < MOUSE_DIST) {
+                    const force = (MOUSE_DIST - dist) / MOUSE_DIST * 0.03;
+                    this.vx += dx * force;
+                    this.vy += dy * force;
+                }
+                // Dampen velocity
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(108, 99, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CONNECTION_DIST) {
+                        const opacity = (1 - dist / CONNECTION_DIST) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(108, 99, 255, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            drawConnections();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        document.getElementById('hero').addEventListener('mousemove', (e) => {
+            const rect = particleCanvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+        document.getElementById('hero').addEventListener('mouseleave', () => {
+            mouseX = -1000;
+            mouseY = -1000;
+        });
+    }
+
     function initCardGlow() {
         document.querySelectorAll('.project-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
@@ -361,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     function initRevealAnimations() {
         const items = document.querySelectorAll(
-            '.section-header, .about-text, .about-details, .contrib-card, .skill-category, .project-card, .timeline-item, .contact-text, .contact-links'
+            '.section-header, .about-text, .about-details, .contrib-card, .skill-category, .project-card, .timeline-item, .cert-card, .contact-text, .contact-links'
         );
         items.forEach(i => i.classList.add('reveal'));
         const obs = new IntersectionObserver(entries => {
@@ -403,10 +543,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // 8. Staggered Reveals
     // =============================
     function initStagger() {
-        document.querySelectorAll('.skills-grid, .projects-grid').forEach(cont => {
+        document.querySelectorAll('.skills-grid, .projects-grid, .certificates-grid').forEach(cont => {
             Array.from(cont.children).forEach((c, i) => { c.style.transitionDelay = `${i * 0.1}s`; });
         });
     }
+
+    // =============================
+    // Parallax Scroll
+    // =============================
+    function initParallax() {
+        const heroVisual = document.querySelector('.hero-visual');
+        const heroContent = document.querySelector('.hero-content');
+        let ticking = false;
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    if (heroVisual && scrollY < window.innerHeight) {
+                        heroVisual.style.transform = `translateY(${scrollY * 0.15}px)`;
+                        heroContent.style.transform = `translateY(${scrollY * 0.08}px)`;
+                    }
+                    // Section headers subtle parallax
+                    document.querySelectorAll('.section-header').forEach(header => {
+                        const rect = header.getBoundingClientRect();
+                        if (rect.top < window.innerHeight && rect.bottom > 0) {
+                            const offset = (rect.top - window.innerHeight / 2) * 0.04;
+                            header.style.transform = `translateY(${offset}px)`;
+                        }
+                    });
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    }
+    initParallax();
 
     // =============================
     // 9. Admin Access (3x logo click)

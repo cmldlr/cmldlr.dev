@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const topbarTitle = document.getElementById('topbarTitle');
     const pageTitles = {
         projects: 'Projeler', skills: 'Yetenekler', experience: 'Deneyim',
-        about: 'Hakkımda', hero: 'Hero Bölümü', contact: 'İletişim', settings: 'Ayarlar'
+        about: 'Hakkımda', hero: 'Hero Bölümü', contact: 'İletişim', certificates: 'Sertifikalar', settings: 'Ayarlar'
     };
 
     let currentPage = 'projects';
@@ -275,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'about': renderAboutPage(); break;
             case 'hero': renderHeroPage(); break;
             case 'contact': renderContactPage(); break;
+            case 'certificates': renderCertificatesPage(); break;
         }
     }
 
@@ -574,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="form-group"><label>İsim</label><input type="text" id="hName" value="${esc(hero.name)}"></div>
                 <div class="form-group"><label>Açıklama (HTML)</label><textarea id="hDesc" rows="3">${esc(hero.description)}</textarea></div>
                 <div class="form-group"><label>Badge</label><input type="text" id="hBadge" value="${esc(hero.badge)}"></div>
+                <div class="form-group"><label>CV URL (boş bırakılırsa buton görünmez)</label><input type="url" id="hCvUrl" value="${esc(hero.cvUrl || '')}"></div>
                 <div class="form-group"><label>Roller (her satıra bir)</label><textarea id="hRoles" rows="4">${hero.roles.join('\n')}</textarea></div>
             </div>
             <div class="editor-card">
@@ -590,11 +592,82 @@ document.addEventListener('DOMContentLoaded', () => {
             hero.name = document.getElementById('hName').value.trim();
             hero.description = document.getElementById('hDesc').value.trim();
             hero.badge = document.getElementById('hBadge').value.trim();
+            hero.cvUrl = document.getElementById('hCvUrl').value.trim();
             hero.roles = document.getElementById('hRoles').value.split('\n').map(s => s.trim()).filter(Boolean);
             hero.stats = Array.from(document.querySelectorAll('.sn')).map((el, i) => ({
                 number: parseInt(el.value) || 0, label: document.querySelectorAll('.sl')[i].value.trim()
             }));
             PortfolioData.saveSection('hero', hero); toast('Kaydedildi', 'success');
+        });
+    }
+
+    // =============================
+    // 8b. Certificates Page
+    // =============================
+    function renderCertificatesPage() {
+        const certs = PortfolioData.getSection('certificates') || [];
+        const list = document.getElementById('certificatesList');
+
+        if (certs.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">Henüz sertifika eklenmedi.</p>';
+            return;
+        }
+
+        list.innerHTML = certs.map((c, i) => `
+            <div class="exp-admin-card">
+                <div class="skill-admin-header">
+                    <h4><i class="ph ${c.icon}"></i> ${esc(c.title)} <span style="color:var(--accent-secondary);font-size:0.8rem;font-family:var(--font-mono);margin-left:8px">${esc(c.date)}</span></h4>
+                    <div>
+                        <button class="btn-ghost" onclick="editCert(${i})"><i class="ph ph-pencil-simple"></i></button>
+                        <button class="btn-ghost" onclick="delCert(${i})"><i class="ph ph-trash"></i></button>
+                    </div>
+                </div>
+                <p style="color:var(--accent-primary);font-size:0.9rem;font-weight:600;margin-bottom:4px">${esc(c.issuer)}</p>
+                <p style="color:var(--text-secondary);font-size:0.85rem">${esc(c.description).substring(0, 120)}...</p>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('addCertificateBtn').addEventListener('click', () => openCertModal());
+    window.editCert = function (i) { const certs = PortfolioData.getSection('certificates') || []; openCertModal(certs[i], i); };
+    window.delCert = function (i) {
+        if (!confirm('Silmek istediğinize emin misiniz?')) return;
+        const certs = PortfolioData.getSection('certificates') || [];
+        certs.splice(i, 1);
+        PortfolioData.saveSection('certificates', certs);
+        renderCertificatesPage();
+        toast('Silindi', 'success');
+    };
+
+    function openCertModal(c = null, idx = -1) {
+        const isE = !!c;
+        const html = `
+            <div class="form-group"><label>Başlık</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
+            <div class="form-group"><label>Yayınlayan</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
+            <div class="form-group"><label>Tarih</label><input type="text" id="certDate" value="${isE ? esc(c.date) : ''}"></div>
+            <div class="form-group"><label>Açıklama</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
+            <div class="form-group"><label>İkon (ör: ph-robot)</label><input type="text" id="certIcon" value="${isE ? esc(c.icon) : 'ph-certificate'}"></div>
+            <div class="form-group"><label>Sertifika URL</label><input type="url" id="certCred" value="${isE ? esc(c.credential || '') : ''}"></div>
+            <div class="form-group"><label>Teknolojiler (virgülle)</label><input type="text" id="certTech" value="${isE ? (c.tech || []).join(', ') : ''}"></div>
+            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary btn-sm" id="saveCertBtn"><i class="ph ph-check"></i> ${isE ? 'Güncelle' : 'Ekle'}</button></div>`;
+        openModal(isE ? 'Sertifika Düzenle' : 'Yeni Sertifika', html);
+        document.getElementById('saveCertBtn').addEventListener('click', () => {
+            const certs = PortfolioData.getSection('certificates') || [];
+            const obj = {
+                id: document.getElementById('certTitle').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                title: document.getElementById('certTitle').value.trim(),
+                issuer: document.getElementById('certIssuer').value.trim(),
+                date: document.getElementById('certDate').value.trim(),
+                description: document.getElementById('certDesc').value.trim(),
+                icon: document.getElementById('certIcon').value.trim() || 'ph-certificate',
+                credential: document.getElementById('certCred').value.trim(),
+                tech: document.getElementById('certTech').value.split(',').map(s => s.trim()).filter(Boolean)
+            };
+            if (!obj.title) { toast('Başlık gerekli', 'error'); return; }
+            if (isE && idx >= 0) certs[idx] = obj; else certs.push(obj);
+            PortfolioData.saveSection('certificates', certs);
+            closeModal(); renderCertificatesPage(); toast(isE ? 'Güncellendi' : 'Eklendi', 'success');
         });
     }
 
