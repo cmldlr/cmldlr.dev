@@ -2330,3 +2330,47 @@ button {
     font-family: var(--font-mono);
     color: var(--text-muted);
 }
+
+/* --- Matrix Rain Easter Egg --- */
+#matrixOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99998;
+    background: #000;
+}
+
+#matrixOverlay canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.matrix-hint {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    z-index: 99999;
+}
+
+/* Game overlay shared — Pong & Flappy reuse snake-container */
+#pongOverlay,
+#flappyOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+    animation: fadeInUp 0.3s ease;
+}

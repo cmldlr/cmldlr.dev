@@ -945,6 +945,446 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =============================
+    // 🎮 Easter Egg — Word Triggers (matrix, fly)
+    // =============================
+    let typedBuffer = '';
+    document.addEventListener('keydown', (e) => {
+        if (document.getElementById('snakeOverlay') || document.getElementById('matrixOverlay') ||
+            document.getElementById('pongOverlay') || document.getElementById('flappyOverlay')) return;
+        if (e.key.length === 1) {
+            typedBuffer += e.key.toLowerCase();
+            if (typedBuffer.length > 10) typedBuffer = typedBuffer.slice(-10);
+            if (typedBuffer.endsWith('matrix')) { typedBuffer = ''; launchMatrixRain(); }
+            if (typedBuffer.endsWith('fly')) { typedBuffer = ''; launchFlappyCD(); }
+        }
+    });
+
+    // =============================
+    // 🎮 Easter Egg — Footer 5x Click → Pong
+    // =============================
+    let footerClicks = 0;
+    let footerTimer = null;
+    const footer = document.querySelector('.footer');
+    if (footer) {
+        footer.addEventListener('click', () => {
+            footerClicks++;
+            clearTimeout(footerTimer);
+            footerTimer = setTimeout(() => footerClicks = 0, 1500);
+            if (footerClicks >= 5) {
+                footerClicks = 0;
+                launchPong();
+            }
+        });
+    }
+
+    // =============================
+    // 🟢 Matrix Rain
+    // =============================
+    function launchMatrixRain() {
+        const overlay = document.createElement('div');
+        overlay.id = 'matrixOverlay';
+        overlay.innerHTML = `<canvas id="matrixCanvas"></canvas><div class="matrix-hint">ESC = Kapat</div>`;
+        document.body.appendChild(overlay);
+
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const fontSize = 14;
+        const cols = Math.floor(canvas.width / fontSize);
+        const drops = new Array(cols).fill(1);
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]<>~`|';
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim() || '#6c63ff';
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = accent;
+            ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                // Random brightness
+                ctx.globalAlpha = 0.3 + Math.random() * 0.7;
+                ctx.fillText(char, x, y);
+                ctx.globalAlpha = 1;
+                if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        const matrixInterval = setInterval(drawMatrix, 40);
+        const autoClose = setTimeout(() => closeMatrix(), 12000);
+
+        function closeMatrix() {
+            clearInterval(matrixInterval);
+            clearTimeout(autoClose);
+            document.removeEventListener('keydown', matrixKey);
+            overlay.remove();
+        }
+
+        function matrixKey(e) {
+            if (e.key === 'Escape') closeMatrix();
+        }
+        document.addEventListener('keydown', matrixKey);
+    }
+
+    // =============================
+    // 🏓 Pong
+    // =============================
+    function launchPong() {
+        const overlay = document.createElement('div');
+        overlay.id = 'pongOverlay';
+        overlay.innerHTML = `
+            <div class="snake-container">
+                <div class="snake-header">
+                    <div class="snake-title"><span class="logo-bracket">{</span><span style="color:var(--accent-primary)">🏓</span><span class="logo-bracket">}</span> Pong</div>
+                    <div class="snake-score" id="pongScoreDisplay">0 — 0</div>
+                    <button class="snake-close" id="pongClose"><i class="ph ph-x"></i></button>
+                </div>
+                <canvas id="pongCanvas" width="500" height="350"></canvas>
+                <div class="snake-info"><span>↑ ↓ ile oyna</span><span>5 sayı = Galibiyet</span></div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim() || '#6c63ff';
+
+        const paddleH = 70, paddleW = 10, ballR = 6;
+        let playerY = H / 2 - paddleH / 2;
+        let aiY = H / 2 - paddleH / 2;
+        let ballX = W / 2, ballY = H / 2;
+        let ballVX = 4, ballVY = 3;
+        let playerScore = 0, aiScore = 0;
+        let keys = {};
+        let pongGameOver = false;
+        let winner = '';
+        let animFrame;
+
+        function drawPong() {
+            // BG
+            ctx.fillStyle = '#0a0a12';
+            ctx.fillRect(0, 0, W, H);
+            // Center line
+            ctx.setLineDash([6, 8]);
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Paddles
+            ctx.shadowColor = accent;
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = accent;
+            ctx.beginPath();
+            ctx.roundRect(15, playerY, paddleW, paddleH, 5);
+            ctx.fill();
+            ctx.fillStyle = '#f43f5e';
+            ctx.shadowColor = '#f43f5e';
+            ctx.beginPath();
+            ctx.roundRect(W - 25, aiY, paddleW, paddleH, 5);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Ball
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = '#fff';
+            ctx.shadowBlur = 12;
+            ctx.beginPath(); ctx.arc(ballX, ballY, ballR, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Score
+            ctx.font = 'bold 32px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            ctx.fillText(playerScore, W / 2 - 50, 50);
+            ctx.fillText(aiScore, W / 2 + 50, 50);
+
+            if (pongGameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 24px "Inter", sans-serif';
+                ctx.fillText(winner === 'player' ? '🎉 Kazandın!' : '😤 Kaybettin!', W / 2, H / 2 - 10);
+                ctx.font = '12px "JetBrains Mono", monospace';
+                ctx.fillStyle = accent;
+                ctx.fillText('SPACE = Tekrar Oyna', W / 2, H / 2 + 25);
+            }
+        }
+
+        function updatePong() {
+            if (pongGameOver) { drawPong(); animFrame = requestAnimationFrame(updatePong); return; }
+
+            // Player movement
+            if (keys['ArrowUp'] && playerY > 0) playerY -= 5;
+            if (keys['ArrowDown'] && playerY < H - paddleH) playerY += 5;
+
+            // AI
+            const aiCenter = aiY + paddleH / 2;
+            const diff = ballY - aiCenter;
+            aiY += diff * 0.08;
+            aiY = Math.max(0, Math.min(H - paddleH, aiY));
+
+            // Ball
+            ballX += ballVX;
+            ballY += ballVY;
+
+            // Top/Bottom bounce
+            if (ballY - ballR <= 0 || ballY + ballR >= H) ballVY *= -1;
+
+            // Player paddle hit
+            if (ballX - ballR <= 25 && ballY >= playerY && ballY <= playerY + paddleH && ballVX < 0) {
+                ballVX = Math.abs(ballVX) * 1.05;
+                ballVY += (ballY - (playerY + paddleH / 2)) * 0.15;
+            }
+            // AI paddle hit
+            if (ballX + ballR >= W - 25 && ballY >= aiY && ballY <= aiY + paddleH && ballVX > 0) {
+                ballVX = -Math.abs(ballVX) * 1.05;
+                ballVY += (ballY - (aiY + paddleH / 2)) * 0.15;
+            }
+
+            // Scoring
+            if (ballX < 0) { aiScore++; resetBall(); }
+            if (ballX > W) { playerScore++; resetBall(); }
+            document.getElementById('pongScoreDisplay').textContent = `${playerScore} — ${aiScore}`;
+
+            if (playerScore >= 5) { pongGameOver = true; winner = 'player'; }
+            if (aiScore >= 5) { pongGameOver = true; winner = 'ai'; }
+
+            drawPong();
+            animFrame = requestAnimationFrame(updatePong);
+        }
+
+        function resetBall() {
+            ballX = W / 2; ballY = H / 2;
+            ballVX = (Math.random() > 0.5 ? 4 : -4);
+            ballVY = (Math.random() - 0.5) * 6;
+        }
+
+        function pongKey(e) {
+            if (e.key === 'Escape') { closePong(); return; }
+            if (e.key === ' ' && pongGameOver) {
+                playerScore = 0; aiScore = 0; pongGameOver = false; winner = '';
+                resetBall(); return;
+            }
+            keys[e.key] = true;
+        }
+        function pongKeyUp(e) { keys[e.key] = false; }
+
+        function closePong() {
+            cancelAnimationFrame(animFrame);
+            document.removeEventListener('keydown', pongKey);
+            document.removeEventListener('keyup', pongKeyUp);
+            overlay.remove();
+        }
+
+        document.addEventListener('keydown', pongKey);
+        document.addEventListener('keyup', pongKeyUp);
+        document.getElementById('pongClose').addEventListener('click', closePong);
+        updatePong();
+    }
+
+    // =============================
+    // 🐦 Flappy {CD}
+    // =============================
+    function launchFlappyCD() {
+        const overlay = document.createElement('div');
+        overlay.id = 'flappyOverlay';
+        overlay.innerHTML = `
+            <div class="snake-container">
+                <div class="snake-header">
+                    <div class="snake-title"><span class="logo-bracket">{</span><span style="color:var(--accent-primary)">CD</span><span class="logo-bracket">}</span> Flappy</div>
+                    <div class="snake-score">Skor: <span id="flappyScore">0</span></div>
+                    <button class="snake-close" id="flappyClose"><i class="ph ph-x"></i></button>
+                </div>
+                <canvas id="flappyCanvas" width="400" height="500"></canvas>
+                <div class="snake-info"><span>SPACE / Click = Zıpla</span><span>ESC = Kapat</span></div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        const canvas = document.getElementById('flappyCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim() || '#6c63ff';
+        const accentRgb = window._particleColor || '108, 99, 255';
+
+        const GRAVITY = 0.45;
+        const JUMP = -7;
+        const PIPE_W = 50;
+        const GAP = 140;
+        const PIPE_SPEED = 2.5;
+
+        let bird = { x: 80, y: H / 2, vy: 0, size: 22 };
+        let pipes = [];
+        let score = 0;
+        let flappyOver = false;
+        let started = false;
+        let animFrame;
+        let pipeTimer = 0;
+
+        function spawnPipe() {
+            const topH = 60 + Math.random() * (H - GAP - 120);
+            pipes.push({ x: W, topH, passed: false });
+        }
+
+        function drawFlappy() {
+            // Sky gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, '#0a0a14');
+            grad.addColorStop(1, '#12121e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Ground
+            ctx.fillStyle = 'rgba(255,255,255,0.03)';
+            ctx.fillRect(0, H - 30, W, 30);
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.beginPath(); ctx.moveTo(0, H - 30); ctx.lineTo(W, H - 30); ctx.stroke();
+
+            // Pipes
+            pipes.forEach(p => {
+                ctx.fillStyle = accent;
+                ctx.shadowColor = accent;
+                ctx.shadowBlur = 6;
+                // Top pipe
+                ctx.beginPath();
+                ctx.roundRect(p.x, 0, PIPE_W, p.topH, [0, 0, 8, 8]);
+                ctx.fill();
+                // Bottom pipe
+                const bottomY = p.topH + GAP;
+                ctx.beginPath();
+                ctx.roundRect(p.x, bottomY, PIPE_W, H - bottomY - 30, [8, 8, 0, 0]);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                // Pipe caps
+                ctx.fillStyle = `rgba(${accentRgb}, 0.7)`;
+                ctx.fillRect(p.x - 4, p.topH - 16, PIPE_W + 8, 16);
+                ctx.fillRect(p.x - 4, bottomY, PIPE_W + 8, 16);
+            });
+            ctx.shadowBlur = 0;
+
+            // Bird — {CD} logo
+            ctx.save();
+            ctx.translate(bird.x, bird.y);
+            const rotation = Math.min(Math.max(bird.vy * 3, -30), 45) * Math.PI / 180;
+            ctx.rotate(rotation);
+            // Glow
+            ctx.shadowColor = accent;
+            ctx.shadowBlur = 16;
+            ctx.fillStyle = '#0a0a14';
+            ctx.beginPath();
+            ctx.roundRect(-bird.size, -bird.size / 1.3, bird.size * 2, bird.size * 1.5, 8);
+            ctx.fill();
+            ctx.strokeStyle = accent;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            // Text
+            ctx.font = `bold ${bird.size * 0.7}px "JetBrains Mono", monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = accent;
+            ctx.fillText('{', -bird.size * 0.45, 0);
+            ctx.fillText('}', bird.size * 0.45, 0);
+            ctx.fillStyle = '#fff';
+            ctx.fillText('CD', 0, 0);
+            ctx.restore();
+
+            // Score text
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.font = 'bold 48px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(score, W / 2, 70);
+
+            // Intro / Game over
+            if (!started && !flappyOver) {
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                ctx.font = '14px "JetBrains Mono", monospace';
+                ctx.fillText('SPACE / Click = Başla', W / 2, H / 2 + 60);
+            }
+            if (flappyOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 28px "Inter", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Game Over!', W / 2, H / 2 - 15);
+                ctx.font = '14px "JetBrains Mono", monospace';
+                ctx.fillStyle = accent;
+                ctx.fillText(`Skor: ${score}`, W / 2, H / 2 + 15);
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.font = '12px "JetBrains Mono", monospace';
+                ctx.fillText('SPACE = Tekrar Oyna', W / 2, H / 2 + 45);
+            }
+        }
+
+        function updateFlappy() {
+            if (!flappyOver && started) {
+                bird.vy += GRAVITY;
+                bird.y += bird.vy;
+
+                pipeTimer++;
+                if (pipeTimer % 90 === 0) spawnPipe();
+
+                pipes.forEach(p => {
+                    p.x -= PIPE_SPEED;
+                    // Score
+                    if (!p.passed && p.x + PIPE_W < bird.x) {
+                        p.passed = true;
+                        score++;
+                        document.getElementById('flappyScore').textContent = score;
+                    }
+                    // Collision
+                    if (bird.x + bird.size > p.x && bird.x - bird.size < p.x + PIPE_W) {
+                        if (bird.y - bird.size / 1.3 < p.topH || bird.y + bird.size / 1.3 > p.topH + GAP) {
+                            flappyOver = true;
+                        }
+                    }
+                });
+                pipes = pipes.filter(p => p.x + PIPE_W > -10);
+
+                // Ground / ceiling
+                if (bird.y + bird.size > H - 30 || bird.y - bird.size < 0) flappyOver = true;
+            }
+            drawFlappy();
+            animFrame = requestAnimationFrame(updateFlappy);
+        }
+
+        function flap() {
+            if (flappyOver) {
+                bird = { x: 80, y: H / 2, vy: 0, size: 22 };
+                pipes = []; score = 0; pipeTimer = 0;
+                flappyOver = false; started = true;
+                document.getElementById('flappyScore').textContent = 0;
+                return;
+            }
+            if (!started) started = true;
+            bird.vy = JUMP;
+        }
+
+        function flappyKey(e) {
+            if (e.key === 'Escape') { closeFlappy(); return; }
+            if (e.key === ' ') { e.preventDefault(); flap(); }
+        }
+
+        function closeFlappy() {
+            cancelAnimationFrame(animFrame);
+            document.removeEventListener('keydown', flappyKey);
+            canvas.removeEventListener('click', flap);
+            overlay.remove();
+        }
+
+        document.addEventListener('keydown', flappyKey);
+        canvas.addEventListener('click', flap);
+        document.getElementById('flappyClose').addEventListener('click', closeFlappy);
+        updateFlappy();
+    }
+
+    // =============================
     // Utility
     // =============================
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
