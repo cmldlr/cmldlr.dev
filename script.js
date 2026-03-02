@@ -61,6 +61,94 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================
+    // 0d. Accent Color Picker
+    // =============================
+    const COLOR_KEY = 'portfolio_accent';
+    const colorPickerToggle = document.getElementById('colorPickerToggle');
+    const colorPickerPopup = document.getElementById('colorPickerPopup');
+    const colorSwatches = document.getElementById('colorSwatches');
+    const customColorInput = document.getElementById('customColorInput');
+
+    const colorPresets = {
+        purple: { primary: '#6c63ff', secondary: '#a78bfa' },
+        blue: { primary: '#3b82f6', secondary: '#60a5fa' },
+        emerald: { primary: '#10b981', secondary: '#34d399' },
+        rose: { primary: '#f43f5e', secondary: '#fb7185' },
+        amber: { primary: '#f59e0b', secondary: '#fbbf24' },
+        cyan: { primary: '#06b6d4', secondary: '#22d3ee' }
+    };
+
+    function hexToRgb(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return { r, g, b };
+    }
+
+    function applyAccentColor(primary, secondary) {
+        const root = document.documentElement;
+        const rgb = hexToRgb(primary);
+        root.style.setProperty('--accent-primary', primary);
+        root.style.setProperty('--accent-secondary', secondary);
+        root.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${primary}, ${secondary})`);
+        root.style.setProperty('--accent-glow', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+        root.style.setProperty('--accent-glow-strong', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
+        root.style.setProperty('--border-hover', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
+        // Update particles color
+        window._particleColor = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+    }
+
+    function loadAccentColor() {
+        const saved = localStorage.getItem(COLOR_KEY);
+        if (saved) {
+            try {
+                const { primary, secondary, name } = JSON.parse(saved);
+                applyAccentColor(primary, secondary);
+                customColorInput.value = primary;
+                // Mark active swatch
+                document.querySelectorAll('.color-swatch').forEach(s => {
+                    s.classList.toggle('active', s.dataset.color === name);
+                });
+            } catch (e) { /* ignore */ }
+        }
+    }
+    loadAccentColor();
+
+    colorPickerToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        colorPickerPopup.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!colorPickerPopup.contains(e.target) && e.target !== colorPickerToggle) {
+            colorPickerPopup.classList.remove('open');
+        }
+    });
+
+    colorSwatches.addEventListener('click', (e) => {
+        const swatch = e.target.closest('.color-swatch');
+        if (!swatch) return;
+        const name = swatch.dataset.color;
+        const preset = colorPresets[name];
+        if (!preset) return;
+        applyAccentColor(preset.primary, preset.secondary);
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        customColorInput.value = preset.primary;
+        localStorage.setItem(COLOR_KEY, JSON.stringify({ ...preset, name }));
+    });
+
+    customColorInput.addEventListener('input', (e) => {
+        const primary = e.target.value;
+        // Generate lighter secondary
+        const rgb = hexToRgb(primary);
+        const secondary = `#${Math.min(255, rgb.r + 50).toString(16).padStart(2, '0')}${Math.min(255, rgb.g + 50).toString(16).padStart(2, '0')}${Math.min(255, rgb.b + 50).toString(16).padStart(2, '0')}`;
+        applyAccentColor(primary, secondary);
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        localStorage.setItem(COLOR_KEY, JSON.stringify({ primary, secondary, name: 'custom' }));
+    });
+
+    // =============================
     // 1. Initial Render
     // =============================
     I18n.applyToDOM();
@@ -448,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(108, 99, 255, ${this.opacity})`;
+                ctx.fillStyle = `rgba(${window._particleColor || '108, 99, 255'}, ${this.opacity})`;
                 ctx.fill();
             }
         }
@@ -466,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(108, 99, 255, ${opacity})`;
+                        ctx.strokeStyle = `rgba(${window._particleColor || '108, 99, 255'}, ${opacity})`;
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }

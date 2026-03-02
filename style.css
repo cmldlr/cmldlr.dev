@@ -53,39 +53,67 @@
 
 /* --- Light Theme Override --- */
 [data-theme="light"] {
-    --bg-primary: #f5f5f8;
-    --bg-secondary: #ebebf0;
-    --bg-tertiary: #e0e0e8;
-    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-primary: #f8f8fb;
+    --bg-secondary: #eeeef3;
+    --bg-tertiary: #e4e4ec;
+    --bg-card: rgba(255, 255, 255, 0.9);
     --bg-glass: rgba(0, 0, 0, 0.02);
 
     --text-primary: #1a1a2e;
     --text-secondary: #4a4a6a;
     --text-muted: #8888a0;
 
-    --accent-glow: rgba(108, 99, 255, 0.1);
-    --accent-glow-strong: rgba(108, 99, 255, 0.2);
+    --accent-glow: rgba(108, 99, 255, 0.08);
+    --accent-glow-strong: rgba(108, 99, 255, 0.15);
 
-    --border-color: rgba(0, 0, 0, 0.08);
-    --border-hover: rgba(108, 99, 255, 0.35);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --border-hover: rgba(108, 99, 255, 0.4);
 }
 
 [data-theme="light"] .bg-grid {
     background-image:
-        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
 }
 
 [data-theme="light"] .bg-noise {
-    opacity: 0.015;
+    opacity: 0.01;
 }
 
 [data-theme="light"] .nav {
-    background: rgba(245, 245, 248, 0.85);
+    background: rgba(248, 248, 251, 0.92);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .nav.scrolled {
+    background: rgba(248, 248, 251, 0.97);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .hero {
+    background: linear-gradient(135deg, #f0f0ff 0%, #f8f8fb 50%, #f0f8ff 100%);
 }
 
 [data-theme="light"] .preloader {
-    background: var(--bg-primary);
+    background: #f8f8fb;
+}
+
+[data-theme="light"] .cursor-glow {
+    background: radial-gradient(300px circle, rgba(108, 99, 255, 0.04), transparent 40%);
+}
+
+[data-theme="light"] #particleCanvas {
+    opacity: 0.45;
+}
+
+/* Code window light */
+[data-theme="light"] .code-window {
+    background: #ffffff;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .code-header {
+    background: #f5f5f9;
 }
 
 [data-theme="light"] .code-line .code-keyword {
@@ -100,17 +128,84 @@
     color: #9ca3af;
 }
 
-[data-theme="light"] .cursor-glow {
-    background: radial-gradient(300px circle, rgba(108, 99, 255, 0.06), transparent 40%);
+[data-theme="light"] .code-line .code-func {
+    color: #d97706;
 }
 
+[data-theme="light"] .code-line .code-number {
+    color: #dc2626;
+}
+
+/* Cards & sections light */
+[data-theme="light"] .section-alt {
+    background: #f0f0f5;
+}
+
+[data-theme="light"] .skill-category,
+[data-theme="light"] .project-card,
+[data-theme="light"] .timeline-content,
+[data-theme="light"] .cert-card,
+[data-theme="light"] .contact-card,
+[data-theme="light"] .contrib-card {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .skill-category:hover,
+[data-theme="light"] .project-card:hover,
+[data-theme="light"] .cert-card:hover {
+    box-shadow: 0 8px 32px rgba(108, 99, 255, 0.1);
+}
+
+[data-theme="light"] .project-card.project-featured {
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.04), rgba(167, 139, 250, 0.04));
+}
+
+[data-theme="light"] .filter-btn {
+    background: transparent;
+}
+
+[data-theme="light"] .filter-btn.active {
+    background: var(--accent-gradient);
+    color: white;
+}
+
+[data-theme="light"] .skill-tag {
+    background: rgba(108, 99, 255, 0.06);
+    border-color: rgba(108, 99, 255, 0.12);
+}
+
+[data-theme="light"] .project-tech span,
+[data-theme="light"] .timeline-tech span,
+[data-theme="light"] .cert-tech span {
+    background: rgba(108, 99, 255, 0.07);
+}
+
+/* Contribution graph light */
 [data-theme="light"] .contrib-cell[data-level="0"] {
     background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] #particleCanvas {
-    opacity: 0.6;
+[data-theme="light"] .contrib-tooltip {
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Footer & details light */
+[data-theme="light"] .footer {
+    background: #eeeef3;
+}
+
+[data-theme="light"] .detail-card {
+    background: rgba(108, 99, 255, 0.04);
+    border-color: rgba(108, 99, 255, 0.1);
+}
+
+/* Hero badge light */
+[data-theme="light"] .hero-badge {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.08);
 }
 
 /* --- Preloader --- */
@@ -276,12 +371,123 @@
     background: var(--accent-glow);
 }
 
-/* Smooth theme transition */
-body,
-body * {
-    transition-property: background-color, color, border-color, box-shadow;
-    transition-duration: 0.3s;
-    transition-timing-function: ease;
+/* --- Color Picker --- */
+.color-picker-wrapper {
+    position: relative;
+}
+
+.color-picker-popup {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    min-width: 200px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.color-picker-popup.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.color-picker-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.color-picker-swatches {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: var(--swatch);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    padding: 0;
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch.active {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 3px var(--bg-secondary), 0 0 0 5px var(--swatch);
+}
+
+.color-picker-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.color-picker-custom label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.color-picker-custom input[type="color"] {
+    width: 32px;
+    height: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: transparent;
+    padding: 2px;
+}
+
+/* Smooth theme transition — only on main elements, not all descendants */
+body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.nav,
+.hero,
+.section,
+.section-alt,
+.footer,
+.project-card,
+.skill-category,
+.cert-card,
+.timeline-content,
+.contact-card,
+.contrib-card,
+.code-window,
+.code-header,
+.filter-btn,
+.skill-tag,
+.detail-card,
+.nav-link,
+.btn,
+.lang-toggle,
+.theme-toggle {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 /* --- Reset & Base --- */
