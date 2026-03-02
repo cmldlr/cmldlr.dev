@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rgb = hexToRgb(primary);
         root.style.setProperty('--accent-primary', primary);
         root.style.setProperty('--accent-secondary', secondary);
+        root.style.setProperty('--accent-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
         root.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${primary}, ${secondary})`);
         root.style.setProperty('--accent-glow', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
         root.style.setProperty('--accent-glow-strong', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
@@ -773,6 +774,175 @@ document.addEventListener('DOMContentLoaded', () => {
             clickTimer = setTimeout(() => clicks = 0, 600);
         }
     });
+
+    // =============================
+    // 🎮 Easter Egg — Konami Code Snake Game
+    // ↑ ↑ ↓ ↓ ← → ← → B A
+    // =============================
+    const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === konamiSequence[konamiIndex] || e.key.toLowerCase() === konamiSequence[konamiIndex]) {
+            konamiIndex++;
+            if (konamiIndex === konamiSequence.length) {
+                konamiIndex = 0;
+                launchSnakeGame();
+            }
+        } else {
+            konamiIndex = 0;
+        }
+    });
+
+    function launchSnakeGame() {
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'snakeOverlay';
+        overlay.innerHTML = `
+            <div class="snake-container">
+                <div class="snake-header">
+                    <div class="snake-title"><span class="logo-bracket">{</span><span style="color:var(--accent-primary)">🐍</span><span class="logo-bracket">}</span> Snake</div>
+                    <div class="snake-score">Skor: <span id="snakeScore">0</span></div>
+                    <button class="snake-close" id="snakeClose"><i class="ph ph-x"></i></button>
+                </div>
+                <canvas id="snakeCanvas" width="400" height="400"></canvas>
+                <div class="snake-info">
+                    <span>Yön tuşları ile oyna</span>
+                    <span>ESC = Kapat</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const canvas = document.getElementById('snakeCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('snakeScore');
+        const GRID = 20;
+        const CELL = canvas.width / GRID;
+
+        let snake = [{ x: 10, y: 10 }];
+        let dir = { x: 1, y: 0 };
+        let nextDir = { x: 1, y: 0 };
+        let food = spawnFood();
+        let score = 0;
+        let gameOver = false;
+        let interval;
+
+        const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim() || '#6c63ff';
+        const accentRgb = window._particleColor || '108, 99, 255';
+
+        function spawnFood() {
+            let pos;
+            do {
+                pos = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) };
+            } while (snake.some(s => s.x === pos.x && s.y === pos.y));
+            return pos;
+        }
+
+        function draw() {
+            // Background
+            ctx.fillStyle = '#0a0a12';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            for (let i = 0; i <= GRID; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height);
+                ctx.moveTo(0, i * CELL); ctx.lineTo(canvas.width, i * CELL);
+                ctx.stroke();
+            }
+
+            // Food
+            ctx.fillStyle = '#f43f5e';
+            ctx.shadowColor = '#f43f5e';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL / 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Snake
+            snake.forEach((seg, i) => {
+                const alpha = 1 - (i / snake.length) * 0.6;
+                ctx.fillStyle = i === 0 ? accent : `rgba(${accentRgb}, ${alpha})`;
+                ctx.shadowColor = accent;
+                ctx.shadowBlur = i === 0 ? 12 : 4;
+                const pad = i === 0 ? 1 : 2;
+                ctx.beginPath();
+                ctx.roundRect(seg.x * CELL + pad, seg.y * CELL + pad, CELL - pad * 2, CELL - pad * 2, 4);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+
+            // Game over text
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 28px "Inter", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 15);
+                ctx.font = '14px "JetBrains Mono", monospace';
+                ctx.fillStyle = accent;
+                ctx.fillText(`Skor: ${score}`, canvas.width / 2, canvas.height / 2 + 15);
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.font = '12px "JetBrains Mono", monospace';
+                ctx.fillText('SPACE = Tekrar Oyna', canvas.width / 2, canvas.height / 2 + 45);
+            }
+        }
+
+        function update() {
+            if (gameOver) return;
+            dir = nextDir;
+            const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+            // Wall collision
+            if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
+                gameOver = true; draw(); clearInterval(interval); return;
+            }
+            // Self collision
+            if (snake.some(s => s.x === head.x && s.y === head.y)) {
+                gameOver = true; draw(); clearInterval(interval); return;
+            }
+
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                scoreEl.textContent = score;
+                food = spawnFood();
+            } else {
+                snake.pop();
+            }
+            draw();
+        }
+
+        function handleKey(e) {
+            const k = e.key;
+            if (k === 'Escape') { closeGame(); return; }
+            if (k === ' ' && gameOver) {
+                snake = [{ x: 10, y: 10 }]; dir = { x: 1, y: 0 }; nextDir = { x: 1, y: 0 };
+                food = spawnFood(); score = 0; scoreEl.textContent = 0; gameOver = false;
+                interval = setInterval(update, 120); draw(); return;
+            }
+            if (k === 'ArrowUp' && dir.y === 0) nextDir = { x: 0, y: -1 };
+            if (k === 'ArrowDown' && dir.y === 0) nextDir = { x: 0, y: 1 };
+            if (k === 'ArrowLeft' && dir.x === 0) nextDir = { x: -1, y: 0 };
+            if (k === 'ArrowRight' && dir.x === 0) nextDir = { x: 1, y: 0 };
+        }
+
+        function closeGame() {
+            clearInterval(interval);
+            document.removeEventListener('keydown', handleKey);
+            overlay.remove();
+        }
+
+        document.addEventListener('keydown', handleKey);
+        document.getElementById('snakeClose').addEventListener('click', closeGame);
+
+        draw();
+        interval = setInterval(update, 120);
+    }
 
     // =============================
     // Utility

@@ -21,6 +21,7 @@
     --accent-gradient: linear-gradient(135deg, #6c63ff, #a78bfa);
     --accent-glow: rgba(108, 99, 255, 0.15);
     --accent-glow-strong: rgba(108, 99, 255, 0.3);
+    --accent-rgb: 108, 99, 255;
 
     --green: #4ade80;
     --yellow: #fbbf24;
@@ -1319,39 +1320,39 @@ button {
     z-index: 10;
 }
 
-/* Purple theme color scale (matches accent) */
+/* Accent-aware color scale for contribution cells */
 .contrib-cell[data-level="0"] {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .contrib-cell[data-level="1"] {
-    background: rgba(108, 99, 255, 0.2);
-    border: 1px solid rgba(108, 99, 255, 0.15);
-    box-shadow: 0 0 4px rgba(108, 99, 255, 0.1);
+    background: rgba(var(--accent-rgb), 0.2);
+    border: 1px solid rgba(var(--accent-rgb), 0.15);
+    box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.1);
 }
 
 .contrib-cell[data-level="2"] {
-    background: rgba(108, 99, 255, 0.4);
-    border: 1px solid rgba(108, 99, 255, 0.3);
-    box-shadow: 0 0 6px rgba(108, 99, 255, 0.15);
+    background: rgba(var(--accent-rgb), 0.4);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.15);
 }
 
 .contrib-cell[data-level="3"] {
-    background: rgba(108, 99, 255, 0.65);
-    border: 1px solid rgba(108, 99, 255, 0.5);
-    box-shadow: 0 0 8px rgba(108, 99, 255, 0.2);
+    background: rgba(var(--accent-rgb), 0.65);
+    border: 1px solid rgba(var(--accent-rgb), 0.5);
+    box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.2);
 }
 
 .contrib-cell[data-level="4"] {
-    background: rgba(108, 99, 255, 0.9);
-    border: 1px solid rgba(108, 99, 255, 0.7);
-    box-shadow: 0 0 12px rgba(108, 99, 255, 0.3);
+    background: rgba(var(--accent-rgb), 0.9);
+    border: 1px solid rgba(var(--accent-rgb), 0.7);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.3);
 }
 
 .contrib-cell[data-level="3"]:hover,
 .contrib-cell[data-level="4"]:hover {
-    box-shadow: 0 0 16px rgba(108, 99, 255, 0.5);
+    box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.5);
 }
 
 /* Footer */
@@ -2242,4 +2243,90 @@ button {
     .section-title {
         font-size: 1.8rem;
     }
+}
+
+/* --- Snake Game Easter Egg --- */
+#snakeOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+    animation: fadeInUp 0.3s ease;
+}
+
+.snake-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.snake-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.snake-title {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.snake-score {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    font-weight: 600;
+}
+
+.snake-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.snake-close:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(248, 113, 113, 0.1);
+}
+
+#snakeCanvas {
+    display: block;
+    border-radius: 0;
+}
+
+.snake-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
 }
