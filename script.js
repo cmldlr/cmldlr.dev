@@ -813,7 +813,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
 
         const canvas = document.getElementById('snakeCanvas');
         const ctx = canvas.getContext('2d');
@@ -926,7 +925,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 food = spawnFood(); score = 0; scoreEl.textContent = 0; gameOver = false;
                 interval = setInterval(update, 120); draw(); return;
             }
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(k)) e.preventDefault();
             if (k === 'ArrowUp' && dir.y === 0) nextDir = { x: 0, y: -1 };
             if (k === 'ArrowDown' && dir.y === 0) nextDir = { x: 0, y: 1 };
             if (k === 'ArrowLeft' && dir.x === 0) nextDir = { x: -1, y: 0 };
@@ -936,7 +934,6 @@ document.addEventListener('DOMContentLoaded', () => {
         function closeGame() {
             clearInterval(interval);
             document.removeEventListener('keydown', handleKey);
-            document.body.style.overflow = '';
             overlay.remove();
         }
 
@@ -988,7 +985,6 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.id = 'matrixOverlay';
         overlay.innerHTML = `<canvas id="matrixCanvas"></canvas><div class="matrix-hint">ESC = Kapat</div>`;
         document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
 
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
@@ -1027,7 +1023,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(matrixInterval);
             clearTimeout(autoClose);
             document.removeEventListener('keydown', matrixKey);
-            document.body.style.overflow = '';
             overlay.remove();
         }
 
@@ -1054,7 +1049,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="snake-info"><span>↑ ↓ ile oyna</span><span>5 sayı = Galibiyet</span></div>
             </div>`;
         document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
 
         const canvas = document.getElementById('pongCanvas');
         const ctx = canvas.getContext('2d');
@@ -1172,7 +1166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function pongKey(e) {
-            if (['ArrowUp', 'ArrowDown', ' '].includes(e.key)) e.preventDefault();
             if (e.key === 'Escape') { closePong(); return; }
             if (e.key === ' ' && pongGameOver) {
                 playerScore = 0; aiScore = 0; pongGameOver = false; winner = '';
@@ -1186,7 +1179,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelAnimationFrame(animFrame);
             document.removeEventListener('keydown', pongKey);
             document.removeEventListener('keyup', pongKeyUp);
-            document.body.style.overflow = '';
             overlay.remove();
         }
 
@@ -1213,7 +1205,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="snake-info"><span>SPACE / Click = Zıpla</span><span>ESC = Kapat</span></div>
             </div>`;
         document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
 
         const canvas = document.getElementById('flappyCanvas');
         const ctx = canvas.getContext('2d');
@@ -1384,7 +1375,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelAnimationFrame(animFrame);
             document.removeEventListener('keydown', flappyKey);
             canvas.removeEventListener('click', flap);
-            document.body.style.overflow = '';
             overlay.remove();
         }
 
