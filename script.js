@@ -708,9 +708,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (!href || href === '#') return;
             e.preventDefault();
-            const t = document.querySelector(this.getAttribute('href'));
-            if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            try {
+                const t = document.querySelector(href);
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (err) { /* invalid selector, ignore */ }
         });
     });
 
@@ -1393,6 +1397,374 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.addEventListener('click', flap);
         document.getElementById('flappyClose').addEventListener('click', closeFlappy);
         updateFlappy();
+    }
+
+    // =============================
+    // 💻 Interactive Terminal Mode
+    // Press ` (backtick) to open
+    // =============================
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '`' && !document.getElementById('terminalOverlay') &&
+            !document.getElementById('snakeOverlay') && !document.getElementById('pongOverlay') &&
+            !document.getElementById('flappyOverlay') && !document.getElementById('matrixOverlay')) {
+            e.preventDefault();
+            launchTerminal();
+        }
+    });
+
+    function launchTerminal() {
+        const overlay = document.createElement('div');
+        overlay.id = 'terminalOverlay';
+        overlay.innerHTML = `
+            <div class="terminal-window">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="terminal-title">cemil@portfolio:~</span>
+                    <button class="terminal-close-btn" id="terminalCloseBtn"><i class="ph ph-x"></i></button>
+                </div>
+                <div class="terminal-body" id="terminalBody">
+                    <div class="terminal-output" id="terminalOutput"></div>
+                    <div class="terminal-input-line">
+                        <span class="terminal-prompt">visitor@cmldlr.dev:~$</span>
+                        <input type="text" class="terminal-input" id="terminalInput" autofocus autocomplete="off" spellcheck="false">
+                        <span class="terminal-cursor-blink"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="terminal-scanlines"></div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        const output = document.getElementById('terminalOutput');
+        const input = document.getElementById('terminalInput');
+        const body = document.getElementById('terminalBody');
+        let history = [];
+        let historyIndex = -1;
+
+        const data = PortfolioData.getData();
+
+        // ASCII boot
+        const asciiLogo = [
+            '',
+            '  ██████╗██████╗     ████████╗███████╗██████╗ ███╗   ███╗',
+            ' ██╔════╝██╔══██╗    ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║',
+            ' ██║     ██║  ██║       ██║   █████╗  ██████╔╝██╔████╔██║',
+            ' ██║     ██║  ██║       ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║',
+            ' ╚██████╗██████╔╝       ██║   ███████╗██║  ██║██║ ╚═╝ ██║',
+            '  ╚═════╝╚═════╝        ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝',
+            ''
+        ].join('\n');
+
+        function print(text, cls = '') {
+            const div = document.createElement('div');
+            div.className = 'terminal-line ' + cls;
+            div.innerHTML = text;
+            output.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function printLines(lines, cls = '') {
+            lines.forEach(l => print(l, cls));
+        }
+
+        // Boot sequence
+        print(asciiLogo, 'terminal-ascii');
+        print('<span class="t-accent">Cemil Dalar</span> — Interactive Portfolio Terminal v1.0', 'terminal-boot');
+        print('Type <span class="t-cmd">help</span> to see available commands.', 'terminal-boot');
+        print('Press <span class="t-muted">ESC</span> or type <span class="t-cmd">exit</span> to close.', 'terminal-boot');
+        print('');
+
+        const commands = {
+            help: () => {
+                printLines([
+                    '<span class="t-accent">━━━ Available Commands ━━━</span>',
+                    '',
+                    '  <span class="t-cmd">whoami</span>      — Who am I?',
+                    '  <span class="t-cmd">about</span>       — About me',
+                    '  <span class="t-cmd">skills</span>      — Technical skills',
+                    '  <span class="t-cmd">projects</span>    — Project portfolio',
+                    '  <span class="t-cmd">experience</span>  — Work experience',
+                    '  <span class="t-cmd">contact</span>     — Get in touch',
+                    '  <span class="t-cmd">neofetch</span>    — System info',
+                    '  <span class="t-cmd">ls</span>          — List sections',
+                    '  <span class="t-cmd">cd &lt;section&gt;</span> — Navigate to section',
+                    '  <span class="t-cmd">cat readme</span>  — Read the README',
+                    '  <span class="t-cmd">games</span>       — Hidden games list',
+                    '  <span class="t-cmd">theme</span>       — Toggle dark/light',
+                    '  <span class="t-cmd">clear</span>       — Clear terminal',
+                    '  <span class="t-cmd">exit</span>        — Close terminal',
+                    ''
+                ]);
+            },
+
+            whoami: () => {
+                print(`<span class="t-accent">${data.hero.name}</span> — ${data.hero.roles[0]}`);
+                print(`${data.hero.roles.join(' • ')}`);
+            },
+
+            about: () => {
+                print('<span class="t-accent">━━━ About ━━━</span>');
+                data.about.paragraphs.forEach(p => {
+                    print(p.replace(/<\/?strong>/g, ''));
+                });
+                print('');
+                data.about.details.forEach(d => {
+                    print(`  <span class="t-muted">${d.label}:</span> ${d.value}`);
+                });
+            },
+
+            skills: () => {
+                print('<span class="t-accent">━━━ Skills ━━━</span>');
+                data.skills.forEach(cat => {
+                    print(`\n  <span class="t-cmd">[${cat.category}]</span>`);
+                    cat.items.forEach(s => {
+                        const bar = '█'.repeat(Math.round(s.level / 10)) + '░'.repeat(10 - Math.round(s.level / 10));
+                        print(`    ${s.name.padEnd(16)} ${bar} ${s.level}%`);
+                    });
+                });
+            },
+
+            projects: () => {
+                print('<span class="t-accent">━━━ Projects ━━━</span>');
+                const visible = data.projects.filter(p => p.visible);
+                visible.forEach((p, i) => {
+                    const star = p.featured ? ' ⭐' : '';
+                    print(`\n  <span class="t-cmd">${i + 1}. ${p.title}${star}</span>`);
+                    print(`     ${p.description}`);
+                    print(`     <span class="t-muted">[${p.tech.join(', ')}]</span>`);
+                    if (p.github) print(`     <span class="t-link">→ ${p.github}</span>`);
+                });
+            },
+
+            experience: () => {
+                print('<span class="t-accent">━━━ Experience ━━━</span>');
+                data.experience.forEach(exp => {
+                    print(`\n  <span class="t-cmd">${exp.role}</span> @ <span class="t-accent">${exp.company}</span>`);
+                    print(`  <span class="t-muted">${exp.period}</span>`);
+                    exp.description.forEach(d => print(`    • ${d}`));
+                });
+            },
+
+            contact: () => {
+                print('<span class="t-accent">━━━ Contact ━━━</span>');
+                print(`  ${data.contact.heading}`);
+                print(`  ${data.contact.description}`);
+                print('');
+                data.contact.links.forEach(l => {
+                    print(`  <span class="t-cmd">${l.label}</span>: <span class="t-link">${l.url}</span>`);
+                });
+            },
+
+            neofetch: () => {
+                const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+                const lang = I18n.getLang().toUpperCase();
+                const skills = data.skills.reduce((acc, c) => acc + c.items.length, 0);
+                const projects = data.projects.filter(p => p.visible).length;
+                printLines([
+                    '',
+                    '  <span class="t-accent">    {CD}</span>         <span class="t-cmd">cemil@portfolio</span>',
+                    '  <span class="t-accent">   {  CD  }</span>      ─────────────────',
+                    '  <span class="t-accent">  {   CD   }</span>     <span class="t-muted">OS:</span> Portfolio v1.0',
+                    '  <span class="t-accent"> {    CD    }</span>    <span class="t-muted">Host:</span> cmldlr.dev',
+                    '  <span class="t-accent">  {   CD   }</span>     <span class="t-muted">Theme:</span> ' + theme,
+                    '  <span class="t-accent">   {  CD  }</span>      <span class="t-muted">Language:</span> ' + lang,
+                    '  <span class="t-accent">    {CD}</span>         <span class="t-muted">Skills:</span> ' + skills + ' technologies',
+                    '                     <span class="t-muted">Projects:</span> ' + projects + ' visible',
+                    '                     <span class="t-muted">Games:</span> 4 hidden',
+                    '                     <span class="t-muted">Shell:</span> portfolio-sh',
+                    '                     <span class="t-muted">Uptime:</span> ' + new Date().toLocaleTimeString(),
+                    '',
+                    '  <span style="background:#f43f5e;color:#f43f5e">██</span><span style="background:#f59e0b;color:#f59e0b">██</span><span style="background:#4ade80;color:#4ade80">██</span><span style="background:#3b82f6;color:#3b82f6">██</span><span style="background:#6c63ff;color:#6c63ff">██</span><span style="background:#a78bfa;color:#a78bfa">██</span><span style="background:#22d3ee;color:#22d3ee">██</span><span style="background:#fff;color:#fff">██</span>',
+                    ''
+                ]);
+            },
+
+            ls: () => {
+                printLines([
+                    '<span class="t-muted">drwxr-xr-x</span>  <span class="t-cmd">about/</span>         <span class="t-cmd">skills/</span>        <span class="t-cmd">projects/</span>',
+                    '<span class="t-muted">drwxr-xr-x</span>  <span class="t-cmd">experience/</span>    <span class="t-cmd">certificates/</span>  <span class="t-cmd">contact/</span>',
+                    '<span class="t-muted">-rw-r--r--</span>  <span class="t-accent">README.md</span>      <span class="t-accent">.secret</span>        <span class="t-accent">games.sh</span>'
+                ]);
+            },
+
+            clear: () => { output.innerHTML = ''; },
+
+            'cat readme': () => {
+                printLines([
+                    '<span class="t-accent">━━━ README.md ━━━</span>',
+                    '',
+                    '# Cemil Dalar — Portfolio',
+                    '',
+                    'Welcome to my interactive portfolio!',
+                    'This isn\'t your average developer website.',
+                    '',
+                    'You found the hidden terminal — impressive! 🎉',
+                    '',
+                    'Pro tips:',
+                    '  • Try <span class="t-cmd">neofetch</span> for system info',
+                    '  • Type <span class="t-cmd">games</span> to discover hidden games',
+                    '  • Try <span class="t-cmd">sudo hire cemil</span> if you dare',
+                    '  • Navigate with <span class="t-cmd">cd about</span>',
+                    ''
+                ]);
+            },
+
+            'cat .secret': () => {
+                printLines([
+                    '',
+                    '🔑 You found the secret file!',
+                    '',
+                    '  Konami Code: ↑↑↓↓←→←→BA → Snake',
+                    '  Type "matrix" → Matrix Rain',
+                    '  Type "fly" → Flappy {CD}',
+                    '  Click footer 5x → Pong',
+                    '  Press ` → This terminal',
+                    '',
+                    '  You\'re clearly a curious developer. I like that. 😎',
+                    ''
+                ]);
+            },
+
+            games: () => {
+                printLines([
+                    '<span class="t-accent">━━━ Hidden Games ━━━</span>',
+                    '',
+                    '  🐍 <span class="t-cmd">Snake</span>       — Konami Code: ↑↑↓↓←→←→BA',
+                    '  🟢 <span class="t-cmd">Matrix</span>      — Type "matrix" anywhere',
+                    '  🏓 <span class="t-cmd">Pong</span>        — Click footer 5 times',
+                    '  🐦 <span class="t-cmd">Flappy {CD}</span> — Type "fly" anywhere',
+                    '',
+                    '  Close terminal first, then activate a game!',
+                    ''
+                ]);
+            },
+
+            'sudo hire cemil': () => {
+                printLines([
+                    '',
+                    '  <span class="t-accent">🎉 EXCELLENT CHOICE! 🎉</span>',
+                    '',
+                    '  Processing hiring request...',
+                    '  ████████████████████ 100%',
+                    '',
+                    '  ✅ Request approved!',
+                    '  📧 Contact: cemil@cmldlr.dev',
+                    '  🔗 LinkedIn: linkedin.com/in/cmldlr',
+                    '  🐙 GitHub: github.com/cmldlr',
+                    '',
+                    '  Let\'s build something amazing together! 🚀',
+                    ''
+                ]);
+            },
+
+            theme: () => {
+                const curr = document.documentElement.getAttribute('data-theme') || 'dark';
+                const next = curr === 'dark' ? 'light' : 'dark';
+                document.getElementById('themeToggle').click();
+                print(`Theme switched to <span class="t-cmd">${next}</span>`);
+            },
+
+            lang: () => {
+                document.getElementById('langToggle').click();
+                print(`Language switched to <span class="t-cmd">${I18n.getLang().toUpperCase()}</span>`);
+            },
+
+            exit: () => { closeTerminal(); }
+        };
+
+        // CD command handler
+        function handleCd(section) {
+            const valid = ['about', 'skills', 'projects', 'experience', 'certificates', 'contact', 'github-activity'];
+            if (valid.includes(section)) {
+                closeTerminal();
+                setTimeout(() => {
+                    document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } else {
+                print(`<span class="t-error">cd: ${section}: No such section</span>`);
+                print(`Valid: ${valid.join(', ')}`);
+            }
+        }
+
+        function executeCommand(cmd) {
+            const trimmed = cmd.trim().toLowerCase();
+            print(`<span class="terminal-prompt">visitor@cmldlr.dev:~$</span> ${esc(cmd)}`);
+
+            if (!trimmed) return;
+
+            history.push(cmd);
+            historyIndex = history.length;
+
+            if (commands[trimmed]) {
+                commands[trimmed]();
+            } else if (trimmed.startsWith('cd ')) {
+                handleCd(trimmed.slice(3).trim());
+            } else if (trimmed.startsWith('cat ')) {
+                const file = trimmed;
+                if (commands[file]) commands[file]();
+                else print(`<span class="t-error">cat: ${trimmed.slice(4)}: No such file</span>`);
+            } else if (trimmed === 'sudo' || trimmed.startsWith('sudo ')) {
+                if (trimmed === 'sudo hire cemil') {
+                    commands['sudo hire cemil']();
+                } else {
+                    print(`<span class="t-error">${esc(cmd)}: permission denied. Try "sudo hire cemil" 😏</span>`);
+                }
+            } else if (trimmed === 'pwd') {
+                print('/home/visitor/cmldlr.dev');
+            } else if (trimmed === 'date') {
+                print(new Date().toString());
+            } else if (trimmed === 'echo' || trimmed.startsWith('echo ')) {
+                print(esc(cmd.slice(5)));
+            } else if (trimmed === 'rm -rf /') {
+                print('Nice try 😄 This portfolio is indestructible!');
+            } else {
+                print(`<span class="t-error">command not found: ${esc(trimmed)}</span>`);
+                print('Type <span class="t-cmd">help</span> for available commands.');
+            }
+        }
+
+        // Tab completion
+        const allCmds = ['help', 'whoami', 'about', 'skills', 'projects', 'experience', 'contact', 'neofetch', 'ls', 'cd', 'cat readme', 'cat .secret', 'clear', 'games', 'theme', 'lang', 'exit', 'sudo hire cemil', 'pwd', 'date', 'echo'];
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand(input.value);
+                input.value = '';
+            } else if (e.key === 'Escape') {
+                closeTerminal();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) { historyIndex--; input.value = history[historyIndex]; }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < history.length - 1) { historyIndex++; input.value = history[historyIndex]; }
+                else { historyIndex = history.length; input.value = ''; }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                const val = input.value.toLowerCase();
+                const match = allCmds.find(c => c.startsWith(val) && c !== val);
+                if (match) input.value = match;
+            } else if (e.key === 'l' && e.ctrlKey) {
+                e.preventDefault();
+                output.innerHTML = '';
+            }
+        });
+
+        // Focus input on click
+        overlay.addEventListener('click', () => input.focus());
+        input.focus();
+
+        function closeTerminal() {
+            document.body.style.overflow = '';
+            overlay.remove();
+        }
+
+        document.getElementById('terminalCloseBtn').addEventListener('click', closeTerminal);
     }
 
     // =============================
