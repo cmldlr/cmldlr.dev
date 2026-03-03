@@ -4,30 +4,6 @@
    ================================ */
 
 :root {
-    --bg-primary: #0a0a0f;
-    --bg-secondary: #111118;
-    --bg-tertiary: #16161f;
-    --bg-card: rgba(22, 22, 31, 0.7);
-    --bg-glass: rgba(255, 255, 255, 0.03);
-    --text-primary: #e8e8ed;
-    --text-secondary: #8b8b9e;
-    --text-muted: #55556a;
-    --accent-primary: #6c63ff;
-    --accent-secondary: #a78bfa;
-    --accent-gradient: linear-gradient(135deg, #6c63ff, #a78bfa);
-    --accent-glow: rgba(108, 99, 255, 0.15);
-    --green: #4ade80;
-    --yellow: #fbbf24;
-    --red: #f87171;
-    --border-color: rgba(255, 255, 255, 0.06);
-    --border-hover: rgba(108, 99, 255, 0.3);
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --sidebar-width: 260px;
 }
 
@@ -1173,4 +1149,48 @@ body.show-admin .admin-panel {
     .exp-admin-card .form-row {
         grid-template-columns: 1fr;
     }
+}
+
+/* ========== LIGHT THEME OVERRIDES ========== */
+[data-theme="light"] .admin-panel {
+    background: var(--bg-primary);
+}
+
+[data-theme="light"] .sidebar {
+    background: #f0f0f5;
+}
+
+[data-theme="light"] .admin-topbar {
+    background: rgba(248, 248, 251, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .login-card {
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .modal {
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .toast {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .editor-card,
+[data-theme="light"] .skill-admin-card,
+[data-theme="light"] .exp-admin-card,
+[data-theme="light"] .settings-card,
+[data-theme="light"] .project-admin-card {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .login-overlay {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .modal-overlay {
+    background: rgba(0, 0, 0, 0.3);
 }

@@ -89,6 +89,8 @@
 [data-theme="light"] .nav.scrolled {
     background: rgba(248, 248, 251, 0.97);
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 [data-theme="light"] .hero {
@@ -207,6 +209,51 @@
 [data-theme="light"] .hero-badge {
     background: rgba(255, 255, 255, 0.8);
     border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Code syntax colors light */
+[data-theme="light"] .code-var {
+    color: #b45309;
+}
+
+[data-theme="light"] .code-key {
+    color: #be123c;
+}
+
+[data-theme="light"] .code-boolean {
+    color: #0369a1;
+}
+
+/* Preloader bar background light */
+[data-theme="light"] .preloader-bar {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* Card hover shadows light */
+[data-theme="light"] .project-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .cert-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .skill-category:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+/* Mobile nav menu light */
+@media (max-width: 768px) {
+    [data-theme="light"] .nav-links {
+        background: #f0f0f5;
+        border-left-color: rgba(0, 0, 0, 0.08);
+    }
+}
+
+/* Color picker popup light */
+[data-theme="light"] .color-picker-popup {
+    background: #ffffff;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 /* --- Preloader --- */
@@ -2329,6 +2376,18 @@ button {
     font-size: 0.72rem;
     font-family: var(--font-mono);
     color: var(--text-muted);
+}
+
+/* Game containers light theme */
+[data-theme="light"] .snake-container {
+    background: #ffffff;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] #snakeOverlay,
+[data-theme="light"] #pongOverlay,
+[data-theme="light"] #flappyOverlay {
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* --- Matrix Rain Easter Egg --- */

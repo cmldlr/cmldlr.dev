@@ -58,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.addEventListener('click', () => {
         const next = getTheme() === 'dark' ? 'light' : 'dark';
         applyTheme(next);
+        // Re-apply accent color so glow opacities match the new theme
+        loadAccentColor();
     });
 
     // =============================
@@ -88,13 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyAccentColor(primary, secondary) {
         const root = document.documentElement;
         const rgb = hexToRgb(primary);
+        const isLight = getTheme() === 'light';
         root.style.setProperty('--accent-primary', primary);
         root.style.setProperty('--accent-secondary', secondary);
         root.style.setProperty('--accent-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
         root.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${primary}, ${secondary})`);
-        root.style.setProperty('--accent-glow', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
-        root.style.setProperty('--accent-glow-strong', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
-        root.style.setProperty('--border-hover', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
+        root.style.setProperty('--accent-glow', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${isLight ? 0.08 : 0.15})`);
+        root.style.setProperty('--accent-glow-strong', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${isLight ? 0.15 : 0.3})`);
+        root.style.setProperty('--border-hover', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${isLight ? 0.4 : 0.3})`);
         // Update particles color
         window._particleColor = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
     }
