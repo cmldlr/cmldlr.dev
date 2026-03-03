@@ -648,6 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="form-group"><label>Açıklama</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
             <div class="form-group"><label>İkon (ör: ph-robot)</label><input type="text" id="certIcon" value="${isE ? esc(c.icon) : 'ph-certificate'}"></div>
             <div class="form-group"><label>Sertifika URL</label><input type="url" id="certCred" value="${isE ? esc(c.credential || '') : ''}"></div>
+            <div class="form-group"><label>Resim URL (isteğe bağlı)</label><input type="url" id="certImage" value="${isE ? esc(c.image || '') : ''}" placeholder="https://... veya assets/cert.jpg"></div>
             <div class="form-group"><label>Teknolojiler (virgülle)</label><input type="text" id="certTech" value="${isE ? (c.tech || []).join(', ') : ''}"></div>
             <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
             <button class="btn btn-primary btn-sm" id="saveCertBtn"><i class="ph ph-check"></i> ${isE ? 'Güncelle' : 'Ekle'}</button></div>`;
@@ -662,6 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 description: document.getElementById('certDesc').value.trim(),
                 icon: document.getElementById('certIcon').value.trim() || 'ph-certificate',
                 credential: document.getElementById('certCred').value.trim(),
+                image: document.getElementById('certImage').value.trim(),
                 tech: document.getElementById('certTech').value.split(',').map(s => s.trim()).filter(Boolean)
             };
             if (!obj.title) { toast('Başlık gerekli', 'error'); return; }

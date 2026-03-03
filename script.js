@@ -319,8 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         grid.innerHTML = certificates.map(c => `
-            <div class="cert-card">
+            <div class="cert-card${c.image ? ' has-image' : ''}">
                 <div class="cert-card-glow"></div>
+                ${c.image ? `<div class="cert-image"><img src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy"></div>` : ''}
                 <div class="cert-icon"><i class="ph ${c.icon}"></i></div>
                 <div class="cert-info">
                     <h3 class="cert-title">${esc(c.title)}</h3>
