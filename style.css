@@ -256,6 +256,19 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
+/* --- Scroll Progress Bar --- */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: var(--accent-gradient);
+    z-index: 10000;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
 /* --- Preloader --- */
 .preloader {
     position: fixed;

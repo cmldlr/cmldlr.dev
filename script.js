@@ -44,7 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const THEME_KEY = 'portfolio_theme';
 
     function getTheme() {
-        return localStorage.getItem(THEME_KEY) || 'dark';
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved) return saved;
+        // Auto-detect system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            return 'light';
+        }
+        return 'dark';
     }
 
     function applyTheme(theme) {
@@ -63,7 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================
-    // 0d. Accent Color Picker
+    // 0d. Scroll Progress Bar
+    // =============================
+    const scrollProgress = document.getElementById('scrollProgress');
+    if (scrollProgress) {
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            scrollProgress.style.width = percent + '%';
+        }, { passive: true });
+    }
+
+    // =============================
+    // 0e. Accent Color Picker
     // =============================
     const COLOR_KEY = 'portfolio_accent';
     const colorPickerToggle = document.getElementById('colorPickerToggle');

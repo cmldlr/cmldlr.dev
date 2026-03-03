@@ -44,13 +44,13 @@ Bu dosya, portföy sitesine eklenebilecek potansiyel özelliklerin listesini iç
 - [ ] **3D Proje Kartları** — Three.js veya CSS 3D transform ile kutu proje kartları
 - [ ] **Müzik Çalar** — Arka plan lo-fi müzik seçeneği (mute/unmute)
 - [ ] **Oyunlaştırma** — Portfolyoda gizli Easter Egg'ler, up-up-down-down kod vb.
-- [ ] **Scroll İlerleme Göstergesi** — Sayfanın neresinde olduğunu gösteren progress bar
+- [x] **Scroll İlerleme Göstergesi** — Sayfanın neresinde olduğunu gösteren progress bar ✅
 
 ## 📱 Mobil & Erişilebilirlik
 
 - [ ] **Gesture Desteği** — Mobilde swipe ile bölümler arası geçiş
 - [ ] **Erişilebilirlik (a11y)** — ARIA etiketleri, klavye navigasyonu, ekran okuyucu desteği
-- [ ] **Koyu/Açık Tema Sistem Tercihi** — `prefers-color-scheme` medya sorgusu ile otomatik tema
+- [x] **Koyu/Açık Tema Sistem Tercihi** — `prefers-color-scheme` medya sorgusu ile otomatik tema ✅
 - [ ] **Font Boyutu Ayarı** — Kullanıcının font boyutunu büyütüp küçültmesi
 
 ## 🔒 Güvenlik & Admin
