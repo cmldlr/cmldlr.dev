@@ -8,8 +8,6 @@ Bu dosya, portföy sitesine eklenebilecek potansiyel özelliklerin listesini iç
 
 - [ ] **Özel Tema Renk Seçici** — Accent rengi admin panelinden değiştirme (mor, mavi, yeşil, turuncu vb.)
 - [ ] **Animasyonlu Sayfa Geçişleri** — Bölümler arası smooth scroll + section giriş animasyonları
-- [ ] **Custom Cursor Tasarımı** — Özel cursor efektleri (text üzerinde farklı, link üzerinde farklı)
-- [ ] **Karanlık/Aydınlık Tema Seçenekleri** — Daha fazla tema varyasyonu (solarized, dracula, nord)
 - [ ] **Responsive İyileştirmeler** — Tablet ve mobilde daha iyi UX
 
 ## 📊 İçerik & Veri
@@ -50,7 +48,7 @@ Bu dosya, portföy sitesine eklenebilecek potansiyel özelliklerin listesini iç
 
 - [ ] **Gesture Desteği** — Mobilde swipe ile bölümler arası geçiş
 - [ ] **Erişilebilirlik (a11y)** — ARIA etiketleri, klavye navigasyonu, ekran okuyucu desteği
-- [x] **Koyu/Açık Tema Sistem Tercihi** — `prefers-color-scheme` medya sorgusu ile otomatik tema ✅
+- [x] ~~**Koyu/Açık Tema Sistem Tercihi**~~ — Kaldırıldı, sadece koyu tema kullanılıyor
 - [ ] **Font Boyutu Ayarı** — Kullanıcının font boyutunu büyütüp küçültmesi
 
 ## 🔒 Güvenlik & Admin
