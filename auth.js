@@ -10,13 +10,10 @@ const PortfolioAuth = (() => {
     // ============ DEMO MODE ============
     // true = EmailJS olmadan çalışır, kod konsola yazılır, '000000' ile giriş yapılabilir
     // Yayına alırken false yap!
-    const DEMO_MODE = true;
+    const DEMO_MODE = false;
 
     // ============ EmailJS Config ============
-    // EmailJS hesabından alınacak değerler:
-    const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';   // TODO: EmailJS Public Key
-    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';   // TODO: EmailJS Service ID
-    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // TODO: EmailJS Template ID
+    // Artık backend (server.js) üzerinden '.env' dosyasından okunuyor.
 
     // ============ OTP State ============
     let currentOTP = null;
@@ -80,26 +77,31 @@ const PortfolioAuth = (() => {
         if (DEMO_MODE) {
             console.log(`🔑 DEMO OTP Kodu: ${currentOTP}`);
             console.log(`💡 Veya "000000" girerek giriş yapabilirsiniz.`);
-            return true;
+            // return true; (Devre Dışı Bırakıldı - Email yollaması istendi)
         }
 
-        // EmailJS ile gönder
-        if (typeof emailjs === 'undefined') {
-            throw new Error('Email servisi yüklenemedi. Sayfayı yenileyin.');
-        }
-
+        // Sunucu (backend) üzerinden gönder
         try {
-            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                to_email: ADMIN_EMAIL,
-                otp_code: currentOTP,
-                expiry_minutes: '5'
+            const response = await fetch('http://localhost:3000/api/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: ADMIN_EMAIL,
+                    otp_code: currentOTP
+                })
             });
+
+            if (!response.ok) {
+                throw new Error('Sunucu hatası. API başarısız yanıt verdi.');
+            }
             return true;
         } catch (err) {
             currentOTP = null;
             otpExpiry = null;
-            console.error('EmailJS error:', err);
-            throw new Error('Kod gönderilemedi. Lütfen tekrar deneyin.');
+            console.error('Server OTP error:', err);
+            throw new Error('Kod gönderilemedi. Lütfen arka plan sunucusunun çalıştığından emin olun.');
         }
     }
 

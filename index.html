@@ -582,15 +582,7 @@
 
     <script src="i18n.js"></script>
     <script src="data.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script>
-        // EmailJS init — public key auth.js'den alınıyor
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof emailjs !== 'undefined') {
-                emailjs.init({ publicKey: 'YOUR_PUBLIC_KEY' }); // TODO: EmailJS Public Key
-            }
-        });
-    </script>
+
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script src="admin.js"></script>

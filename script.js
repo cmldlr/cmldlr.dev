@@ -490,8 +490,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = particleCanvas.getContext('2d');
         let particles = [];
         let mouseX = -1000, mouseY = -1000;
-        const PARTICLE_COUNT = 70;
-        const CONNECTION_DIST = 120;
+        const isMobile = window.innerWidth <= 768;
+        const PARTICLE_COUNT = isMobile ? 30 : 70;
+        const CONNECTION_DIST = isMobile ? 80 : 120;
         const MOUSE_DIST = 150;
 
         function resizeCanvas() {
@@ -601,13 +602,24 @@ document.addEventListener('DOMContentLoaded', () => {
     navToggle.addEventListener('click', () => {
         navToggle.classList.toggle('active');
         navLinks.classList.toggle('open');
+        document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
     });
 
     navLinks.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             navToggle.classList.remove('active');
             navLinks.classList.remove('open');
+            document.body.style.overflow = '';
         });
+    });
+
+    // Close mobile nav when clicking backdrop
+    navLinks.addEventListener('click', (e) => {
+        if (e.target === navLinks) {
+            navToggle.classList.remove('active');
+            navLinks.classList.remove('open');
+            document.body.style.overflow = '';
+        }
     });
 
     // Active link on scroll
@@ -726,6 +738,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Parallax Scroll
     // =============================
     function initParallax() {
+        // Disable parallax on touch/mobile devices for better performance
+        const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        if (isTouchDevice || window.innerWidth <= 768) return;
+
         const heroVisual = document.querySelector('.hero-visual');
         const heroContent = document.querySelector('.hero-content');
         let ticking = false;
@@ -942,6 +958,43 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('keydown', handleKey);
         document.getElementById('snakeClose').addEventListener('click', closeGame);
 
+        // --- Mobile touch controls for Snake ---
+        let touchStartX = null, touchStartY = null;
+        canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        }, { passive: true });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchend', (e) => {
+            if (touchStartX === null) return;
+            const touch = e.changedTouches[0];
+            const dx = touch.clientX - touchStartX;
+            const dy = touch.clientY - touchStartY;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+            if (Math.max(absDx, absDy) < 20) {
+                // Tap — restart if game over
+                if (gameOver) {
+                    snake = [{ x: 10, y: 10 }]; dir = { x: 1, y: 0 }; nextDir = { x: 1, y: 0 };
+                    food = spawnFood(); score = 0; scoreEl.textContent = 0; gameOver = false;
+                    interval = setInterval(update, 120); draw();
+                }
+                touchStartX = null; touchStartY = null;
+                return;
+            }
+            if (absDx > absDy) {
+                if (dx > 0 && dir.x === 0) nextDir = { x: 1, y: 0 };
+                else if (dx < 0 && dir.x === 0) nextDir = { x: -1, y: 0 };
+            } else {
+                if (dy > 0 && dir.y === 0) nextDir = { x: 0, y: 1 };
+                else if (dy < 0 && dir.y === 0) nextDir = { x: 0, y: -1 };
+            }
+            touchStartX = null; touchStartY = null;
+        });
+
         draw();
         interval = setInterval(update, 120);
     }
@@ -980,12 +1033,107 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =============================
+    // 📱 Secret Menu — Long-press footer logo (mobile-friendly easter eggs)
+    // =============================
+    const footerLogo = document.querySelector('.footer-logo');
+    if (footerLogo) {
+        let longPressTimer = null;
+        let longPressTriggered = false;
+
+        function startLongPress(e) {
+            longPressTriggered = false;
+            longPressTimer = setTimeout(() => {
+                longPressTriggered = true;
+                e.preventDefault();
+                showSecretMenu();
+            }, 800);
+        }
+
+        function cancelLongPress() {
+            clearTimeout(longPressTimer);
+        }
+
+        footerLogo.addEventListener('mousedown', startLongPress);
+        footerLogo.addEventListener('mouseup', cancelLongPress);
+        footerLogo.addEventListener('mouseleave', cancelLongPress);
+        footerLogo.addEventListener('touchstart', startLongPress, { passive: false });
+        footerLogo.addEventListener('touchend', (e) => {
+            cancelLongPress();
+            if (longPressTriggered) e.preventDefault();
+        });
+        footerLogo.addEventListener('touchmove', cancelLongPress);
+        footerLogo.style.cursor = 'pointer';
+        footerLogo.style.userSelect = 'none';
+        footerLogo.style.webkitUserSelect = 'none';
+    }
+
+    function showSecretMenu() {
+        if (document.querySelector('.secret-menu-overlay')) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'secret-menu-overlay';
+        overlay.innerHTML = `
+            <div class="secret-menu">
+                <div class="secret-menu-title">🕹️ Gizli Menü</div>
+                <div class="secret-menu-grid">
+                    <button class="secret-menu-btn" data-action="snake">
+                        <span class="emoji">🐍</span>
+                        Snake
+                    </button>
+                    <button class="secret-menu-btn" data-action="pong">
+                        <span class="emoji">🏓</span>
+                        Pong
+                    </button>
+                    <button class="secret-menu-btn" data-action="flappy">
+                        <span class="emoji">🐦</span>
+                        Flappy
+                    </button>
+                    <button class="secret-menu-btn" data-action="matrix">
+                        <span class="emoji">💊</span>
+                        Matrix
+                    </button>
+                    <button class="secret-menu-btn" data-action="terminal" style="grid-column: 1 / -1;">
+                        <span class="emoji">💻</span>
+                        Terminal
+                    </button>
+                </div>
+                <button class="secret-menu-close">
+                    <i class="ph ph-x"></i> Kapat
+                </button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        function closeMenu() { overlay.remove(); }
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeMenu();
+        });
+
+        overlay.querySelector('.secret-menu-close').addEventListener('click', closeMenu);
+
+        overlay.querySelectorAll('.secret-menu-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                closeMenu();
+                setTimeout(() => {
+                    if (action === 'snake') launchSnakeGame();
+                    else if (action === 'pong') launchPong();
+                    else if (action === 'flappy') launchFlappyCD();
+                    else if (action === 'matrix') launchMatrixRain();
+                    else if (action === 'terminal') launchTerminal();
+                }, 100);
+            });
+        });
+    }
+
+    // =============================
     // 🟢 Matrix Rain
     // =============================
     function launchMatrixRain() {
         const overlay = document.createElement('div');
         overlay.id = 'matrixOverlay';
-        overlay.innerHTML = `<canvas id="matrixCanvas"></canvas><div class="matrix-hint">ESC = Kapat</div>`;
+        overlay.innerHTML = `<canvas id="matrixCanvas"></canvas><div class="matrix-hint">Kapatmak için dokun</div><button class="snake-close" id="matrixClose" style="position:fixed;top:16px;right:16px;z-index:99999;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.6);color:rgba(255,255,255,0.7);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="ph ph-x"></i></button>`;
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
 
@@ -1034,6 +1182,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Escape') closeMatrix();
         }
         document.addEventListener('keydown', matrixKey);
+        document.getElementById('matrixClose').addEventListener('click', closeMatrix);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay || e.target.tagName === 'CANVAS') closeMatrix();
+        });
     }
 
     // =============================
@@ -1192,6 +1344,32 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('keydown', pongKey);
         document.addEventListener('keyup', pongKeyUp);
         document.getElementById('pongClose').addEventListener('click', closePong);
+
+        // --- Mobile touch controls for Pong ---
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleY = H / rect.height;
+            playerY = (touch.clientY - rect.top) * scaleY - paddleH / 2;
+            playerY = Math.max(0, Math.min(H - paddleH, playerY));
+        }, { passive: false });
+        canvas.addEventListener('click', () => {
+            if (pongGameOver) {
+                playerScore = 0; aiScore = 0; pongGameOver = false; winner = '';
+                resetBall();
+            }
+        });
+
+        // Update info text for mobile
+        const snakeInfoEl = overlay.querySelector('.snake-info');
+        if (snakeInfoEl && window.innerWidth <= 768) {
+            snakeInfoEl.innerHTML = '<span>Dokunarak oyna</span><span>5 sayı = Galibiyet</span>';
+        }
+
         updatePong();
     }
 
@@ -1399,7 +1577,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Press ` (backtick) to open
     // =============================
     document.addEventListener('keydown', (e) => {
-        if (e.key === '`' && !document.getElementById('terminalOverlay') &&
+        if (e.key === 'F2' && !document.getElementById('terminalOverlay') &&
             !document.getElementById('snakeOverlay') && !document.getElementById('pongOverlay') &&
             !document.getElementById('flappyOverlay') && !document.getElementById('matrixOverlay')) {
             e.preventDefault();
@@ -1618,7 +1796,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     '  Type "matrix" → Matrix Rain',
                     '  Type "fly" → Flappy {CD}',
                     '  Click footer 5x → Pong',
-                    '  Press ` → This terminal',
+                    '  Press F2 → This terminal',
                     '',
                     '  You\'re clearly a curious developer. I like that. 😎',
                     ''
