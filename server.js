@@ -19,6 +19,8 @@ emailjs.init({
     privateKey: process.env.EMAILJS_PRIVATE_KEY || undefined,
 });
 
+const DEMO_MODE = true; // Mail limitini harcamamak için test modunu aktifleştiren değişken. Kaldırıldığında veya false yapıldığında tekrar mail atmaya başlar.
+
 app.post('/api/send-otp', async (req, res) => {
     try {
         const { email, otp_code } = req.body;
@@ -28,6 +30,11 @@ app.post('/api/send-otp', async (req, res) => {
         }
 
         console.log(`Sending OTP to ${email}...`);
+
+        if (DEMO_MODE) {
+            console.log(`[DEMO_MODE AKTIF] E-posta gönderilmedi. OTP Kodunuz: ${otp_code}`);
+            return res.json({ success: true, message: 'OTP sent successfully (DEMO)', isDemo: true });
+        }
 
         const result = await emailjs.send(
             process.env.EMAILJS_SERVICE_ID,

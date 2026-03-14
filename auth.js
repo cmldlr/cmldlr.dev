@@ -22,6 +22,8 @@ const PortfolioAuth = (() => {
     const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 dakika
     const COOLDOWN_MS = 60 * 1000;       // 1 dk tekrar gönderim bekleme
     let lastSentAt = 0;
+    
+    let backendDemoMode = false; // Sunucudan gelen demo modunu takip eden state
 
     // 6 haneli rastgele kod üret
     function generateOTP() {
@@ -96,6 +98,15 @@ const PortfolioAuth = (() => {
             if (!response.ok) {
                 throw new Error('Sunucu hatası. API başarısız yanıt verdi.');
             }
+            
+            const data = await response.json();
+            if (data.isDemo) {
+                backendDemoMode = true;
+                console.log('💡 Backend Demo modunda: "000000" girerek giriş yapabilirsiniz.');
+            } else {
+                backendDemoMode = false;
+            }
+            
             return true;
         } catch (err) {
             currentOTP = null;
@@ -110,10 +121,11 @@ const PortfolioAuth = (() => {
         if (!code) return false;
 
         // Demo mode: 000000 her zaman geçerli
-        if (DEMO_MODE && code.trim() === '000000') {
+        if ((DEMO_MODE || backendDemoMode) && code.trim() === '000000') {
             sessionStorage.setItem(SESSION_KEY, 'authenticated');
             currentOTP = null;
             otpExpiry = null;
+            backendDemoMode = false; // Reset
             return true;
         }
 

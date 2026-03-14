@@ -1194,3 +1194,72 @@ body.show-admin .admin-panel {
 [data-theme="light"] .modal-overlay {
     background: rgba(0, 0, 0, 0.3);
 }
+
+/* ========================================= */
+/* Image Upload Zone & Previews */
+/* ========================================= */
+
+.image-upload-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 12px;
+}
+.image-upload-zone:hover, .image-upload-zone.drag-over {
+    border-color: var(--accent-primary, #6c63ff);
+    background: rgba(108, 99, 255, 0.05);
+}
+.image-upload-zone i {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    display: block;
+}
+.image-upload-zone span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+.image-preview-item {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: #111;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.image-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.image-preview-item .remove-img-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(255, 59, 48, 0.9);
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: 0.2s;
+}
+.image-preview-item .remove-img-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 59, 48, 1);
+}

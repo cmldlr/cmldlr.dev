@@ -263,23 +263,114 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('projectFilters').innerHTML = fhtml;
 
         // Cards
-        document.getElementById('projectsGrid').innerHTML = visible.map(p => `
+        document.getElementById('projectsGrid').innerHTML = visible.map(p => {
+            const images = p.images || [];
+            let mediaHtml = '';
+            if (images.length > 0) {
+                mediaHtml = `
+                    <div class="project-carousel">
+                        <div class="carousel-track">
+                            ${images.map(img => `<img src="${img}" alt="${esc(p.title)}" loading="lazy">`).join('')}
+                        </div>
+                        ${images.length > 1 ? `
+                        <button class="carousel-nav prev" title="Önceki"><i class="ph ph-caret-left"></i></button>
+                        <button class="carousel-nav next" title="Sonraki"><i class="ph ph-caret-right"></i></button>
+                        <div class="carousel-dots">
+                            ${images.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`).join('')}
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                mediaHtml = `
+                    <div class="project-header">
+                        <div class="project-icon"><i class="ph ${p.icon}"></i></div>
+                        <div class="project-links">
+                            ${p.github ? `<a href="${esc(p.github)}" target="_blank" rel="noopener" class="project-link" title="GitHub"><i class="ph ph-github-logo"></i></a>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
             <div class="project-card ${p.featured ? 'project-featured' : ''}" data-tags="${p.tags.join(',')}">
                 <div class="project-card-glow"></div>
-                <div class="project-header">
-                    <div class="project-icon"><i class="ph ${p.icon}"></i></div>
-                    <div class="project-links">
-                        ${p.github ? `<a href="${esc(p.github)}" target="_blank" rel="noopener" class="project-link" title="GitHub"><i class="ph ph-github-logo"></i></a>` : ''}
-                    </div>
+                ${mediaHtml}
+                <div class="project-content">
+                    <h3 class="project-title">${esc(p.title)}</h3>
+                    <p class="project-desc">${esc(p.description)}</p>
+                    <div class="project-tech">${p.tech.map(t => `<span>${esc(t)}</span>`).join('')}</div>
+                    ${images.length > 0 && p.github ? `<div style="margin-top:16px"><a href="${esc(p.github)}" target="_blank" rel="noopener" class="project-link" style="display:inline-flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text-secondary);text-decoration:none;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'"><i class="ph ph-github-logo"></i> GitHub'da Görüntüle</a></div>` : ''}
                 </div>
-                <h3 class="project-title">${esc(p.title)}</h3>
-                <p class="project-desc">${esc(p.description)}</p>
-                <div class="project-tech">${p.tech.map(t => `<span>${esc(t)}</span>`).join('')}</div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         initProjectFilters();
         initCardGlow();
+        initCarousels();
+    }
+
+    function initCarousels() {
+        document.querySelectorAll('.project-carousel').forEach(carousel => {
+            const track = carousel.querySelector('.carousel-track');
+            const prevBtn = carousel.querySelector('.carousel-nav.prev');
+            const nextBtn = carousel.querySelector('.carousel-nav.next');
+            const dots = carousel.querySelectorAll('.dot');
+            const slides = track.querySelectorAll('img');
+            if (slides.length <= 1) return;
+
+            let currentIndex = 0;
+            const total = slides.length;
+
+            function updateCarousel() {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); e.preventDefault();
+                    currentIndex = (currentIndex > 0) ? currentIndex - 1 : total - 1;
+                    updateCarousel();
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); e.preventDefault();
+                    currentIndex = (currentIndex < total - 1) ? currentIndex + 1 : 0;
+                    updateCarousel();
+                });
+            }
+
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation(); e.preventDefault();
+                    currentIndex = i;
+                    updateCarousel();
+                });
+            });
+
+            let startX = 0;
+            let isDown = false;
+            carousel.addEventListener('touchstart', e => {
+                startX = e.changedTouches[0].screenX;
+                isDown = true;
+            }, {passive:true});
+            carousel.addEventListener('touchend', e => {
+                if (!isDown) return;
+                isDown = false;
+                let endX = e.changedTouches[0].screenX;
+                if (startX - endX > 40) {
+                    currentIndex = (currentIndex < total - 1) ? currentIndex + 1 : 0;
+                    updateCarousel();
+                } else if (endX - startX > 40) {
+                    currentIndex = (currentIndex > 0) ? currentIndex - 1 : total - 1;
+                    updateCarousel();
+                }
+            }, {passive:true});
+        });
     }
 
     function renderExperience(experience) {

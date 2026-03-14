@@ -2950,3 +2950,87 @@ button {
     color: var(--text-primary);
     background: var(--bg-glass);
 }
+
+/* ========================================= */
+/* Project Image Carousel */
+/* ========================================= */
+
+.project-carousel {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: #000;
+}
+.project-carousel .carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.project-carousel img {
+    min-width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none; /* Prevent drag breaking swipe */
+}
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+}
+.project-card:hover .carousel-nav {
+    opacity: 1;
+}
+.carousel-nav.prev { left: 8px; }
+.carousel-nav.next { right: 8px; }
+.carousel-nav:hover { background: var(--accent-primary); }
+
+.carousel-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+}
+.carousel-dots .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: 0.3s;
+}
+.carousel-dots .dot.active {
+    background: white;
+    transform: scale(1.3);
+}
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+}
+.project-card .project-content {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-card .project-content .project-icon { display: none; }

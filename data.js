@@ -111,7 +111,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr',
                 featured: true,
                 visible: true,
-                fromGithub: false
+                fromGithub: false,
+                images: []
             },
             {
                 id: 'progressio',
@@ -123,7 +124,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/Progressio',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             },
             {
                 id: 'number-maze',
@@ -135,7 +137,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/Number-Maze',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             },
             {
                 id: 'power-outage',
@@ -147,7 +150,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/Analysis-power-outage-data-with-using-machine-learning',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             },
             {
                 id: 'ibm-ai',
@@ -159,7 +163,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/IBM-AI-Engineering',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             },
             {
                 id: 'rent-a-car',
@@ -171,7 +176,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/Rent-A-Car-Management-System',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             },
             {
                 id: 'the-matrix',
@@ -183,7 +189,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/The-Matrix',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             },
             {
                 id: 'ceng-editor',
@@ -195,7 +202,8 @@ const PortfolioData = (() => {
                 github: 'https://github.com/cmldlr/Ceng-Editor',
                 featured: false,
                 visible: true,
-                fromGithub: true
+                fromGithub: true,
+                images: []
             }
         ],
         experience: [

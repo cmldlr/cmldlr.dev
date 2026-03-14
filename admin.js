@@ -382,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openProjectModal(p = null) {
         const isEdit = !!p;
+        const currentImages = (isEdit && p.images && Array.isArray(p.images)) ? [...p.images] : [];
         const html = `
             <div class="form-group"><label>Başlık</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
             <div class="form-group"><label>Açıklama</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
@@ -393,11 +394,81 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="checkbox" id="projFeatured" ${isEdit && p.featured ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--accent-primary)">
                 <label for="projFeatured" style="margin:0">Öne Çıkan</label>
             </div>
+            <div class="form-group">
+                <label>Proje Görselleri (Sürükle bırak veya seç)</label>
+                <div class="image-upload-zone" id="imageUploadZone">
+                    <i class="ph ph-image"></i>
+                    <span>Tıklayın veya resimleri buraya sürükleyin</span>
+                    <input type="file" id="imageFileInput" multiple accept="image/*" style="display:none;">
+                </div>
+                <div class="image-preview-grid" id="imagePreviewGrid"></div>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
                 <button class="btn btn-primary btn-sm" id="saveProjectBtn"><i class="ph ph-check"></i> ${isEdit ? 'Güncelle' : 'Ekle'}</button>
             </div>`;
         openModal(isEdit ? 'Proje Düzenle' : 'Yeni Proje', html);
+        
+        // Image Upload Logic
+        let uploadedImages = [...currentImages];
+        const previewGrid = document.getElementById('imagePreviewGrid');
+        const uploadZone = document.getElementById('imageUploadZone');
+        const fileInput = document.getElementById('imageFileInput');
+
+        function renderThumbnails() {
+            previewGrid.innerHTML = uploadedImages.map((b64, index) => `
+                <div class="image-preview-item">
+                    <img src="${b64}" alt="preview">
+                    <button class="remove-img-btn" data-index="${index}"><i class="ph ph-x"></i></button>
+                </div>
+            `).join('');
+
+            previewGrid.querySelectorAll('.remove-img-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+                    uploadedImages.splice(idx, 1);
+                    renderThumbnails();
+                });
+            });
+        }
+        
+        async function processFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+                try {
+                    uploadZone.querySelector('span').textContent = 'Yükleniyor...';
+                    const b64 = await compressImage(file, 800, 0.7);
+                    uploadedImages.push(b64);
+                } catch (err) {
+                    toast('Resim işlenirken hata oluştu', 'error');
+                }
+            }
+            uploadZone.querySelector('span').textContent = 'Tıklayın veya resimleri buraya sürükleyin';
+            renderThumbnails();
+        }
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => processFiles(e.target.files));
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+        });
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            if (e.dataTransfer.files) {
+                processFiles(e.dataTransfer.files);
+            }
+        });
+
+        renderThumbnails();
+
         document.getElementById('saveProjectBtn').addEventListener('click', () => {
             const title = document.getElementById('projTitle').value.trim();
             if (!title) { toast('Başlık gerekli', 'error'); return; }
@@ -408,7 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 tech: document.getElementById('projTech').value.split(',').map(s => s.trim()).filter(Boolean),
                 tags: document.getElementById('projTags').value.split(',').map(s => s.trim()).filter(Boolean),
                 featured: document.getElementById('projFeatured').checked,
-                visible: true, fromGithub: false
+                visible: true, fromGithub: !!(isEdit && p.fromGithub),
+                images: uploadedImages
             };
             if (isEdit) { PortfolioData.updateProject(p.id, obj); }
             else { obj.id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); PortfolioData.addProject(obj); }
@@ -746,4 +818,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function iconForLang(l) { return { 'JavaScript': 'ph-file-js', 'Python': 'ph-snake', 'Java': 'ph-coffee', 'C#': 'ph-code', 'PHP': 'ph-globe', 'Jupyter Notebook': 'ph-notebook' }[l] || 'ph-folder'; }
     function tagsForLang(l) { return { 'JavaScript': ['web'], 'Python': ['python'], 'Java': ['java'], 'C#': ['csharp'], 'PHP': ['web'], 'Jupyter Notebook': ['python'] }[l] || []; }
+
+    // Compress base64 images client-side before saving to localStorage
+    function compressImage(file, maxSize, quality) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > maxSize) { height = Math.round(height * maxSize / width); width = maxSize; }
+                    } else {
+                        if (height > maxSize) { width = Math.round(width * maxSize / height); height = maxSize; }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = error => reject(error);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
 });
