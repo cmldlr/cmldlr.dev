@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
     const topbarTitle = document.getElementById('topbarTitle');
     const pageTitles = {
-        projects: 'Projeler', skills: 'Yetenekler', experience: 'Deneyim',
+        projects: 'Projeler', skills: 'Yetenekler',
         about: 'Hakkımda', hero: 'Hero Bölümü', contact: 'İletişim', certificates: 'Sertifikalar', settings: 'Ayarlar'
     };
 
@@ -271,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (currentPage) {
             case 'projects': renderProjectsPage(); break;
             case 'skills': renderSkillsPage(); break;
-            case 'experience': renderExperiencePage(); break;
             case 'about': renderAboutPage(); break;
             case 'hero': renderHeroPage(); break;
             case 'contact': renderContactPage(); break;
@@ -551,58 +550,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addSkillTag = function (ci) { const n = prompt('Yetenek adı:'); if (!n) return; const s = PortfolioData.getSection('skills'); s[ci].tags.push({ name: n.trim(), level: 'intermediate' }); PortfolioData.saveSection('skills', s); renderSkillsPage(); };
     window.rmSkillTag = function (ci, ti) { const s = PortfolioData.getSection('skills'); s[ci].tags.splice(ti, 1); PortfolioData.saveSection('skills', s); renderSkillsPage(); };
     window.setSkillLvl = function (ci, ti, l) { const s = PortfolioData.getSection('skills'); s[ci].tags[ti].level = l; PortfolioData.saveSection('skills', s); };
-
-    // =============================
-    // 6. Experience Page
-    // =============================
-    function renderExperiencePage() {
-        const exp = PortfolioData.getSection('experience') || [];
-        document.getElementById('experienceList').innerHTML = exp.map((e, i) => `
-            <div class="exp-admin-card">
-                <div class="skill-admin-header">
-                    <h4>${esc(e.title)} <span style="color:var(--accent-secondary);font-size:0.8rem;font-family:var(--font-mono);margin-left:8px">${esc(e.date)}</span></h4>
-                    <div>
-                        <button class="btn-ghost" onclick="editExp(${i})"><i class="ph ph-pencil-simple"></i></button>
-                        <button class="btn-ghost" onclick="delExp(${i})"><i class="ph ph-trash"></i></button>
-                    </div>
-                </div>
-                <p style="color:var(--accent-primary);font-size:0.9rem;font-weight:600;margin-bottom:4px">${esc(e.company)}</p>
-                <p style="color:var(--text-secondary);font-size:0.85rem">${esc(e.description).substring(0, 120)}...</p>
-            </div>
-        `).join('');
-    }
-
-    document.getElementById('addExperienceBtn').addEventListener('click', () => openExpModal());
-    window.editExp = function (i) { openExpModal(PortfolioData.getSection('experience')[i], i); };
-    window.delExp = function (i) { if (!confirm('Silmek istediğinize emin misiniz?')) return; const e = PortfolioData.getSection('experience'); e.splice(i, 1); PortfolioData.saveSection('experience', e); renderExperiencePage(); toast('Silindi', 'success'); };
-
-    function openExpModal(e = null, idx = -1) {
-        const isE = !!e;
-        const html = `
-            <div class="form-group"><label>Başlık</label><input type="text" id="expTitle" value="${isE ? esc(e.title) : ''}"></div>
-            <div class="form-group"><label>Tarih</label><input type="text" id="expDate" value="${isE ? esc(e.date) : ''}"></div>
-            <div class="form-group"><label>Şirket</label><input type="text" id="expComp" value="${isE ? esc(e.company) : ''}"></div>
-            <div class="form-group"><label>Açıklama</label><textarea id="expDesc" rows="4">${isE ? esc(e.description) : ''}</textarea></div>
-            <div class="form-group"><label>Teknolojiler (virgülle)</label><input type="text" id="expTech" value="${isE ? e.tech.join(', ') : ''}"></div>
-            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
-            <button class="btn btn-primary btn-sm" id="saveExpBtn"><i class="ph ph-check"></i> ${isE ? 'Güncelle' : 'Ekle'}</button></div>`;
-        openModal(isE ? 'Deneyim Düzenle' : 'Yeni Deneyim', html);
-        document.getElementById('saveExpBtn').addEventListener('click', () => {
-            const exp = PortfolioData.getSection('experience') || [];
-            const obj = {
-                id: document.getElementById('expTitle').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-                title: document.getElementById('expTitle').value.trim(),
-                date: document.getElementById('expDate').value.trim(),
-                company: document.getElementById('expComp').value.trim(),
-                description: document.getElementById('expDesc').value.trim(),
-                tech: document.getElementById('expTech').value.split(',').map(s => s.trim()).filter(Boolean)
-            };
-            if (!obj.title) { toast('Başlık gerekli', 'error'); return; }
-            if (isE && idx >= 0) exp[idx] = obj; else exp.push(obj);
-            PortfolioData.saveSection('experience', exp);
-            closeModal(); renderExperiencePage(); toast(isE ? 'Güncellendi' : 'Eklendi', 'success');
-        });
-    }
 
     // =============================
     // 7. About Page

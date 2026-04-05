@@ -206,32 +206,6 @@ const PortfolioData = (() => {
                 images: []
             }
         ],
-        experience: [
-            {
-                id: 'naviras',
-                title: 'Yazılım Mühendisi',
-                date: '2024 — Günümüz',
-                company: 'Naviras',
-                description: 'Endüstriyel IoT platformu geliştirme. MQTT-Kafka köprüsü, TimescaleDB ile zaman serisi veri yönetimi, C# mikroservisler, Next.js dashboard ve DevExpress raporlama araçları üzerinde çalışma.',
-                tech: ['C#', 'Kafka', 'MQTT', 'TimescaleDB', 'Next.js', 'Docker']
-            },
-            {
-                id: 'university',
-                title: 'Bilgisayar Mühendisliği',
-                date: '2020 — 2024',
-                company: 'Üniversite',
-                description: 'Algoritma ve programlama, veri yapıları, bilgisayar mimarisi, bilgisayar ağları, veritabanı yönetimi, programlama dilleri kavramları üzerine kapsamlı eğitim. Proje tabanlı öğrenme ile çeşitli yazılım projeleri geliştirme.',
-                tech: ['C#', 'Java', 'Python', 'Data Structures', 'Algorithms']
-            },
-            {
-                id: 'ibm-cert',
-                title: 'IBM AI Engineering Sertifikası',
-                date: '2025',
-                company: 'IBM / Coursera',
-                description: 'Yapay zeka ve derin öğrenme konularında IBM sertifika programı. TensorFlow, Keras ve PyTorch ile model geliştirme.',
-                tech: ['Python', 'TensorFlow', 'Deep Learning']
-            }
-        ],
         certificates: [
             {
                 id: 'ibm-ai-cert',
@@ -260,7 +234,7 @@ const PortfolioData = (() => {
             links: [
                 { icon: 'ph-github-logo', label: 'GitHub', value: '@cmldlr', url: 'https://github.com/cmldlr' },
                 { icon: 'ph-linkedin-logo', label: 'LinkedIn', value: '@cmldlr', url: 'https://linkedin.com/in/cmldlr' },
-                { icon: 'ph-envelope', label: 'E-posta', value: 'cemildalar@outlook.com', url: 'mailto:cemildalar@outlook.com' }
+                { icon: 'ph-envelope', label: 'E-posta', value: 'contact@cmldlr.dev', url: 'mailto:contact@cmldlr.dev' }
             ]
         }
     };

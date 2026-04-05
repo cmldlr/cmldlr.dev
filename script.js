@@ -155,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAbout(data.about);
         renderSkills(data.skills);
         renderProjects(data.projects);
-        renderExperience(data.experience);
         renderCertificates(data.certificates || []);
         renderContact(data.contact);
         initRevealAnimations();
@@ -371,23 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, {passive:true});
         });
-    }
-
-    function renderExperience(experience) {
-        document.getElementById('timeline').innerHTML = experience.map(e => `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="timeline-header">
-                        <h3>${esc(e.title)}</h3>
-                        <span class="timeline-date">${esc(e.date)}</span>
-                    </div>
-                    <p class="timeline-company">${esc(e.company)}</p>
-                    <p class="timeline-desc">${esc(e.description)}</p>
-                    <div class="timeline-tech">${e.tech.map(t => `<span>${esc(t)}</span>`).join('')}</div>
-                </div>
-            </div>
-        `).join('');
     }
 
     // =============================
@@ -1752,7 +1734,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     '  <span class="t-cmd">about</span>       — About me',
                     '  <span class="t-cmd">skills</span>      — Technical skills',
                     '  <span class="t-cmd">projects</span>    — Project portfolio',
-                    '  <span class="t-cmd">experience</span>  — Work experience',
                     '  <span class="t-cmd">contact</span>     — Get in touch',
                     '  <span class="t-cmd">neofetch</span>    — System info',
                     '  <span class="t-cmd">ls</span>          — List sections',
@@ -1805,15 +1786,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             },
 
-            experience: () => {
-                print('<span class="t-accent">━━━ Experience ━━━</span>');
-                data.experience.forEach(exp => {
-                    print(`\n  <span class="t-cmd">${exp.role}</span> @ <span class="t-accent">${exp.company}</span>`);
-                    print(`  <span class="t-muted">${exp.period}</span>`);
-                    exp.description.forEach(d => print(`    • ${d}`));
-                });
-            },
-
             contact: () => {
                 print('<span class="t-accent">━━━ Contact ━━━</span>');
                 print(`  ${data.contact.heading}`);
@@ -1851,7 +1823,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ls: () => {
                 printLines([
                     '<span class="t-muted">drwxr-xr-x</span>  <span class="t-cmd">about/</span>         <span class="t-cmd">skills/</span>        <span class="t-cmd">projects/</span>',
-                    '<span class="t-muted">drwxr-xr-x</span>  <span class="t-cmd">experience/</span>    <span class="t-cmd">certificates/</span>  <span class="t-cmd">contact/</span>',
+                    '<span class="t-muted">drwxr-xr-x</span>  <span class="t-cmd">certificates/</span>  <span class="t-cmd">contact/</span>',
                     '<span class="t-muted">-rw-r--r--</span>  <span class="t-accent">README.md</span>      <span class="t-accent">.secret</span>        <span class="t-accent">games.sh</span>'
                 ]);
             },
@@ -1943,7 +1915,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // CD command handler
         function handleCd(section) {
-            const valid = ['about', 'skills', 'projects', 'experience', 'certificates', 'contact', 'github-activity'];
+            const valid = ['about', 'skills', 'projects', 'certificates', 'contact', 'github-activity'];
             if (valid.includes(section)) {
                 closeTerminal();
                 setTimeout(() => {
@@ -1993,7 +1965,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Tab completion
-        const allCmds = ['help', 'whoami', 'about', 'skills', 'projects', 'experience', 'contact', 'neofetch', 'ls', 'cd', 'cat readme', 'cat .secret', 'clear', 'games', 'theme', 'lang', 'exit', 'sudo hire cemil', 'pwd', 'date', 'echo'];
+        const allCmds = ['help', 'whoami', 'about', 'skills', 'projects', 'contact', 'neofetch', 'ls', 'cd', 'cat readme', 'cat .secret', 'clear', 'games', 'theme', 'lang', 'exit', 'sudo hire cemil', 'pwd', 'date', 'echo'];
 
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {

@@ -12,7 +12,6 @@ const I18n = (() => {
             'nav.about': 'Hakkımda',
             'nav.skills': 'Yetenekler',
             'nav.projects': 'Projeler',
-            'nav.experience': 'Deneyim',
             'nav.certificates': 'Sertifikalar',
             'nav.contact': 'İletişim',
 
@@ -25,11 +24,9 @@ const I18n = (() => {
             'section.skills.title': 'Yetenekler',
             'section.projects.tag': '// 03',
             'section.projects.title': 'Projeler',
-            'section.experience.tag': '// 04',
-            'section.experience.title': 'Deneyim',
-            'section.certificates.tag': '// 05',
+            'section.certificates.tag': '// 04',
             'section.certificates.title': 'Sertifikalar',
-            'section.contact.tag': '// 06',
+            'section.contact.tag': '// 05',
             'section.contact.title': 'İletişim',
 
             // Hero
@@ -81,7 +78,6 @@ const I18n = (() => {
             'nav.about': 'About',
             'nav.skills': 'Skills',
             'nav.projects': 'Projects',
-            'nav.experience': 'Experience',
             'nav.certificates': 'Certificates',
             'nav.contact': 'Contact',
 
@@ -94,11 +90,9 @@ const I18n = (() => {
             'section.skills.title': 'Skills',
             'section.projects.tag': '// 03',
             'section.projects.title': 'Projects',
-            'section.experience.tag': '// 04',
-            'section.experience.title': 'Experience',
-            'section.certificates.tag': '// 05',
+            'section.certificates.tag': '// 04',
             'section.certificates.title': 'Certificates',
-            'section.contact.tag': '// 06',
+            'section.contact.tag': '// 05',
             'section.contact.title': 'Contact',
 
             // Hero
@@ -147,7 +141,7 @@ const I18n = (() => {
         }
     };
 
-    // Data translations (about, hero description, contact, experience, certificates)
+    // Data translations (about, hero description, contact, certificates)
     const dataTranslations = {
         tr: {
             hero: {
