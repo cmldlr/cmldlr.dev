@@ -337,8 +337,8 @@
                 <span class="logo-text">CD</span>
                 <span class="logo-bracket">}</span>
             </div>
-            <h1 class="login-title">Admin Girişi</h1>
-            <p class="login-subtitle">Doğrulama kodu e-posta adresinize gönderilecektir.</p>
+            <h1 class="login-title">Admin Login</h1>
+            <p class="login-subtitle">A verification code will be sent to your email.</p>
 
             <!-- Step 1: Send OTP -->
             <div class="otp-step" id="otpStep1">
@@ -348,7 +348,7 @@
                 </div>
                 <button class="btn btn-primary btn-full" id="sendOtpBtn">
                     <i class="ph ph-paper-plane-right"></i>
-                    <span>Doğrulama Kodu Gönder</span>
+                    <span>Send Verification Code</span>
                 </button>
                 <div class="login-error" id="sendError"></div>
             </div>
@@ -357,7 +357,7 @@
             <div class="otp-step" id="otpStep2" style="display:none">
                 <p class="otp-sent-info">
                     <i class="ph ph-check-circle"></i>
-                    <span id="otpSentEmail">me@cmldlr.dev</span> adresine kod gönderildi
+                    <span id="otpSentEmail">me@cmldlr.dev</span> receives the code
                 </p>
                 <form id="verifyOtpForm">
                     <div class="otp-input-group" id="otpInputGroup">
@@ -376,18 +376,18 @@
                     <div class="login-error" id="verifyError"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="verifyOtpBtn">
                         <i class="ph ph-sign-in"></i>
-                        <span>Doğrula ve Giriş Yap</span>
+                        <span>Verify & Login</span>
                     </button>
                 </form>
                 <button class="otp-resend" id="resendOtpBtn" disabled>
                     <i class="ph ph-arrow-clockwise"></i>
-                    Tekrar Gönder (<span id="resendCooldown">60</span>s)
+                    Resend (<span id="resendCooldown">60</span>s)
                 </button>
             </div>
 
             <button class="login-back" id="loginBackBtn">
                 <i class="ph ph-arrow-left"></i>
-                Portfolyoya Dön
+                Back to Portfolio
             </button>
         </div>
     </div>
@@ -399,7 +399,7 @@
         <!-- Admin Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <button class="sidebar-logo" id="adminBackBtn" title="Portfolyoya dön">
+                <button class="sidebar-logo" id="adminBackBtn" title="Back to Portfolio">
                     <span class="logo-bracket">{</span>
                     <span class="logo-text">CD</span>
                     <span class="logo-bracket">}</span>
@@ -408,31 +408,31 @@
             </div>
             <nav class="sidebar-nav">
                 <button class="sidebar-link active" data-page="projects">
-                    <i class="ph ph-folder-open"></i><span>Projeler</span>
+                    <i class="ph ph-folder-open"></i><span>Projects</span>
                 </button>
                 <button class="sidebar-link" data-page="skills">
-                    <i class="ph ph-code"></i><span>Yetenekler</span>
+                    <i class="ph ph-code"></i><span>Skills</span>
                 </button>
                 <button class="sidebar-link" data-page="about">
-                    <i class="ph ph-user"></i><span>Hakkımda</span>
+                    <i class="ph ph-user"></i><span>About</span>
                 </button>
                 <button class="sidebar-link" data-page="hero">
                     <i class="ph ph-star"></i><span>Hero</span>
                 </button>
                 <button class="sidebar-link" data-page="contact">
-                    <i class="ph ph-envelope"></i><span>İletişim</span>
+                    <i class="ph ph-envelope"></i><span>Contact</span>
                 </button>
                 <button class="sidebar-link" data-page="certificates">
-                    <i class="ph ph-certificate"></i><span>Sertifikalar</span>
+                    <i class="ph ph-certificate"></i><span>Certificates</span>
                 </button>
                 <div class="sidebar-divider"></div>
                 <button class="sidebar-link" data-page="settings">
-                    <i class="ph ph-gear"></i><span>Ayarlar</span>
+                    <i class="ph ph-gear"></i><span>Settings</span>
                 </button>
             </nav>
             <div class="sidebar-footer">
                 <button class="sidebar-link" id="logoutBtn">
-                    <i class="ph ph-sign-out"></i><span>Çıkış</span>
+                    <i class="ph ph-sign-out"></i><span>Logout</span>
                 </button>
             </div>
         </aside>
@@ -441,10 +441,10 @@
         <main class="admin-main">
             <header class="admin-topbar">
                 <button class="sidebar-toggle" id="sidebarToggle"><i class="ph ph-list"></i></button>
-                <h2 class="topbar-title" id="topbarTitle">Projeler</h2>
+                <h2 class="topbar-title" id="topbarTitle">Projects</h2>
                 <div class="topbar-actions">
-                    <button class="btn btn-outline btn-sm" id="previewBtn" title="Portfolyoya dön">
-                        <i class="ph ph-eye"></i><span>Önizle</span>
+                    <button class="btn btn-outline btn-sm" id="previewBtn" title="Back to Portfolio">
+                        <i class="ph ph-eye"></i><span>Preview</span>
                     </button>
                 </div>
             </header>
@@ -453,12 +453,12 @@
                 <!-- PROJECTS -->
                 <div class="admin-page active" id="page-projects">
                     <div class="page-header">
-                        <h3>Proje Yönetimi</h3>
+                        <h3>Project Management</h3>
                         <div class="page-header-actions">
                             <button class="btn btn-outline btn-sm" id="fetchGithubBtn"><i class="ph ph-github-logo"></i>
-                                GitHub'dan Çek</button>
-                            <button class="btn btn-primary btn-sm" id="addProjectBtn"><i class="ph ph-plus"></i> Yeni
-                                Proje</button>
+                                Fetch from GitHub</button>
+                            <button class="btn btn-primary btn-sm" id="addProjectBtn"><i class="ph ph-plus"></i> New
+                                Project</button>
                         </div>
                     </div>
                     <div class="projects-list" id="projectsList"></div>
@@ -466,73 +466,70 @@
                 <!-- SKILLS -->
                 <div class="admin-page" id="page-skills">
                     <div class="page-header">
-                        <h3>Yetenek Yönetimi</h3>
-                        <button class="btn btn-primary btn-sm" id="addSkillCategoryBtn"><i class="ph ph-plus"></i> Yeni
-                            Kategori</button>
+                        <h3>Skill Management</h3>
+                        <button class="btn btn-primary btn-sm" id="addSkillCategoryBtn"><i class="ph ph-plus"></i> New
+                            Category</button>
                     </div>
                     <div class="skills-list" id="skillsList"></div>
                 </div>
                 <!-- ABOUT -->
                 <div class="admin-page" id="page-about">
                     <div class="page-header">
-                        <h3>Hakkımda Düzenle</h3>
+                        <h3>Edit About</h3>
                     </div>
                     <div class="about-editor" id="aboutEditor"></div>
                 </div>
                 <!-- HERO -->
                 <div class="admin-page" id="page-hero">
                     <div class="page-header">
-                        <h3>Hero Bölümü</h3>
+                        <h3>Hero Section</h3>
                     </div>
                     <div class="hero-editor" id="heroEditor"></div>
                 </div>
                 <!-- CONTACT -->
                 <div class="admin-page" id="page-contact">
                     <div class="page-header">
-                        <h3>İletişim Bilgileri</h3>
+                        <h3>Contact Information</h3>
                     </div>
                     <div class="contact-editor" id="contactEditor"></div>
                 </div>
                 <!-- SETTINGS -->
                 <div class="admin-page" id="page-settings">
                     <div class="page-header">
-                        <h3>Ayarlar</h3>
+                        <h3>Settings</h3>
                     </div>
                     <div class="settings-content">
                         <div class="settings-card">
-                            <h4><i class="ph ph-shield-check"></i> Kimlik Doğrulama</h4>
-                            <p class="settings-desc">Admin girişi e-posta doğrulama kodu ile yapılmaktadır.</p>
+                            <h4><i class="ph ph-shield-check"></i> Authentication</h4>
+                            <p class="settings-desc">Admin login requires an email verification code.</p>
                             <div class="otp-email-display" style="margin-top:12px">
                                 <i class="ph ph-envelope-simple"></i>
                                 <span>me@cmldlr.dev</span>
                             </div>
                         </div>
                         <div class="settings-card">
-                            <h4><i class="ph ph-download"></i> Veri Yedekleme</h4>
-                            <p class="settings-desc">Tüm portfolyo verilerinizi JSON olarak dışa aktarın veya içe
-                                aktarın.</p>
+                            <h4><i class="ph ph-download"></i> Data Backup</h4>
+                            <p class="settings-desc">Export or import your entire portfolio data as JSON.</p>
                             <div class="settings-actions">
-                                <button class="btn btn-outline btn-sm" id="exportBtn"><i class="ph ph-export"></i> Dışa
-                                    Aktar</button>
-                                <label class="btn btn-outline btn-sm" for="importFile"><i class="ph ph-upload"></i> İçe
-                                    Aktar</label>
+                                <button class="btn btn-outline btn-sm" id="exportBtn"><i class="ph ph-export"></i> Export</button>
+                                <label class="btn btn-outline btn-sm" for="importFile"><i class="ph ph-upload"></i> Import</label>
                                 <input type="file" id="importFile" accept=".json" style="display:none">
                             </div>
                         </div>
                         <div class="settings-card settings-danger">
-                            <h4><i class="ph ph-warning"></i> Tehlikeli Bölge</h4>
-                            <p class="settings-desc">Tüm verileri varsayılana sıfırlar. Bu işlem geri alınamaz!</p>
+                            <h4><i class="ph ph-warning"></i> Danger Zone</h4>
+                            <p class="settings-desc">Resets all data to defaults. This action cannot be undone!</p>
                             <button class="btn btn-danger btn-sm" id="resetBtn"><i class="ph ph-trash"></i>
-                                Sıfırla</button>
+                                Reset</button>
                         </div>
                     </div>
                 </div>
                 <!-- CERTIFICATES -->
                 <div class="admin-page" id="page-certificates">
                     <div class="page-header">
-                        <h3>Sertifika Yönetimi</h3>
-                        <button class="btn btn-primary btn-sm" id="addCertificateBtn"><i class="ph ph-plus"></i> Yeni
-                            Sertifika</button>
+                        <h3>Certificate Management</h3>
+                        <button class="btn btn-primary btn-sm" id="addCertificateBtn"><i class="ph ph-plus"></i> New
+                            Certificate</button>
                     </div>
                     <div class="certificates-list" id="certificatesList"></div>
                 </div>

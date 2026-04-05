@@ -11,36 +11,36 @@ const PortfolioData = (() => {
     // =============================
     const DEFAULTS = {
         hero: {
-            greeting: 'Merhaba, ben',
+            greeting: 'Hi, I\'m',
             name: 'Cemil Dalar',
-            roles: ['Software Engineer', 'Full-Stack Developer', 'IoT Specialist', 'Backend Architect', 'Problem Solver'],
-            description: 'IoT, bulut tabanlı mimariler ve endüstriyel sistemler konusunda uzmanlaşmış <strong>Yazılım Mühendisi</strong>. MQTT, Kafka, TimescaleDB ve modern web teknolojileri ile ölçeklenebilir çözümler geliştiriyorum.',
-            badge: 'Çalışmaya Açık',
+            roles: ['Software Engineer', 'Backend Developer', 'AI Solutions Creator', 'Problem Solver'],
+            description: '<strong>Software Engineer</strong> focusing on scalable backend architectures and AI integrations. I build robust data-driven systems and API services, prioritizing clean code and high performance.',
+            badge: 'Open to Work',
             stats: [
-                { number: 21, label: 'Açık Kaynak Proje' },
-                { number: 6, label: 'Programlama Dili' },
-                { number: 3, label: 'Yıl Deneyim' }
+                { number: 21, label: 'Open Source Projects' },
+                { number: 6, label: 'Programming Languages' },
+                { number: 3, label: 'Years Experience' }
             ],
             cvUrl: ''
         },
         about: {
             paragraphs: [
-                'Bilgisayar Mühendisliği geçmişine sahip bir <strong>Yazılım Mühendisi</strong>yim. Endüstriyel IoT platformları, gerçek zamanlı veri işleme sistemleri ve modern web uygulamaları geliştirme konusunda deneyimliyim.',
-                'Profesyonel olarak MQTT-Kafka köprüleri, TimescaleDB ile zaman serisi veri yönetimi, mikroservis mimarileri ve Next.js tabanlı dashboard\'lar üzerinde çalışıyorum. Her projemde temiz kod, ölçeklenebilirlik ve performans önceliğimdir.',
-                'Akademik çalışmalarımda makine öğrenmesi ile güç kesintisi analizi, çeşitli Java/C#/Python projeleri ve veri yapıları üzerine projeler geliştirdim.'
+                'I am a <strong>Software Engineer</strong> with a strong foundation in Computer Engineering. I specialize in designing industrial IoT platforms, real-time data processing systems, and modern web applications.',
+                'Professionally, I work extensively with MQTT-Kafka bridges, time-series data management using TimescaleDB, microservice architectures, and Next.js dashboards. Clean code, scalability, and optimal performance are my core priorities in every project.',
+                'During my academic journey, I developed power outage analysis models using machine learning and built a variety of algorithms and data structure projects in Java, C#, and Python.'
             ],
             details: [
-                { icon: 'ph-map-pin', label: 'Konum', value: 'Türkiye' },
-                { icon: 'ph-graduation-cap', label: 'Eğitim', value: 'Bilgisayar Mühendisliği' },
-                { icon: 'ph-briefcase', label: 'Pozisyon', value: 'Yazılım Mühendisi' },
-                { icon: 'ph-translate', label: 'Diller', value: 'Türkçe, İngilizce' }
+                { icon: 'ph-map-pin', label: 'Location', value: 'Turkey' },
+                { icon: 'ph-graduation-cap', label: 'Education', value: 'Computer Engineering' },
+                { icon: 'ph-briefcase', label: 'Position', value: 'Software Engineer' },
+                { icon: 'ph-translate', label: 'Languages', value: 'Turkish, English' }
             ]
         },
         skills: [
             {
                 id: 'languages',
                 icon: 'ph-code',
-                title: 'Programlama Dilleri',
+                title: 'Programming Languages',
                 tags: [
                     { name: 'C#', level: 'advanced' },
                     { name: 'Java', level: 'advanced' },
@@ -66,7 +66,7 @@ const PortfolioData = (() => {
             {
                 id: 'backend',
                 icon: 'ph-database',
-                title: 'Backend & Veri',
+                title: 'Backend & Data',
                 tags: [
                     { name: '.NET / ASP.NET', level: 'advanced' },
                     { name: 'TimescaleDB', level: 'advanced' },
@@ -91,7 +91,7 @@ const PortfolioData = (() => {
             {
                 id: 'other',
                 icon: 'ph-brain',
-                title: 'Diğer',
+                title: 'Other',
                 tags: [
                     { name: 'Machine Learning', level: 'intermediate' },
                     { name: 'Data Analysis', level: 'intermediate' },
@@ -104,7 +104,7 @@ const PortfolioData = (() => {
             {
                 id: 'iot-platform',
                 title: 'IoT Data Platform',
-                description: 'MQTT → Kafka → TimescaleDB veri pipeline\'ı ile endüstriyel IoT verileri toplama, işleme ve görselleştirme platformu. Mikroservis mimarisi, gerçek zamanlı dashboard ve alarm sistemi içerir.',
+                description: 'Industrial IoT data collection, processing, and visualization platform using an MQTT → Kafka → TimescaleDB pipeline. Includes microservice architecture, real-time dashboards, and an alarm system.',
                 icon: 'ph-factory',
                 tags: ['featured', 'web'],
                 tech: ['C#', '.NET', 'Kafka', 'MQTT', 'TimescaleDB', 'Next.js', 'Docker'],
@@ -117,7 +117,7 @@ const PortfolioData = (() => {
             {
                 id: 'progressio',
                 title: 'Progressio',
-                description: 'İlerleme takip ve yönetim uygulaması. Kullanıcı dostu arayüz ile hedef belirleme ve performans izleme özellikleri sunar.',
+                description: 'Goal tracking and management application. Offers goal setting and performance tracking features with a user-friendly interface.',
                 icon: 'ph-chart-line-up',
                 tags: ['featured', 'web'],
                 tech: ['JavaScript', 'Web App'],
@@ -130,7 +130,7 @@ const PortfolioData = (() => {
             {
                 id: 'number-maze',
                 title: 'Number Maze',
-                description: 'Sayı tabanlı labirent oyunu. Algoritmik düşünme ve problem çözme becerilerini geliştirmeye yönelik tasarlanmış interaktif oyun.',
+                description: 'Number-based interactive maze game designed to enhance algorithmic thinking and problem-solving skills.',
                 icon: 'ph-game-controller',
                 tags: ['java'],
                 tech: ['Java', 'Game Dev'],
@@ -142,8 +142,8 @@ const PortfolioData = (() => {
             },
             {
                 id: 'power-outage',
-                title: 'Güç Kesintisi Analizi',
-                description: 'Makine öğrenmesi teknikleri ile güç kesintisi verilerinin analizi. Veri ön işleme, model eğitimi ve performans değerlendirmesi içerir.',
+                title: 'Power Outage Analysis',
+                description: 'Analysis of power outage data using machine learning techniques. Includes data preprocessing, model training, and performance evaluation.',
                 icon: 'ph-lightning',
                 tags: ['python', 'featured'],
                 tech: ['Python', 'Machine Learning', 'Jupyter'],
@@ -156,7 +156,7 @@ const PortfolioData = (() => {
             {
                 id: 'ibm-ai',
                 title: 'IBM AI Engineering',
-                description: 'IBM AI Engineering sertifika programı kapsamında geliştirilen yapay zeka ve derin öğrenme projeleri koleksiyonu.',
+                description: 'Collection of artificial intelligence and deep learning projects developed during the IBM AI Engineering certificate program.',
                 icon: 'ph-robot',
                 tags: ['python', 'featured'],
                 tech: ['Python', 'AI / Deep Learning', 'Jupyter'],
@@ -168,8 +168,8 @@ const PortfolioData = (() => {
             },
             {
                 id: 'rent-a-car',
-                title: 'Araç Kiralama Yönetim Sistemi',
-                description: 'Kapsamlı araç kiralama yönetim sistemi. Araç takibi, müşteri yönetimi ve kiralama işlemleri modüllerini içerir.',
+                title: 'Rent-A-Car Management System',
+                description: 'Comprehensive car rental management system. Includes modules for vehicle tracking, customer management, and rental operations.',
                 icon: 'ph-car',
                 tags: ['web'],
                 tech: ['PHP', 'Web'],
@@ -182,7 +182,7 @@ const PortfolioData = (() => {
             {
                 id: 'the-matrix',
                 title: 'The Matrix',
-                description: 'C# ile geliştirilmiş matris işlemleri kütüphanesi. Toplama, çarpma, determinant ve ters matris hesaplama gibi temel lineer cebir operasyonlarını destekler.',
+                description: 'Matrix operations library developed with C#. Supports basic linear algebra operations like addition, multiplication, determinant, and inverse computation.',
                 icon: 'ph-grid-four',
                 tags: ['csharp'],
                 tech: ['C#', '.NET'],
@@ -195,7 +195,7 @@ const PortfolioData = (() => {
             {
                 id: 'ceng-editor',
                 title: 'Ceng Editor',
-                description: 'Java ile geliştirilmiş metin editörü. Sözdizimi vurgulama, dosya yönetimi ve temel düzenleme özellikleri sunar.',
+                description: 'A text editor built with Java. Features syntax highlighting, file management, and basic text manipulation functionalities.',
                 icon: 'ph-text-aa',
                 tags: ['java'],
                 tech: ['Java', 'Swing'],
@@ -212,7 +212,7 @@ const PortfolioData = (() => {
                 title: 'IBM AI Engineering',
                 issuer: 'IBM / Coursera',
                 date: '2025',
-                description: 'Yapay zeka ve derin öğrenme konularında profesyonel sertifika. TensorFlow, Keras, PyTorch ile model geliştirme.',
+                description: 'Professional certificate covering AI and deep learning. Includes practical projects utilizing TensorFlow, Keras, and PyTorch.',
                 icon: 'ph-robot',
                 credential: '',
                 tech: ['Python', 'TensorFlow', 'PyTorch', 'Deep Learning']
@@ -222,20 +222,46 @@ const PortfolioData = (() => {
                 title: 'Google IT Support',
                 issuer: 'Google / Coursera',
                 date: '2023',
-                description: 'IT destek, ağ yönetimi, güvenlik ve sistem yönetimi konularında profesyonel sertifika.',
+                description: 'Professional certificate focusing on IT support, network administration, security, and systems management.',
                 icon: 'ph-shield-check',
                 credential: '',
                 tech: ['Networking', 'Security', 'Linux', 'Troubleshooting']
             }
         ],
         contact: {
-            heading: 'Birlikte çalışalım!',
-            description: 'Yeni projeler, iş fırsatları veya sadece merhaba demek için benimle iletişime geçmekten çekinmeyin.',
+            heading: 'Let\'s work together!',
+            description: 'Feel free to reach out for new projects, job opportunities, or just to say hello.',
             links: [
                 { icon: 'ph-github-logo', label: 'GitHub', value: '@cmldlr', url: 'https://github.com/cmldlr' },
                 { icon: 'ph-linkedin-logo', label: 'LinkedIn', value: '@cmldlr', url: 'https://linkedin.com/in/cmldlr' },
                 { icon: 'ph-envelope', label: 'E-posta', value: 'contact@cmldlr.dev', url: 'mailto:contact@cmldlr.dev' }
             ]
+        },
+        translations: {
+            tr: {
+                hero: {
+                    greeting: 'Merhaba, ben',
+                    description: 'Backend mimarileri ve yapay zeka entegrasyonlarına odaklanan <strong>Yazılım Mühendisi</strong>. Performans ve ölçeklenebilirlik öncelikli, veri odaklı sistemler ve servisler geliştiriyorum.',
+                    badge: 'Çalışmaya Açık'
+                },
+                about: {
+                    paragraphs: [
+                        'Bilgisayar Mühendisliği geçmişine sahip bir <strong>Yazılım Mühendisi</strong>yim. Endüstriyel IoT platformları, gerçek zamanlı veri işleme sistemleri ve modern web uygulamaları tasarımı konusunda uzmanlaşıyorum.',
+                        'Profesyonel olarak MQTT-Kafka köprüleri, TimescaleDB ile zaman serisi veri yönetimi, mikroservis mimarileri ve Next.js tabanlı dashboard\'lar üzerinde çalışıyorum. Her projemde temiz kod, ölçeklenebilirlik ve performans önceliğimdir.',
+                        'Akademik geçmişimde makine öğrenmesi ile güç kesintisi analizi yapan modeller geliştirdim; ayrıca Java, C# ve Python kullanarak çeşitli algoritma ve veri yapısı projeleri ürettim.'
+                    ],
+                    details: [
+                        { label: 'Konum', value: 'Türkiye' },
+                        { label: 'Eğitim', value: 'Bilgisayar Mühendisliği' },
+                        { label: 'Pozisyon', value: 'Yazılım Mühendisi' },
+                        { label: 'Diller', value: 'Türkçe, İngilizce' }
+                    ]
+                },
+                contact: {
+                    heading: 'Birlikte çalışalım!',
+                    description: 'Yeni projeler, iş fırsatları veya sadece merhaba demek için benimle iletişime geçmekten çekinmeyin.'
+                }
+            }
         }
     };
 

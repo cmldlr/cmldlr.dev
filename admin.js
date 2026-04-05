@@ -149,16 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (PortfolioAuth.isOTPExpired()) {
-            verifyError.textContent = 'Kodun süresi doldu. Yeni kod gönderin.';
+            verifyError.textContent = 'Code expired. Request a new one.';
             return;
         }
 
         const success = PortfolioAuth.verifyOTP(code);
         if (success) {
             showAdmin();
-            toast('Giriş başarılı', 'success');
+            toast('Login successful', 'success');
         } else {
-            verifyError.textContent = 'Geçersiz kod. Tekrar deneyin.';
+            verifyError.textContent = 'Invalid code. Try again.';
             otpDigits.forEach(d => d.value = '');
             otpDigits[0].focus();
         }
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             otpDigits[0].focus();
             startOtpTimer();
             startCooldownTimer();
-            toast('Yeni kod gönderildi', 'success');
+            toast('New code sent', 'success');
         } catch (err) {
             verifyError.textContent = err.message;
         }
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             otpCountdown.textContent = `${min}:${sec.toString().padStart(2, '0')}`;
             if (rem <= 0) {
                 clearInterval(otpTimerInterval);
-                otpCountdown.textContent = 'Süre doldu';
+                otpCountdown.textContent = 'Expired';
                 otpCountdown.parentElement.style.color = 'var(--red, #ff5f57)';
             }
         }, 1000);
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rem <= 0) {
                 clearInterval(cooldownInterval);
                 resendOtpBtn.disabled = false;
-                resendOtpBtn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Tekrar Gönder';
+                resendOtpBtn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Resend';
             }
         }, 1000);
     }
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logoutBtn').addEventListener('click', () => {
         PortfolioAuth.logout();
         showPortfolio();
-        toast('Çıkış yapıldı', 'success');
+        toast('Logged out', 'success');
     });
 
     // Escape key closes login
@@ -244,8 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
     const topbarTitle = document.getElementById('topbarTitle');
     const pageTitles = {
-        projects: 'Projeler', skills: 'Yetenekler',
-        about: 'Hakkımda', hero: 'Hero Bölümü', contact: 'İletişim', certificates: 'Sertifikalar', settings: 'Ayarlar'
+        projects: 'Projects', skills: 'Skills',
+        about: 'About', hero: 'Hero Section', contact: 'Contact', certificates: 'Certificates', settings: 'Settings'
     };
 
     let currentPage = 'projects';
@@ -286,14 +286,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = document.getElementById('projectsList');
 
         if (data.projects.length === 0) {
-            list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">Henüz proje eklenmedi.</p>';
+            list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">No projects added yet.</p>';
             return;
         }
 
         list.innerHTML = data.projects.map(p => `
             <div class="project-admin-card ${p.visible ? '' : 'hidden-project'}" data-id="${p.id}">
-                <div class="project-admin-drag" title="Sürükle"><i class="ph ph-dots-six-vertical"></i></div>
-                <div class="project-admin-toggle ${p.visible ? 'on' : ''}" data-id="${p.id}" title="${p.visible ? 'Gizle' : 'Göster'}"></div>
+                <div class="project-admin-drag" title="Drag"><i class="ph ph-dots-six-vertical"></i></div>
+                <div class="project-admin-toggle ${p.visible ? 'on' : ''}" data-id="${p.id}" title="${p.visible ? 'Hide' : 'Show'}"></div>
                 <div class="project-admin-info">
                     <div class="project-admin-title">${esc(p.title)}</div>
                     <div class="project-admin-meta">
@@ -302,8 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="project-admin-actions">
-                    <button class="btn-ghost" onclick="editProject('${p.id}')" title="Düzenle"><i class="ph ph-pencil-simple"></i></button>
-                    <button class="btn-ghost" onclick="deleteProject('${p.id}')" title="Sil"><i class="ph ph-trash"></i></button>
+                    <button class="btn-ghost" onclick="editProject('${p.id}')" title="Edit"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="btn-ghost" onclick="deleteProject('${p.id}')" title="Delete"><i class="ph ph-trash"></i></button>
                 </div>
             </div>
         `).join('');
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
             toggle.addEventListener('click', () => {
                 PortfolioData.toggleProjectVisibility(toggle.getAttribute('data-id'));
                 renderProjectsPage();
-                toast('Görünürlük güncellendi', 'success');
+                toast('Visibility updated', 'success');
             });
         });
     }
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addProjectBtn').addEventListener('click', () => openProjectModal());
 
     document.getElementById('fetchGithubBtn').addEventListener('click', async () => {
-        openModal('GitHub Repoları', '<p style="color:var(--text-secondary);text-align:center;padding:20px"><i class="ph ph-spinner" style="animation:spin 1s linear infinite;display:inline-block"></i> Yükleniyor...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
+        openModal('GitHub Repositories', '<p style="color:var(--text-secondary);text-align:center;padding:20px"><i class="ph ph-spinner" style="animation:spin 1s linear infinite;display:inline-block"></i> Loading...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
         try {
             const resp = await fetch('https://api.github.com/users/cmldlr/repos?sort=updated&per_page=50');
             if (!resp.ok) throw new Error('GitHub API hatası');
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${repo.language ? `<span class="github-repo-lang">${repo.language}</span>` : ''}
                 </label>`;
             });
-            html += '</div><div class="modal-footer"><button class="btn btn-primary btn-sm" id="importGithubBtn"><i class="ph ph-check"></i> Seçilenleri Ekle</button></div>';
+            html += '</div><div class="modal-footer"><button class="btn btn-primary btn-sm" id="importGithubBtn"><i class="ph ph-check"></i> Add Selected</button></div>';
             document.getElementById('modalBody').innerHTML = html;
 
             document.getElementById('importGithubBtn').addEventListener('click', () => {
@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 closeModal();
                 renderProjectsPage();
-                toast(`${added} proje eklendi`, 'success');
+                toast(`${added} projects added`, 'success');
             });
         } catch (err) {
             document.getElementById('modalBody').innerHTML = `<p style="color:var(--red);text-align:center;padding:20px">${err.message}</p>`;
@@ -372,10 +372,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p) openProjectModal(p);
     };
     window.deleteProject = function (id) {
-        if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) {
+        if (confirm('Are you sure you want to delete this project?')) {
             PortfolioData.removeProject(id);
             renderProjectsPage();
-            toast('Proje silindi', 'success');
+            toast('Project deleted', 'success');
         }
     };
 
@@ -383,30 +383,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEdit = !!p;
         const currentImages = (isEdit && p.images && Array.isArray(p.images)) ? [...p.images] : [];
         const html = `
-            <div class="form-group"><label>Başlık</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
-            <div class="form-group"><label>Açıklama</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
-            <div class="form-group"><label>İkon (ör: ph-factory)</label><input type="text" id="projIcon" value="${isEdit ? esc(p.icon) : 'ph-folder'}"></div>
+            <div class="form-group"><label>Title</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
+            <div class="form-group"><label>Description</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
+            <div class="form-group"><label>Icon (e.g. ph-factory)</label><input type="text" id="projIcon" value="${isEdit ? esc(p.icon) : 'ph-folder'}"></div>
             <div class="form-group"><label>GitHub URL</label><input type="url" id="projGithub" value="${isEdit ? esc(p.github) : ''}"></div>
-            <div class="form-group"><label>Teknolojiler (virgülle)</label><input type="text" id="projTech" value="${isEdit ? p.tech.join(', ') : ''}"></div>
-            <div class="form-group"><label>Etiketler (featured, web, java, csharp, python)</label><input type="text" id="projTags" value="${isEdit ? p.tags.join(', ') : ''}"></div>
+            <div class="form-group"><label>Technologies (comma separated)</label><input type="text" id="projTech" value="${isEdit ? p.tech.join(', ') : ''}"></div>
+            <div class="form-group"><label>Tags (featured, web, java, csharp, python)</label><input type="text" id="projTags" value="${isEdit ? p.tags.join(', ') : ''}"></div>
             <div class="form-group" style="display:flex;align-items:center;gap:8px">
                 <input type="checkbox" id="projFeatured" ${isEdit && p.featured ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--accent-primary)">
-                <label for="projFeatured" style="margin:0">Öne Çıkan</label>
+                <label for="projFeatured" style="margin:0">Featured</label>
             </div>
             <div class="form-group">
-                <label>Proje Görselleri (Sürükle bırak veya seç)</label>
+                <label>Project Images (Drag & Drop or Select)</label>
                 <div class="image-upload-zone" id="imageUploadZone">
                     <i class="ph ph-image"></i>
-                    <span>Tıklayın veya resimleri buraya sürükleyin</span>
+                    <span>Click or drag images here</span>
                     <input type="file" id="imageFileInput" multiple accept="image/*" style="display:none;">
                 </div>
                 <div class="image-preview-grid" id="imagePreviewGrid"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
-                <button class="btn btn-primary btn-sm" id="saveProjectBtn"><i class="ph ph-check"></i> ${isEdit ? 'Güncelle' : 'Ekle'}</button>
+                <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="saveProjectBtn"><i class="ph ph-check"></i> ${isEdit ? 'Update' : 'Add'}</button>
             </div>`;
-        openModal(isEdit ? 'Proje Düzenle' : 'Yeni Proje', html);
+        openModal(isEdit ? 'Edit Project' : 'New Project', html);
         
         // Image Upload Logic
         let uploadedImages = [...currentImages];
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const b64 = await compressImage(file, 800, 0.7);
                     uploadedImages.push(b64);
                 } catch (err) {
-                    toast('Resim işlenirken hata oluştu', 'error');
+                    toast('Error processing image', 'error');
                 }
             }
             uploadZone.querySelector('span').textContent = 'Tıklayın veya resimleri buraya sürükleyin';
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('saveProjectBtn').addEventListener('click', () => {
             const title = document.getElementById('projTitle').value.trim();
-            if (!title) { toast('Başlık gerekli', 'error'); return; }
+            if (!title) { toast('Title is required', 'error'); return; }
             const obj = {
                 title, description: document.getElementById('projDesc').value.trim(),
                 icon: document.getElementById('projIcon').value.trim() || 'ph-folder',
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isEdit) { PortfolioData.updateProject(p.id, obj); }
             else { obj.id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); PortfolioData.addProject(obj); }
             closeModal(); renderProjectsPage();
-            toast(isEdit ? 'Güncellendi' : 'Eklendi', 'success');
+            toast(isEdit ? 'Updated' : 'Added', 'success');
         });
     }
 
@@ -505,49 +505,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="skill-admin-tags">
                     ${cat.tags.map((t, ti) => `<div class="skill-admin-tag"><span>${esc(t.name)}</span>
                         <select onchange="setSkillLvl(${ci},${ti},this.value)">
-                            <option value="beginner" ${t.level === 'beginner' ? 'selected' : ''}>Başlangıç</option>
-                            <option value="intermediate" ${t.level === 'intermediate' ? 'selected' : ''}>Orta</option>
-                            <option value="advanced" ${t.level === 'advanced' ? 'selected' : ''}>İleri</option>
+                            <option value="beginner" ${t.level === 'beginner' ? 'selected' : ''}>Beginner</option>
+                            <option value="intermediate" ${t.level === 'intermediate' ? 'selected' : ''}>Intermediate</option>
+                            <option value="advanced" ${t.level === 'advanced' ? 'selected' : ''}>Advanced</option>
                         </select>
                         <button onclick="rmSkillTag(${ci},${ti})"><i class="ph ph-x"></i></button>
                     </div>`).join('')}
-                    <button class="btn-ghost" onclick="addSkillTag(${ci})" style="font-size:0.8rem"><i class="ph ph-plus"></i> Ekle</button>
+                    <button class="btn-ghost" onclick="addSkillTag(${ci})" style="font-size:0.8rem"><i class="ph ph-plus"></i> Add</button>
                 </div>
             </div>
         `).join('');
     }
 
     document.getElementById('addSkillCategoryBtn').addEventListener('click', () => {
-        const html = `<div class="form-group"><label>Kategori Adı</label><input type="text" id="catTitle"></div>
-            <div class="form-group"><label>İkon</label><input type="text" id="catIcon" value="ph-code"></div>
-            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
-            <button class="btn btn-primary btn-sm" id="saveCatBtn"><i class="ph ph-check"></i> Ekle</button></div>`;
-        openModal('Yeni Kategori', html);
+        const html = `<div class="form-group"><label>Category Name</label><input type="text" id="catTitle"></div>
+            <div class="form-group"><label>Icon</label><input type="text" id="catIcon" value="ph-code"></div>
+            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary btn-sm" id="saveCatBtn"><i class="ph ph-check"></i> Add</button></div>`;
+        openModal('New Category', html);
         document.getElementById('saveCatBtn').addEventListener('click', () => {
             const title = document.getElementById('catTitle').value.trim();
             if (!title) return;
             const skills = PortfolioData.getSection('skills') || [];
             skills.push({ id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'), icon: document.getElementById('catIcon').value.trim(), title, tags: [] });
             PortfolioData.saveSection('skills', skills);
-            closeModal(); renderSkillsPage(); toast('Eklendi', 'success');
+            closeModal(); renderSkillsPage(); toast('Added', 'success');
         });
     });
 
     window.editSkillCat = function (ci) {
         const s = PortfolioData.getSection('skills'); const cat = s[ci];
-        const html = `<div class="form-group"><label>Ad</label><input type="text" id="catTitle" value="${esc(cat.title)}"></div>
-            <div class="form-group"><label>İkon</label><input type="text" id="catIcon" value="${esc(cat.icon)}"></div>
-            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
-            <button class="btn btn-primary btn-sm" id="saveCEBtn"><i class="ph ph-check"></i> Güncelle</button></div>`;
-        openModal('Kategori Düzenle', html);
+        const html = `<div class="form-group"><label>Name</label><input type="text" id="catTitle" value="${esc(cat.title)}"></div>
+            <div class="form-group"><label>Icon</label><input type="text" id="catIcon" value="${esc(cat.icon)}"></div>
+            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary btn-sm" id="saveCEBtn"><i class="ph ph-check"></i> Update</button></div>`;
+        openModal('Edit Category', html);
         document.getElementById('saveCEBtn').addEventListener('click', () => {
             s[ci].title = document.getElementById('catTitle').value.trim();
             s[ci].icon = document.getElementById('catIcon').value.trim();
-            PortfolioData.saveSection('skills', s); closeModal(); renderSkillsPage(); toast('Güncellendi', 'success');
+            PortfolioData.saveSection('skills', s); closeModal(); renderSkillsPage(); toast('Updated', 'success');
         });
     };
-    window.delSkillCat = function (ci) { if (!confirm('Silmek istediğinize emin misiniz?')) return; const s = PortfolioData.getSection('skills'); s.splice(ci, 1); PortfolioData.saveSection('skills', s); renderSkillsPage(); toast('Silindi', 'success'); };
-    window.addSkillTag = function (ci) { const n = prompt('Yetenek adı:'); if (!n) return; const s = PortfolioData.getSection('skills'); s[ci].tags.push({ name: n.trim(), level: 'intermediate' }); PortfolioData.saveSection('skills', s); renderSkillsPage(); };
+    window.delSkillCat = function (ci) { if (!confirm('Are you sure you want to delete?')) return; const s = PortfolioData.getSection('skills'); s.splice(ci, 1); PortfolioData.saveSection('skills', s); renderSkillsPage(); toast('Deleted', 'success'); };
+    window.addSkillTag = function (ci) { const n = prompt('Skill name:'); if (!n) return; const s = PortfolioData.getSection('skills'); s[ci].tags.push({ name: n.trim(), level: 'intermediate' }); PortfolioData.saveSection('skills', s); renderSkillsPage(); };
     window.rmSkillTag = function (ci, ti) { const s = PortfolioData.getSection('skills'); s[ci].tags.splice(ti, 1); PortfolioData.saveSection('skills', s); renderSkillsPage(); };
     window.setSkillLvl = function (ci, ti, l) { const s = PortfolioData.getSection('skills'); s[ci].tags[ti].level = l; PortfolioData.saveSection('skills', s); };
 
@@ -556,29 +556,109 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     function renderAboutPage() {
         const about = PortfolioData.getSection('about');
+        const translations = PortfolioData.getSection('translations') || { tr: { about: { paragraphs: [], details: [] } } };
+        const trAbout = translations.tr?.about || { paragraphs: about.paragraphs.map(()=>''), details: about.details.map(()=>({label:'', value:''})) };
+        
+        // Match lengths if mismatched
+        while (trAbout.paragraphs.length < about.paragraphs.length) trAbout.paragraphs.push('');
+        while (trAbout.details.length < about.details.length) trAbout.details.push({label:'', value:''});
+
         document.getElementById('aboutEditor').innerHTML = `
-            <div class="editor-card">
-                <h4><i class="ph ph-text-align-left"></i> Paragraflar</h4>
-                ${about.paragraphs.map((p, i) => `<div class="form-group"><label>Paragraf ${i + 1}</label><textarea class="about-para" data-i="${i}" rows="3">${esc(p.replace(/<\/?strong>/g, ''))}</textarea></div>`).join('')}
-                <button class="btn btn-outline btn-sm" id="addParaBtn"><i class="ph ph-plus"></i> Ekle</button>
+            <div class="editor-card" style="display:flex; flex-direction:row; gap: 20px;">
+                <div style="flex:1;" id="aboutEnParas">
+                    <h4><i class="ph ph-text-align-left"></i> Paragraphs (English / Default)</h4>
+                    ${about.paragraphs.map((p, i) => `
+                    <div class="form-group" style="position:relative;">
+                        <label>Paragraph ${i + 1}</label>
+                        <textarea class="about-para" data-i="${i}" rows="4">${esc(p.replace(/<\/?strong>/g, ''))}</textarea>
+                        <button class="btn-ghost remove-para-btn" data-i="${i}" style="position:absolute; top:0; right:0;" title="Delete"><i class="ph ph-trash"></i></button>
+                    </div>`).join('')}
+                    <button class="btn btn-outline btn-sm" id="addParaBtn"><i class="ph ph-plus"></i> Add</button>
+                </div>
+                <div style="flex:1; border-left: 4px solid var(--accent-secondary); padding-left: 20px;" id="aboutTrParas">
+                    <h4><i class="ph ph-translate"></i> Paragraphs (Turkish Translation)</h4>
+                    ${trAbout.paragraphs.map((p, i) => `
+                    <div class="form-group">
+                        <label style="color:var(--accent-secondary);">Paragraph ${i + 1} (TR)</label>
+                        <textarea class="about-para-tr" data-i="${i}" rows="4" style="border-color:var(--accent-secondary);">${esc((p || '').replace(/<\/?strong>/g, ''))}</textarea>
+                    </div>`).join('')}
+                </div>
             </div>
             <div class="editor-card">
-                <h4><i class="ph ph-identification-card"></i> Detay Kartları</h4>
-                ${about.details.map((d, i) => `<div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-                    <div><label>İkon</label><input type="text" class="di" data-i="${i}" value="${esc(d.icon)}"></div>
-                    <div><label>Başlık</label><input type="text" class="dl" data-i="${i}" value="${esc(d.label)}"></div>
-                    <div><label>Değer</label><input type="text" class="dv" data-i="${i}" value="${esc(d.value)}"></div>
+                <h4><i class="ph ph-identification-card"></i> Detail Cards</h4>
+                ${about.details.map((d, i) => `
+                <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; align-items: end;">
+                    <div><label>Icon</label><input type="text" class="di" data-i="${i}" value="${esc(d.icon)}"></div>
+                    <div>
+                        <label>Title (EN)</label><input type="text" class="dl" data-i="${i}" value="${esc(d.label)}">
+                        <label style="margin-top:5px; color:var(--accent-secondary); font-size: 0.75rem;">Title (TR)</label>
+                        <input type="text" class="dl-tr" data-i="${i}" value="${esc(trAbout.details[i]?.label || '')}" style="border-color:var(--accent-secondary);">
+                    </div>
+                    <div>
+                        <label>Value (EN)</label><input type="text" class="dv" data-i="${i}" value="${esc(d.value)}">
+                        <label style="margin-top:5px; color:var(--accent-secondary); font-size: 0.75rem;">Value (TR)</label>
+                        <input type="text" class="dv-tr" data-i="${i}" value="${esc(trAbout.details[i]?.value || '')}" style="border-color:var(--accent-secondary);">
+                    </div>
                 </div>`).join('')}
             </div>
-            <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveAboutBtn"><i class="ph ph-check"></i> Kaydet</button></div>`;
+            <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveAboutBtn"><i class="ph ph-check"></i> Save</button></div>`;
 
-        document.getElementById('addParaBtn').addEventListener('click', () => { about.paragraphs.push(''); PortfolioData.saveSection('about', about); renderAboutPage(); });
+        document.getElementById('addParaBtn').addEventListener('click', () => { 
+            about.paragraphs.push(''); 
+            trAbout.paragraphs.push('');
+            PortfolioData.saveSection('about', about); 
+            // Need to persist translations change early since renderAboutPage re-renders from state
+            if (!translations.tr) translations.tr = {};
+            translations.tr.about = trAbout;
+            PortfolioData.saveSection('translations', translations);
+            renderAboutPage(); 
+        });
+
+        document.querySelectorAll('.remove-para-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.getAttribute('data-i'));
+                const enContent = document.querySelectorAll('.about-para')[idx].value.trim();
+                const trContent = document.querySelectorAll('.about-para-tr')[idx].value.trim();
+                
+                if (enContent || trContent) {
+                    if (!confirm('Are you sure you want to delete this paragraph? (English and Turkish versions will be deleted)')) {
+                        return;
+                    }
+                }
+                
+                about.paragraphs.splice(idx, 1);
+                trAbout.paragraphs.splice(idx, 1);
+                
+                PortfolioData.saveSection('about', about);
+                if (!translations.tr) translations.tr = {};
+                translations.tr.about = trAbout;
+                PortfolioData.saveSection('translations', translations);
+                
+                renderAboutPage();
+                toast('Deleted', 'success');
+            });
+        });
+        
         document.getElementById('saveAboutBtn').addEventListener('click', () => {
-            about.paragraphs = Array.from(document.querySelectorAll('.about-para')).map(e => e.value.trim()).filter(Boolean);
+            about.paragraphs = Array.from(document.querySelectorAll('.about-para')).map(e => e.value.trim());
             about.details = Array.from(document.querySelectorAll('.di')).map((el, i) => ({
-                icon: el.value.trim(), label: document.querySelectorAll('.dl')[i].value.trim(), value: document.querySelectorAll('.dv')[i].value.trim()
+                icon: el.value.trim(), 
+                label: document.querySelectorAll('.dl')[i].value.trim(), 
+                value: document.querySelectorAll('.dv')[i].value.trim()
             }));
-            PortfolioData.saveSection('about', about); toast('Kaydedildi', 'success');
+
+            // Save translations
+            if (!translations.tr) translations.tr = {};
+            if (!translations.tr.about) translations.tr.about = {};
+            translations.tr.about.paragraphs = Array.from(document.querySelectorAll('.about-para-tr')).map(e => e.value.trim());
+            translations.tr.about.details = Array.from(document.querySelectorAll('.di')).map((el, i) => ({
+                label: document.querySelectorAll('.dl-tr')[i].value.trim(), 
+                value: document.querySelectorAll('.dv-tr')[i].value.trim()
+            }));
+
+            PortfolioData.saveSection('about', about);
+            PortfolioData.saveSection('translations', translations);
+            toast('Saved', 'success');
         });
     }
 
@@ -587,24 +667,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     function renderHeroPage() {
         const hero = PortfolioData.getSection('hero');
+        const translations = PortfolioData.getSection('translations') || { tr: { hero: {}, about: {}, contact: {} } };
+        const trHero = translations.tr?.hero || { greeting: '', description: '', badge: '' };
+
         document.getElementById('heroEditor').innerHTML = `
-            <div class="editor-card">
-                <h4><i class="ph ph-star"></i> İçerik</h4>
-                <div class="form-group"><label>Karşılama</label><input type="text" id="hGreet" value="${esc(hero.greeting)}"></div>
-                <div class="form-group"><label>İsim</label><input type="text" id="hName" value="${esc(hero.name)}"></div>
-                <div class="form-group"><label>Açıklama (HTML)</label><textarea id="hDesc" rows="3">${esc(hero.description)}</textarea></div>
-                <div class="form-group"><label>Badge</label><input type="text" id="hBadge" value="${esc(hero.badge)}"></div>
-                <div class="form-group"><label>CV URL (boş bırakılırsa buton görünmez)</label><input type="url" id="hCvUrl" value="${esc(hero.cvUrl || '')}"></div>
-                <div class="form-group"><label>Roller (her satıra bir)</label><textarea id="hRoles" rows="4">${hero.roles.join('\n')}</textarea></div>
+            <div class="editor-card" style="display:flex; flex-direction:row; gap: 20px;">
+                <div style="flex:1;">
+                    <h4><i class="ph ph-star"></i> Content (English / Default)</h4>
+                    <div class="form-group"><label>Greeting</label><input type="text" id="hGreet" value="${esc(hero.greeting)}"></div>
+                    <div class="form-group"><label>Name</label><input type="text" id="hName" value="${esc(hero.name)}"></div>
+                    <div class="form-group"><label>Description (HTML)</label><textarea id="hDesc" rows="3">${esc(hero.description)}</textarea></div>
+                    <div class="form-group"><label>Badge</label><input type="text" id="hBadge" value="${esc(hero.badge)}"></div>
+                    <div class="form-group"><label>Roles (one per line)</label><textarea id="hRoles" rows="4">${hero.roles.join('\n')}</textarea></div>
+                    <div class="form-group"><label>CV URL (leave empty to hide button)</label><input type="url" id="hCvUrl" value="${esc(hero.cvUrl || '')}"></div>
+                </div>
+                <div style="flex:1; border-left: 4px solid var(--accent-secondary); padding-left: 20px;">
+                    <h4><i class="ph ph-translate"></i> Content (Turkish Translation)</h4>
+                    <div class="form-group"><label>Greeting (TR)</label><input type="text" id="hGreetTr" value="${esc(trHero.greeting)}"></div>
+                    <div class="form-group"><label>Name (TR) - Usually same</label><input type="text" disabled value="${esc(hero.name)}" style="opacity:0.5; background:var(--bg-secondary);"></div>
+                    <div class="form-group"><label>Description (TR) (HTML)</label><textarea id="hDescTr" rows="3">${esc(trHero.description)}</textarea></div>
+                    <div class="form-group"><label>Badge (TR)</label><input type="text" id="hBadgeTr" value="${esc(trHero.badge)}"></div>
+                    <div class="form-group"><label>Roles (TR) (one per line)</label><textarea id="hRolesTr" rows="4">${(trHero.roles || hero.roles).join('\n')}</textarea></div>
+                </div>
             </div>
             <div class="editor-card">
-                <h4><i class="ph ph-chart-bar"></i> İstatistikler</h4>
+                <h4><i class="ph ph-chart-bar"></i> Statistics</h4>
                 ${hero.stats.map((s, i) => `<div class="form-group" style="display:grid;grid-template-columns:1fr 2fr;gap:8px">
-                    <div><label>Sayı</label><input type="number" class="sn" data-i="${i}" value="${s.number}"></div>
-                    <div><label>Etiket</label><input type="text" class="sl" data-i="${i}" value="${esc(s.label)}"></div>
+                    <div><label>Number</label><input type="number" class="sn" data-i="${i}" value="${s.number}"></div>
+                    <div><label>Label</label><input type="text" class="sl" data-i="${i}" value="${esc(s.label)}"></div>
                 </div>`).join('')}
             </div>
-            <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveHeroBtn"><i class="ph ph-check"></i> Kaydet</button></div>`;
+            <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveHeroBtn"><i class="ph ph-check"></i> Save</button></div>`;
 
         document.getElementById('saveHeroBtn').addEventListener('click', () => {
             hero.greeting = document.getElementById('hGreet').value.trim();
@@ -616,7 +709,18 @@ document.addEventListener('DOMContentLoaded', () => {
             hero.stats = Array.from(document.querySelectorAll('.sn')).map((el, i) => ({
                 number: parseInt(el.value) || 0, label: document.querySelectorAll('.sl')[i].value.trim()
             }));
-            PortfolioData.saveSection('hero', hero); toast('Kaydedildi', 'success');
+
+            // Save translations
+            if (!translations.tr) translations.tr = {};
+            if (!translations.tr.hero) translations.tr.hero = {};
+            translations.tr.hero.greeting = document.getElementById('hGreetTr').value.trim();
+            translations.tr.hero.description = document.getElementById('hDescTr').value.trim();
+            translations.tr.hero.badge = document.getElementById('hBadgeTr').value.trim();
+            translations.tr.hero.roles = document.getElementById('hRolesTr').value.split('\n').map(s => s.trim()).filter(Boolean);
+
+            PortfolioData.saveSection('hero', hero);
+            PortfolioData.saveSection('translations', translations);
+            toast('Saved', 'success');
         });
     }
 
@@ -628,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = document.getElementById('certificatesList');
 
         if (certs.length === 0) {
-            list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">Henüz sertifika eklenmedi.</p>';
+            list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">No certificates added yet.</p>';
             return;
         }
 
@@ -650,28 +754,28 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addCertificateBtn').addEventListener('click', () => openCertModal());
     window.editCert = function (i) { const certs = PortfolioData.getSection('certificates') || []; openCertModal(certs[i], i); };
     window.delCert = function (i) {
-        if (!confirm('Silmek istediğinize emin misiniz?')) return;
+        if (!confirm('Are you sure you want to delete?')) return;
         const certs = PortfolioData.getSection('certificates') || [];
         certs.splice(i, 1);
         PortfolioData.saveSection('certificates', certs);
         renderCertificatesPage();
-        toast('Silindi', 'success');
+        toast('Deleted', 'success');
     };
 
     function openCertModal(c = null, idx = -1) {
         const isE = !!c;
         const html = `
-            <div class="form-group"><label>Başlık</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
-            <div class="form-group"><label>Yayınlayan</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
-            <div class="form-group"><label>Tarih</label><input type="text" id="certDate" value="${isE ? esc(c.date) : ''}"></div>
-            <div class="form-group"><label>Açıklama</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
-            <div class="form-group"><label>İkon (ör: ph-robot)</label><input type="text" id="certIcon" value="${isE ? esc(c.icon) : 'ph-certificate'}"></div>
-            <div class="form-group"><label>Sertifika URL</label><input type="url" id="certCred" value="${isE ? esc(c.credential || '') : ''}"></div>
-            <div class="form-group"><label>Resim URL (isteğe bağlı)</label><input type="url" id="certImage" value="${isE ? esc(c.image || '') : ''}" placeholder="https://... veya assets/cert.jpg"></div>
-            <div class="form-group"><label>Teknolojiler (virgülle)</label><input type="text" id="certTech" value="${isE ? (c.tech || []).join(', ') : ''}"></div>
-            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">İptal</button>
-            <button class="btn btn-primary btn-sm" id="saveCertBtn"><i class="ph ph-check"></i> ${isE ? 'Güncelle' : 'Ekle'}</button></div>`;
-        openModal(isE ? 'Sertifika Düzenle' : 'Yeni Sertifika', html);
+            <div class="form-group"><label>Title</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
+            <div class="form-group"><label>Issuer</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
+            <div class="form-group"><label>Date</label><input type="text" id="certDate" value="${isE ? esc(c.date) : ''}"></div>
+            <div class="form-group"><label>Description</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
+            <div class="form-group"><label>Icon (e.g. ph-robot)</label><input type="text" id="certIcon" value="${isE ? esc(c.icon) : 'ph-certificate'}"></div>
+            <div class="form-group"><label>Credential URL</label><input type="url" id="certCred" value="${isE ? esc(c.credential || '') : ''}"></div>
+            <div class="form-group"><label>Image URL (optional)</label><input type="url" id="certImage" value="${isE ? esc(c.image || '') : ''}" placeholder="https://... or assets/cert.jpg"></div>
+            <div class="form-group"><label>Technologies (comma separated)</label><input type="text" id="certTech" value="${isE ? (c.tech || []).join(', ') : ''}"></div>
+            <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary btn-sm" id="saveCertBtn"><i class="ph ph-check"></i> ${isE ? 'Update' : 'Add'}</button></div>`;
+        openModal(isE ? 'Edit Certificate' : 'New Certificate', html);
         document.getElementById('saveCertBtn').addEventListener('click', () => {
             const certs = PortfolioData.getSection('certificates') || [];
             const obj = {
@@ -685,10 +789,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 image: document.getElementById('certImage').value.trim(),
                 tech: document.getElementById('certTech').value.split(',').map(s => s.trim()).filter(Boolean)
             };
-            if (!obj.title) { toast('Başlık gerekli', 'error'); return; }
+            if (!obj.title) { toast('Title is required', 'error'); return; }
             if (isE && idx >= 0) certs[idx] = obj; else certs.push(obj);
             PortfolioData.saveSection('certificates', certs);
-            closeModal(); renderCertificatesPage(); toast(isE ? 'Güncellendi' : 'Eklendi', 'success');
+            closeModal(); renderCertificatesPage(); toast(isE ? 'Updated' : 'Added', 'success');
         });
     }
 
@@ -697,22 +801,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     function renderContactPage() {
         const c = PortfolioData.getSection('contact');
+        const translations = PortfolioData.getSection('translations') || { tr: { about: {}, contact: {}, hero: {} } };
+        const trContact = translations.tr?.contact || { heading: '', description: '' };
+
         document.getElementById('contactEditor').innerHTML = `
-            <div class="editor-card">
-                <h4><i class="ph ph-envelope"></i> Bilgiler</h4>
-                <div class="form-group"><label>Başlık</label><input type="text" id="cHead" value="${esc(c.heading)}"></div>
-                <div class="form-group"><label>Açıklama</label><textarea id="cDesc" rows="2">${esc(c.description)}</textarea></div>
+            <div class="editor-card" style="display:flex; flex-direction:row; gap: 20px;">
+                <div style="flex:1;">
+                    <h4><i class="ph ph-envelope"></i> Information (EN)</h4>
+                    <div class="form-group"><label>Heading</label><input type="text" id="cHead" value="${esc(c.heading)}"></div>
+                    <div class="form-group"><label>Description</label><textarea id="cDesc" rows="3">${esc(c.description)}</textarea></div>
+                </div>
+                <div style="flex:1; border-left: 4px solid var(--accent-secondary); padding-left: 20px;">
+                    <h4><i class="ph ph-translate"></i> Information (TR)</h4>
+                    <div class="form-group"><label>Heading (TR)</label><input type="text" id="cHeadTr" value="${esc(trContact.heading)}"></div>
+                    <div class="form-group"><label>Description (TR)</label><textarea id="cDescTr" rows="3">${esc(trContact.description)}</textarea></div>
+                </div>
             </div>
             <div class="editor-card">
-                <h4><i class="ph ph-link"></i> Linkler</h4>
+                <h4><i class="ph ph-link"></i> Links</h4>
                 ${c.links.map((l, i) => `<div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:8px">
-                    <div><label>İkon</label><input type="text" class="ci" data-i="${i}" value="${esc(l.icon)}"></div>
-                    <div><label>Etiket</label><input type="text" class="clb" data-i="${i}" value="${esc(l.label)}"></div>
-                    <div><label>Değer</label><input type="text" class="cv" data-i="${i}" value="${esc(l.value)}"></div>
+                    <div><label>Icon</label><input type="text" class="ci" data-i="${i}" value="${esc(l.icon)}"></div>
+                    <div><label>Label</label><input type="text" class="clb" data-i="${i}" value="${esc(l.label)}"></div>
+                    <div><label>Value</label><input type="text" class="cv" data-i="${i}" value="${esc(l.value)}"></div>
                     <div><label>URL</label><input type="text" class="cu" data-i="${i}" value="${esc(l.url)}"></div>
                 </div>`).join('')}
             </div>
-            <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveContactBtn"><i class="ph ph-check"></i> Kaydet</button></div>`;
+            <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveContactBtn"><i class="ph ph-check"></i> Save</button></div>`;
 
         document.getElementById('saveContactBtn').addEventListener('click', () => {
             c.heading = document.getElementById('cHead').value.trim();
@@ -721,23 +835,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: el.value.trim(), label: document.querySelectorAll('.clb')[i].value.trim(),
                 value: document.querySelectorAll('.cv')[i].value.trim(), url: document.querySelectorAll('.cu')[i].value.trim()
             }));
-            PortfolioData.saveSection('contact', c); toast('Kaydedildi', 'success');
+
+            // Save translations
+            if (!translations.tr) translations.tr = {};
+            if (!translations.tr.contact) translations.tr.contact = {};
+            translations.tr.contact.heading = document.getElementById('cHeadTr').value.trim();
+            translations.tr.contact.description = document.getElementById('cDescTr').value.trim();
+
+            PortfolioData.saveSection('contact', c);
+            PortfolioData.saveSection('translations', translations);
+            toast('Saved', 'success');
         });
     }
 
     // =============================
     // 10. Settings
     // =============================
-    document.getElementById('exportBtn').addEventListener('click', () => { PortfolioData.exportToJSON(); toast('Dışa aktarıldı', 'success'); });
+    document.getElementById('exportBtn').addEventListener('click', () => { PortfolioData.exportToJSON(); toast('Exported', 'success'); });
     document.getElementById('importFile').addEventListener('change', async (e) => {
         const f = e.target.files[0]; if (!f) return;
-        try { await PortfolioData.importFromJSON(f); toast('İçe aktarıldı', 'success'); renderCurrentPage(); }
+        try { await PortfolioData.importFromJSON(f); toast('Imported', 'success'); renderCurrentPage(); }
         catch (err) { toast(err.message, 'error'); }
         e.target.value = '';
     });
     document.getElementById('resetBtn').addEventListener('click', () => {
-        if (confirm('Tüm veriler varsayılana sıfırlanacak. Devam?')) {
-            PortfolioData.resetData(); toast('Sıfırlandı', 'success'); renderCurrentPage();
+        if (confirm('All data will be reset to defaults. Continue?')) {
+            PortfolioData.resetData(); toast('Reset', 'success'); renderCurrentPage();
         }
     });
 

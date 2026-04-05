@@ -23,13 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateLangButton() {
         const lang = I18n.getLang();
-        langLabel.textContent = lang === 'tr' ? 'EN' : 'TR';
+        langLabel.textContent = lang === 'en' ? 'TR' : 'EN';
     }
     updateLangButton();
 
     langToggle.addEventListener('click', () => {
         const current = I18n.getLang();
-        const next = current === 'tr' ? 'en' : 'tr';
+        const next = current === 'en' ? 'tr' : 'en';
         I18n.setLang(next);
         updateLangButton();
         I18n.applyToDOM();
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `).join('');
 
-        window._heroRoles = hero.roles;
+        window._heroRoles = heroT?.roles || hero.roles;
     }
 
     function renderAbout(about) {
