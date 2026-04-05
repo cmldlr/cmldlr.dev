@@ -33,7 +33,10 @@ body.show-admin .portfolio-view {
 /* Login overlay — centered, fades in */
 .login-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 500;
     display: flex;
     align-items: center;
@@ -64,19 +67,28 @@ body.show-login .login-overlay .login-card {
 /* Admin panel — slides from right */
 .admin-panel {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 100;
     display: flex;
     transform: translateX(100%);
     opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.4s ease 0.1s;
+        opacity 0.4s ease 0.1s, visibility 0s linear 0.5s;
     background: var(--bg-primary);
 }
 
 body.show-admin .admin-panel {
     transform: translateX(0);
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.4s ease;
 }
 
 /* ========== LOGIN CARD ========== */
@@ -315,14 +327,22 @@ body.show-admin .admin-panel {
 }
 
 @media (max-width: 480px) {
-    .otp-digit {
-        width: 40px;
-        height: 48px;
-        font-size: 1.2rem;
+    .login-overlay {
+        padding: 16px;
     }
-
+    .login-card {
+        padding: 32px 20px;
+    }
+    .otp-digit {
+        width: 34px;
+        height: 44px;
+        font-size: 16px;
+    }
     .otp-input-group {
-        gap: 6px;
+        gap: 4px;
+    }
+    .input-wrapper input {
+        font-size: 16px;
     }
 }
 
@@ -941,7 +961,10 @@ body.show-admin .admin-panel {
 /* ========== MODAL ========== */
 .modal-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     z-index: 2000;
@@ -1118,8 +1141,37 @@ body.show-admin .admin-panel {
     }
 }
 
+/* ========== TRANSLATION GRID ========== */
+.translation-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.translation-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.translation-col-tr {
+    border-left: 4px solid var(--accent-secondary);
+    padding-left: 20px;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
+    .translation-grid {
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .translation-col-tr {
+        border-left: none;
+        padding-left: 0;
+        border-top: 4px dashed var(--accent-secondary);
+        padding-top: 24px;
+    }
+
     .sidebar {
         position: fixed;
         left: 0;

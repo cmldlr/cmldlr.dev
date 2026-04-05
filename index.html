@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Cemil Dalar — Software Engineer</title>
     <meta name="description"
         content="Portfolio of Cemil Dalar — Software Engineer specializing in Full-Stack Development, IoT, and Cloud-Native Architectures.">
@@ -78,41 +78,37 @@
                         data-i18n="nav.certificates">Sertifikalar</a>
                     <a href="#contact" class="nav-link" data-section="contact" data-i18n="nav.contact">İletişim</a>
                 </div>
-                <button class="lang-toggle" id="langToggle" title="TR / EN">
-                    <i class="ph ph-translate"></i>
-                    <span id="langLabel">EN</span>
-                </button>
-                <div class="color-picker-wrapper">
-                    <button class="theme-toggle" id="colorPickerToggle" title="Accent Renk">
-                        <i class="ph ph-palette"></i>
+                <div class="nav-actions" style="display:flex; align-items:center; gap:8px;">
+                    <button class="lang-toggle" id="langToggle" title="TR / EN">
+                        <i class="ph ph-translate"></i>
+                        <span id="langLabel">EN</span>
                     </button>
-                    <div class="color-picker-popup" id="colorPickerPopup">
-                        <span class="color-picker-label">Accent Renk</span>
-                        <div class="color-picker-swatches" id="colorSwatches">
-                            <button class="color-swatch active" data-color="purple" style="--swatch:#6c63ff"
-                                title="Mor"></button>
-                            <button class="color-swatch" data-color="blue" style="--swatch:#3b82f6"
-                                title="Mavi"></button>
-                            <button class="color-swatch" data-color="emerald" style="--swatch:#10b981"
-                                title="Yeşil"></button>
-                            <button class="color-swatch" data-color="rose" style="--swatch:#f43f5e"
-                                title="Kırmızı"></button>
-                            <button class="color-swatch" data-color="amber" style="--swatch:#f59e0b"
-                                title="Turuncu"></button>
-                            <button class="color-swatch" data-color="cyan" style="--swatch:#06b6d4"
-                                title="Cyan"></button>
-                        </div>
-                        <div class="color-picker-custom">
-                            <label for="customColorInput">Özel:</label>
-                            <input type="color" id="customColorInput" value="#6c63ff">
+                    <div class="color-picker-wrapper">
+                        <button class="theme-toggle" id="colorPickerToggle" title="Accent Renk">
+                            <i class="ph ph-palette"></i>
+                        </button>
+                        <div class="color-picker-popup" id="colorPickerPopup">
+                            <span class="color-picker-label">Accent Renk</span>
+                            <div class="color-picker-swatches" id="colorSwatches">
+                                <button class="color-swatch active" data-color="purple" style="--swatch:#6c63ff" title="Mor"></button>
+                                <button class="color-swatch" data-color="blue" style="--swatch:#3b82f6" title="Mavi"></button>
+                                <button class="color-swatch" data-color="emerald" style="--swatch:#10b981" title="Yeşil"></button>
+                                <button class="color-swatch" data-color="rose" style="--swatch:#f43f5e" title="Kırmızı"></button>
+                                <button class="color-swatch" data-color="amber" style="--swatch:#f59e0b" title="Turuncu"></button>
+                                <button class="color-swatch" data-color="cyan" style="--swatch:#06b6d4" title="Cyan"></button>
+                            </div>
+                            <div class="color-picker-custom">
+                                <label for="customColorInput">Özel:</label>
+                                <input type="color" id="customColorInput" value="#6c63ff">
+                            </div>
                         </div>
                     </div>
+                    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
-                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
             </div>
         </nav>
 

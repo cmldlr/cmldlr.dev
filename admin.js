@@ -564,8 +564,8 @@ document.addEventListener('DOMContentLoaded', () => {
         while (trAbout.details.length < about.details.length) trAbout.details.push({label:'', value:''});
 
         document.getElementById('aboutEditor').innerHTML = `
-            <div class="editor-card" style="display:flex; flex-direction:row; gap: 20px;">
-                <div style="flex:1;" id="aboutEnParas">
+            <div class="editor-card translation-grid">
+                <div class="translation-col" id="aboutEnParas">
                     <h4><i class="ph ph-text-align-left"></i> Paragraphs (English / Default)</h4>
                     ${about.paragraphs.map((p, i) => `
                     <div class="form-group" style="position:relative;">
@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`).join('')}
                     <button class="btn btn-outline btn-sm" id="addParaBtn"><i class="ph ph-plus"></i> Add</button>
                 </div>
-                <div style="flex:1; border-left: 4px solid var(--accent-secondary); padding-left: 20px;" id="aboutTrParas">
+                <div class="translation-col translation-col-tr" id="aboutTrParas">
                     <h4><i class="ph ph-translate"></i> Paragraphs (Turkish Translation)</h4>
                     ${trAbout.paragraphs.map((p, i) => `
                     <div class="form-group">
@@ -671,8 +671,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const trHero = translations.tr?.hero || { greeting: '', description: '', badge: '' };
 
         document.getElementById('heroEditor').innerHTML = `
-            <div class="editor-card" style="display:flex; flex-direction:row; gap: 20px;">
-                <div style="flex:1;">
+            <div class="editor-card translation-grid">
+                <div class="translation-col">
                     <h4><i class="ph ph-star"></i> Content (English / Default)</h4>
                     <div class="form-group"><label>Greeting</label><input type="text" id="hGreet" value="${esc(hero.greeting)}"></div>
                     <div class="form-group"><label>Name</label><input type="text" id="hName" value="${esc(hero.name)}"></div>
@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="form-group"><label>Roles (one per line)</label><textarea id="hRoles" rows="4">${hero.roles.join('\n')}</textarea></div>
                     <div class="form-group"><label>CV URL (leave empty to hide button)</label><input type="url" id="hCvUrl" value="${esc(hero.cvUrl || '')}"></div>
                 </div>
-                <div style="flex:1; border-left: 4px solid var(--accent-secondary); padding-left: 20px;">
+                <div class="translation-col translation-col-tr">
                     <h4><i class="ph ph-translate"></i> Content (Turkish Translation)</h4>
                     <div class="form-group"><label>Greeting (TR)</label><input type="text" id="hGreetTr" value="${esc(trHero.greeting)}"></div>
                     <div class="form-group"><label>Name (TR) - Usually same</label><input type="text" disabled value="${esc(hero.name)}" style="opacity:0.5; background:var(--bg-secondary);"></div>
@@ -805,13 +805,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const trContact = translations.tr?.contact || { heading: '', description: '' };
 
         document.getElementById('contactEditor').innerHTML = `
-            <div class="editor-card" style="display:flex; flex-direction:row; gap: 20px;">
-                <div style="flex:1;">
+            <div class="editor-card translation-grid">
+                <div class="translation-col">
                     <h4><i class="ph ph-envelope"></i> Information (EN)</h4>
                     <div class="form-group"><label>Heading</label><input type="text" id="cHead" value="${esc(c.heading)}"></div>
                     <div class="form-group"><label>Description</label><textarea id="cDesc" rows="3">${esc(c.description)}</textarea></div>
                 </div>
-                <div style="flex:1; border-left: 4px solid var(--accent-secondary); padding-left: 20px;">
+                <div class="translation-col translation-col-tr">
                     <h4><i class="ph ph-translate"></i> Information (TR)</h4>
                     <div class="form-group"><label>Heading (TR)</label><input type="text" id="cHeadTr" value="${esc(trContact.heading)}"></div>
                     <div class="form-group"><label>Description (TR)</label><textarea id="cDescTr" rows="3">${esc(trContact.description)}</textarea></div>
