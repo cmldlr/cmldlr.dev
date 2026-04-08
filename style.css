@@ -1442,6 +1442,33 @@ button {
     background: var(--accent-glow);
 }
 
+.github-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    background: var(--bg-glass);
+}
+
+.github-view-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    background: var(--accent-glow);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.15);
+}
+
+.github-view-btn i {
+    font-size: 1.1rem;
+}
+
 .project-title {
     font-size: 1.15rem;
     font-weight: 700;

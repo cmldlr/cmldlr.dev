@@ -1,18 +1,12 @@
-/**
- * Portfolio Data Layer
- * Merkezi veri yönetimi — Supabase + localStorage cache + varsayılan veriler
- */
+
 
 const PortfolioData = (() => {
     const STORAGE_KEY = 'portfolio_data';
 
-    // Supabase Public Config (anon key is safe to expose — RLS protects data)
     const SUPABASE_URL = 'https://mliabmuhvgsxvtywpfrt.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1saWFibXVodmdzeHZ0eXdwZnJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NzY2MjgsImV4cCI6MjA5MTI1MjYyOH0.ZKJQ_PD-YjViHEQmGYF2py2Wjak-wP6tRR61Jx0y1NE';
 
-    // =============================
-    // Varsayılan Veriler (Fallback)
-    // =============================
+
     const DEFAULTS = {
         hero: {
             greeting: 'Hi, I\'m',
@@ -90,7 +84,7 @@ const PortfolioData = (() => {
             links: [
                 { icon: 'ph-github-logo', label: 'GitHub', value: '@cmldlr', url: 'https://github.com/cmldlr' },
                 { icon: 'ph-linkedin-logo', label: 'LinkedIn', value: '@cmldlr', url: 'https://linkedin.com/in/cmldlr' },
-                { icon: 'ph-envelope', label: 'E-posta', value: 'contact@cmldlr.dev', url: 'mailto:contact@cmldlr.dev' }
+                { icon: 'ph-envelope', label: 'Email', value: 'contact@cmldlr.dev', url: 'mailto:contact@cmldlr.dev' }
             ]
         },
         translations: {
@@ -102,15 +96,11 @@ const PortfolioData = (() => {
         }
     };
 
-    // =============================
-    // In-Memory Cache
-    // =============================
+
     let _cache = null;
     let _initialized = false;
 
-    // =============================
-    // Supabase REST API Helpers
-    // =============================
+
     function supabaseHeaders() {
         return {
             'apikey': SUPABASE_ANON_KEY,
@@ -119,9 +109,7 @@ const PortfolioData = (() => {
         };
     }
 
-    // =============================
-    // Init: Fetch from Supabase on page load
-    // =============================
+
     async function init() {
         try {
             const resp = await fetch(
@@ -140,14 +128,10 @@ const PortfolioData = (() => {
                 });
                 _cache = deepMerge(structuredClone(DEFAULTS), data);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(_cache));
-                console.log('✅ Portfolio data loaded from Supabase');
             } else {
-                console.warn('⚠️ Supabase returned empty, using defaults');
                 _cache = structuredClone(DEFAULTS);
             }
         } catch (err) {
-            console.warn('⚠️ Supabase fetch failed, using localStorage/defaults:', err.message);
-            // Fallback: try localStorage, then defaults
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
@@ -162,9 +146,7 @@ const PortfolioData = (() => {
         _initialized = true;
     }
 
-    // =============================
-    // Storage Functions
-    // =============================
+
 
     function getData() {
         if (_cache) return structuredClone(_cache);
@@ -174,9 +156,7 @@ const PortfolioData = (() => {
                 const parsed = JSON.parse(stored);
                 return deepMerge(structuredClone(DEFAULTS), parsed);
             }
-        } catch (e) {
-            console.warn('Portfolio data read error:', e);
-        }
+        } catch (e) { /* silent */ }
         return structuredClone(DEFAULTS);
     }
 
@@ -186,7 +166,6 @@ const PortfolioData = (() => {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             return true;
         } catch (e) {
-            console.error('Portfolio data save error:', e);
             return false;
         }
     }
@@ -207,15 +186,12 @@ const PortfolioData = (() => {
         data[section] = value;
         saveData(data);
 
-        // Sync to Supabase in background via Netlify Function
         syncToSupabase(section, value);
 
         return true;
     }
 
-    // =============================
-    // Supabase Sync (Background)
-    // =============================
+
     async function syncToSupabase(section, value) {
         try {
             const resp = await fetch('/.netlify/functions/save-content', {
@@ -223,20 +199,11 @@ const PortfolioData = (() => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ section, data: value })
             });
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                console.error('❌ Supabase sync failed:', err.error || resp.status);
-            } else {
-                console.log(`✅ Synced "${section}" to Supabase`);
-            }
-        } catch (err) {
-            console.error('❌ Supabase sync error:', err.message);
-        }
+            if (!resp.ok) { /* silent */ }
+        } catch (err) { /* silent */ }
     }
 
-    // =============================
-    // Image Upload (Supabase Storage)
-    // =============================
+
     async function uploadImage(base64Data, filename) {
         try {
             const resp = await fetch('/.netlify/functions/upload-image', {
@@ -247,17 +214,13 @@ const PortfolioData = (() => {
 
             if (!resp.ok) throw new Error('Upload failed');
             const result = await resp.json();
-            return result.url; // Public URL from Supabase Storage
+            return result.url;
         } catch (err) {
-            console.error('❌ Image upload error:', err.message);
-            // Fallback: return base64 if upload fails
             return base64Data;
         }
     }
 
-    // =============================
-    // Export / Import
-    // =============================
+
 
     function exportToJSON() {
         const data = getData();
@@ -279,27 +242,25 @@ const PortfolioData = (() => {
                     if (data && typeof data === 'object' && data.projects) {
                         saveData(data);
 
-                        // Sync all sections to Supabase
+
                         Object.keys(data).forEach(section => {
                             syncToSupabase(section, data[section]);
                         });
 
                         resolve(data);
                     } else {
-                        reject(new Error('Geçersiz veri formatı'));
+                        reject(new Error('Invalid data format'));
                     }
                 } catch (err) {
-                    reject(new Error('JSON parse hatası: ' + err.message));
+                    reject(new Error('JSON parse error: ' + err.message));
                 }
             };
-            reader.onerror = () => reject(new Error('Dosya okunamadı'));
+            reader.onerror = () => reject(new Error('File read error'));
             reader.readAsText(file);
         });
     }
 
-    // =============================
-    // Project Helpers
-    // =============================
+
 
     function getVisibleProjects() {
         const data = getData();
@@ -368,9 +329,7 @@ const PortfolioData = (() => {
         return data;
     }
 
-    // =============================
-    // Certificate Helpers
-    // =============================
+
 
     function addCertificate(cert) {
         const data = getData();
@@ -410,9 +369,7 @@ const PortfolioData = (() => {
         return data;
     }
 
-    // =============================
-    // Utility
-    // =============================
+
 
     function deepMerge(target, source) {
         for (const key in source) {
@@ -430,9 +387,7 @@ const PortfolioData = (() => {
         return structuredClone(DEFAULTS);
     }
 
-    // =============================
-    // Public API
-    // =============================
+
     return {
         init,
         getData,

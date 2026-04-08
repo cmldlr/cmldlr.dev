@@ -63,7 +63,7 @@ exports.handler = async (event, context) => {
             })
         };
     } catch (error) {
-        console.error('Error verifying OTP:', error);
+
         return { 
             statusCode: 500, 
             headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },

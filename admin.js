@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sendError.textContent = err.message;
         } finally {
             sendOtpBtn.disabled = false;
-            sendOtpBtn.querySelector('span').textContent = 'Doğrulama Kodu Gönder';
+            sendOtpBtn.querySelector('span').textContent = 'Send Verification Code';
         }
     });
 
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openModal('GitHub Repositories', '<p style="color:var(--text-secondary);text-align:center;padding:20px"><i class="ph ph-spinner" style="animation:spin 1s linear infinite;display:inline-block"></i> Loading...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
         try {
             const resp = await fetch('https://api.github.com/users/cmldlr/repos?sort=updated&per_page=50');
-            if (!resp.ok) throw new Error('GitHub API hatası');
+            if (!resp.ok) throw new Error('GitHub API error');
             const repos = await resp.json();
             const data = PortfolioData.getData();
             const existingUrls = data.projects.filter(p => p.fromGithub).map(p => p.github);
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const file = files[i];
                 if (!file.type.startsWith('image/')) continue;
                 try {
-                    uploadZone.querySelector('span').textContent = 'Yükleniyor...';
+                    uploadZone.querySelector('span').textContent = 'Uploading...';
                     const b64 = await compressImage(file, 800, 0.7);
                     // Upload to Supabase Storage, get public URL
                     const imageUrl = await PortfolioData.uploadImage(b64, file.name);
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     toast('Error processing image', 'error');
                 }
             }
-            uploadZone.querySelector('span').textContent = 'Tıklayın veya resimleri buraya sürükleyin';
+            uploadZone.querySelector('span').textContent = 'Click or drag images here';
             renderThumbnails();
         }
 

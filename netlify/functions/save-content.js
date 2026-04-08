@@ -96,7 +96,7 @@ exports.handler = async (event) => {
 
         if (!saveResp.ok) {
             const errText = await saveResp.text();
-            console.error('Supabase save error:', errText);
+
             return {
                 statusCode: 500,
                 headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
@@ -104,7 +104,7 @@ exports.handler = async (event) => {
             };
         }
 
-        console.log(`✅ Saved section "${section}" to Supabase`);
+
 
         return {
             statusCode: 200,
@@ -112,7 +112,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ success: true, section })
         };
     } catch (error) {
-        console.error('Error saving content:', error);
+
         return {
             statusCode: 500,
             headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },

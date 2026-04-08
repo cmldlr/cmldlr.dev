@@ -273,8 +273,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             ${images.map(img => `<img src="${img}" alt="${esc(p.title)}" loading="lazy">`).join('')}
                         </div>
                         ${images.length > 1 ? `
-                        <button class="carousel-nav prev" title="Önceki"><i class="ph ph-caret-left"></i></button>
-                        <button class="carousel-nav next" title="Sonraki"><i class="ph ph-caret-right"></i></button>
+                        <button class="carousel-nav prev" title="Previous"><i class="ph ph-caret-left"></i></button>
+                        <button class="carousel-nav next" title="Next"><i class="ph ph-caret-right"></i></button>
                         <div class="carousel-dots">
                             ${images.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`).join('')}
                         </div>
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <h3 class="project-title">${esc(p.title)}</h3>
                     <p class="project-desc">${esc(p.description)}</p>
                     <div class="project-tech">${p.tech.map(t => `<span>${esc(t)}</span>`).join('')}</div>
-                    ${images.length > 0 && p.github ? `<div style="margin-top:16px"><a href="${esc(p.github)}" target="_blank" rel="noopener" class="project-link" style="display:inline-flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text-secondary);text-decoration:none;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'"><i class="ph ph-github-logo"></i> GitHub'da Görüntüle</a></div>` : ''}
+                    ${images.length > 0 && p.github ? `<div style="margin-top:16px"><a href="${esc(p.github)}" target="_blank" rel="noopener" class="github-view-btn"><i class="ph ph-github-logo"></i> View on GitHub</a></div>` : ''}
                 </div>
             </div>
             `;
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const grid = document.getElementById('certificatesGrid');
         if (!grid) return;
         if (!certificates || certificates.length === 0) {
-            grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">Henüz sertifika eklenmedi.</p>';
+            grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">No certificates added yet.</p>';
             return;
         }
         grid.innerHTML = certificates.map(c => `
@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p class="cert-desc">${esc(c.description)}</p>
                     <div class="cert-tech">${(c.tech || []).map(t => `<span>${esc(t)}</span>`).join('')}</div>
                 </div>
-                ${c.credential ? `<a href="${esc(c.credential)}" target="_blank" rel="noopener" class="cert-link"><i class="ph ph-arrow-up-right"></i> Görüntüle</a>` : ''}
+                ${c.credential ? `<a href="${esc(c.credential)}" target="_blank" rel="noopener" class="cert-link"><i class="ph ph-arrow-up-right"></i> View</a>` : ''}
             </div>
         `).join('');
     }
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderContribGraph(data);
         } catch (e) {
             const graph = document.getElementById('contribGraph');
-            graph.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;width:100%">Katkı verileri yüklenemedi.</p>';
+            graph.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;width:100%">Failed to load contribution data.</p>';
         }
     }
 

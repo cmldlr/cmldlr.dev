@@ -69,7 +69,7 @@ exports.handler = async (event) => {
 
         if (!uploadResp.ok) {
             const errText = await uploadResp.text();
-            console.error('Supabase Storage upload error:', errText);
+
             return {
                 statusCode: 500,
                 headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
@@ -80,7 +80,7 @@ exports.handler = async (event) => {
         // Public URL oluştur
         const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${filePath}`;
 
-        console.log(`✅ Image uploaded: ${filePath}`);
+
 
         return {
             statusCode: 200,
@@ -88,7 +88,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ success: true, url: publicUrl })
         };
     } catch (error) {
-        console.error('Error uploading image:', error);
+
         return {
             statusCode: 500,
             headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },

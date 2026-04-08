@@ -31,21 +31,19 @@ exports.handler = async (event, context) => {
             otp_code += crypto.randomInt(0, 10).toString();
         }
 
-        console.log(`[Backend API] Yeni OTP Oluşturuldu.`); // Bilinçli olarak loga şifreyi basmıyoruz.
 
         const DEMO_MODE = process.env.DEMO_MODE === 'true'; 
 
         if (DEMO_MODE) {
-            console.log(`[DEMO_MODE AKTIF] E-posta gönderilmedi. Test şifresi: 000000 olarak sabitlendi.`);
             otp_code = "000000";
         } else {
-            // EmailJS yapılandırması
+
             emailjs.init({
                 publicKey: process.env.EMAILJS_PUBLIC_KEY,
                 privateKey: process.env.EMAILJS_PRIVATE_KEY || undefined,
             });
 
-            // Gerçek email gönderimi
+
             await emailjs.send(
                 process.env.EMAILJS_SERVICE_ID,
                 process.env.EMAILJS_TEMPLATE_ID,
@@ -57,8 +55,6 @@ exports.handler = async (event, context) => {
             );
         }
 
-        // Güvenlik Hash'inin oluşturulması
-        // Şifreyi açıkça browser'a dönmeyiz. HMAC hash ile geri göndeririz.
         const expiresAtMs = Date.now() + (5 * 60 * 1000); // 5 dakika geçerlilik
         const secret = process.env.OTP_SECRET || 'default-secret-do-not-use-in-production';
         const hash = crypto.createHmac('sha256', secret).update(email + otp_code + expiresAtMs).digest('hex');
@@ -78,7 +74,7 @@ exports.handler = async (event, context) => {
             })
         };
     } catch (error) {
-        console.error('Error sending OTP:', error);
+
         return { 
             statusCode: 500, 
             headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
