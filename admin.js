@@ -440,7 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     uploadZone.querySelector('span').textContent = 'Yükleniyor...';
                     const b64 = await compressImage(file, 800, 0.7);
-                    uploadedImages.push(b64);
+                    // Upload to Supabase Storage, get public URL
+                    const imageUrl = await PortfolioData.uploadImage(b64, file.name);
+                    uploadedImages.push(imageUrl);
                 } catch (err) {
                     toast('Error processing image', 'error');
                 }

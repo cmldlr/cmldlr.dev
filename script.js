@@ -3,7 +3,7 @@
  * Data-driven rendering + interactions + admin access
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // =============================
     // 0. Preloader
     // =============================
@@ -146,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =============================
     // 1. Initial Render
     // =============================
+    await PortfolioData.init(); // Fetch from Supabase (falls back to localStorage/defaults)
     I18n.applyToDOM();
     renderAll();
 
