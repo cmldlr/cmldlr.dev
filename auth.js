@@ -1,41 +1,20 @@
 /**
  * Portfolio Authentication Module
- * Email OTP doğrulama — EmailJS ile
+ * Email OTP doğrulama — Netlify Functions üzerinden
  */
 
 const PortfolioAuth = (() => {
     const SESSION_KEY = 'portfolio_session';
     const ADMIN_EMAIL = 'me@cmldlr.dev';
 
-    // ============ DEMO MODE ============
-    // true = EmailJS olmadan çalışır, kod konsola yazılır, '000000' ile giriş yapılabilir
-    // Yayına alırken false yap!
-    const DEMO_MODE = false;
-
-    // ============ EmailJS Config ============
-    // Artık backend (server.js) üzerinden '.env' dosyasından okunuyor.
-
     // ============ OTP State ============
-    let currentOTP = null;
+    let currentHash = null;
+    let expiresAtMs = null;
     let otpExpiry = null;
-    const OTP_LENGTH = 6;
-    const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 dakika
     const COOLDOWN_MS = 60 * 1000;       // 1 dk tekrar gönderim bekleme
     let lastSentAt = 0;
-    
-    let backendDemoMode = false; // Sunucudan gelen demo modunu takip eden state
 
-    // 6 haneli rastgele kod üret
-    function generateOTP() {
-        const digits = '0123456789';
-        let otp = '';
-        const arr = new Uint32Array(OTP_LENGTH);
-        crypto.getRandomValues(arr);
-        for (let i = 0; i < OTP_LENGTH; i++) {
-            otp += digits[arr[i] % 10];
-        }
-        return otp;
-    }
+    let backendDemoMode = false; // Backend demo veriyorsa
 
     // Masked email göster
     function getMaskedEmail() {
@@ -62,7 +41,7 @@ const PortfolioAuth = (() => {
         return Math.max(0, Math.ceil((otpExpiry - Date.now()) / 1000));
     }
 
-    // EmailJS ile OTP gönder
+    // Netlify API ile OTP gönder
     async function sendOTP() {
         // Cooldown kontrolü
         const cooldown = getCooldownRemaining();
@@ -70,78 +49,83 @@ const PortfolioAuth = (() => {
             throw new Error(`Lütfen ${cooldown} saniye bekleyin.`);
         }
 
-        // OTP oluştur
-        currentOTP = generateOTP();
-        otpExpiry = Date.now() + OTP_EXPIRY_MS;
         lastSentAt = Date.now();
 
-        // Demo mode: EmailJS atla, konsola yaz
-        if (DEMO_MODE) {
-            console.log(`🔑 DEMO OTP Kodu: ${currentOTP}`);
-            console.log(`💡 Veya "000000" girerek giriş yapabilirsiniz.`);
-            // return true; (Devre Dışı Bırakıldı - Email yollaması istendi)
-        }
-
-        // Sunucu (backend) üzerinden gönder
         try {
-            const response = await fetch('http://localhost:3000/api/send-otp', {
+            const response = await fetch('/.netlify/functions/send-otp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: ADMIN_EMAIL,
-                    otp_code: currentOTP
+                    email: ADMIN_EMAIL
                 })
             });
 
             if (!response.ok) {
+                lastSentAt = 0;
                 throw new Error('Sunucu hatası. API başarısız yanıt verdi.');
             }
             
             const data = await response.json();
+            
+            currentHash = data.hash;
+            expiresAtMs = data.expiresAtMs;
+            otpExpiry = expiresAtMs;
+
             if (data.isDemo) {
                 backendDemoMode = true;
-                console.log('💡 Backend Demo modunda: "000000" girerek giriş yapabilirsiniz.');
+                console.log('💡 Backend Demo modunda: (Bu mesajı görürseniz şifre olarak "000000" geçerlidir).');
             } else {
                 backendDemoMode = false;
             }
             
             return true;
         } catch (err) {
-            currentOTP = null;
+            currentHash = null;
+            expiresAtMs = null;
             otpExpiry = null;
+            lastSentAt = 0;
             console.error('Server OTP error:', err);
-            throw new Error('Kod gönderilemedi. Lütfen arka plan sunucusunun çalıştığından emin olun.');
+            throw new Error('Kod gönderilemedi. Lütfen sunucu bağlantısını kontrol edin.');
         }
     }
 
-    // OTP doğrula
-    function verifyOTP(code) {
+    // Netlify API ile OTP doğrula
+    async function verifyOTP(code) {
         if (!code) return false;
+        if (!currentHash || !expiresAtMs) throw new Error('Oturum zaman aşımına uğradı, tekrar kod isteyin.');
 
-        // Demo mode: 000000 her zaman geçerli
-        if ((DEMO_MODE || backendDemoMode) && code.trim() === '000000') {
-            sessionStorage.setItem(SESSION_KEY, 'authenticated');
-            currentOTP = null;
-            otpExpiry = null;
-            backendDemoMode = false; // Reset
-            return true;
-        }
+        try {
+            const response = await fetch('/.netlify/functions/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: ADMIN_EMAIL,
+                    code: code.trim(),
+                    hash: currentHash,
+                    expiresAtMs: expiresAtMs
+                })
+            });
 
-        if (!currentOTP) return false;
-        if (isOTPExpired()) {
-            currentOTP = null;
-            otpExpiry = null;
-            return false;
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                sessionStorage.setItem(SESSION_KEY, 'authenticated');
+                currentHash = null;
+                expiresAtMs = null;
+                otpExpiry = null;
+                backendDemoMode = false;
+                return true;
+            } else {
+                throw new Error(data.error || 'Doğrulama başarısız.');
+            }
+        } catch(err) {
+            console.error('Doğrulama hatası:', err.message);
+            throw err;
         }
-        if (code.trim() === currentOTP) {
-            sessionStorage.setItem(SESSION_KEY, 'authenticated');
-            currentOTP = null;
-            otpExpiry = null;
-            return true;
-        }
-        return false;
     }
 
     // Oturum kontrolü
@@ -152,14 +136,14 @@ const PortfolioAuth = (() => {
     // Çıkış
     function logout() {
         sessionStorage.removeItem(SESSION_KEY);
-        currentOTP = null;
+        currentHash = null;
+        expiresAtMs = null;
         otpExpiry = null;
     }
 
     return {
         ADMIN_EMAIL,
         getMaskedEmail,
-        generateOTP,
         sendOTP,
         verifyOTP,
         isOTPExpired,

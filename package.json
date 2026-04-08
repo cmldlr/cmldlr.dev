@@ -1,26 +1,27 @@
 {
   "name": "cmldlr.dev",
   "version": "1.0.0",
-  "description": "",
+  "description": "Personal portfolio website",
   "main": "admin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx netlify dev"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cmldlr/cmldlr.dev.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Cemil Dalar",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/cmldlr/cmldlr.dev/issues"
   },
   "homepage": "https://github.com/cmldlr/cmldlr.dev#readme",
   "dependencies": {
-    "@emailjs/nodejs": "^5.0.2",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "@emailjs/nodejs": "^5.0.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^24.10.0"
   }
 }

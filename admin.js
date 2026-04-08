@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Submit OTP
-    verifyOtpForm.addEventListener('submit', (e) => {
+    verifyOtpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         verifyError.textContent = '';
         const code = getOtpValue();
@@ -153,12 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const success = PortfolioAuth.verifyOTP(code);
-        if (success) {
-            showAdmin();
-            toast('Login successful', 'success');
-        } else {
-            verifyError.textContent = 'Invalid code. Try again.';
+        try {
+            const success = await PortfolioAuth.verifyOTP(code);
+            if (success) {
+                showAdmin();
+                toast('Login successful', 'success');
+            }
+        } catch (err) {
+            verifyError.textContent = err.message || 'Invalid code. Try again.';
             otpDigits.forEach(d => d.value = '');
             otpDigits[0].focus();
         }
