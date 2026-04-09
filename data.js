@@ -3,10 +3,6 @@
 const PortfolioData = (() => {
     const STORAGE_KEY = 'portfolio_data';
 
-    const SUPABASE_URL = 'https://mliabmuhvgsxvtywpfrt.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1saWFibXVodmdzeHZ0eXdwZnJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NzY2MjgsImV4cCI6MjA5MTI1MjYyOH0.ZKJQ_PD-YjViHEQmGYF2py2Wjak-wP6tRR61Jx0y1NE';
-
-
     const DEFAULTS = {
         hero: {
             greeting: 'Hi, I\'m',
@@ -104,25 +100,14 @@ const PortfolioData = (() => {
     let _initialized = false;
 
 
-    function supabaseHeaders() {
-        return {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-            'Content-Type': 'application/json'
-        };
-    }
-
-
     async function init() {
         try {
-            const resp = await fetch(
-                `${SUPABASE_URL}/rest/v1/site_content?select=id,data`,
-                { headers: supabaseHeaders() }
-            );
+            const resp = await fetch('/.netlify/functions/get-content');
 
-            if (!resp.ok) throw new Error(`Supabase HTTP ${resp.status}`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-            const rows = await resp.json();
+            const result = await resp.json();
+            const rows = result.rows;
 
             if (rows && rows.length > 0) {
                 const data = {};
@@ -135,6 +120,7 @@ const PortfolioData = (() => {
                 _cache = structuredClone(DEFAULTS);
             }
         } catch (err) {
+            // Fallback: localStorage → defaults
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
