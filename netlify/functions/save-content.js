@@ -26,7 +26,7 @@ exports.handler = async (event) => {
             };
         }
 
-        // Güvenlik: sadece izin verilen section'lar
+        // Security: only allow permitted sections
         const ALLOWED_SECTIONS = ['hero', 'about', 'skills', 'projects', 'certificates', 'contact', 'translations'];
         if (!ALLOWED_SECTIONS.includes(section)) {
             return {
@@ -47,7 +47,7 @@ exports.handler = async (event) => {
             };
         }
 
-        // Upsert: varsa güncelle, yoksa oluştur
+        // Upsert: update if exists, create if not
         const resp = await fetch(
             `${SUPABASE_URL}/rest/v1/site_content?id=eq.${section}`,
             {

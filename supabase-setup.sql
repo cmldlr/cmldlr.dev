@@ -215,7 +215,7 @@ INSERT INTO site_content (id, data) VALUES
     "links": [
         {"icon": "ph-github-logo", "label": "GitHub", "value": "@cmldlr", "url": "https://github.com/cmldlr"},
         {"icon": "ph-linkedin-logo", "label": "LinkedIn", "value": "@cmldlr", "url": "https://linkedin.com/in/cmldlr"},
-        {"icon": "ph-envelope", "label": "E-posta", "value": "contact@cmldlr.dev", "url": "mailto:contact@cmldlr.dev"}
+        {"icon": "ph-envelope", "label": "Email", "value": "contact@cmldlr.dev", "url": "mailto:contact@cmldlr.dev"}
     ]
 }'::jsonb),
 

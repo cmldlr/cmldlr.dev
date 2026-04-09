@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Expose for admin panel to call on return
     window.refreshPortfolio = function () {
+        I18n.applyToDOM();
         renderAll();
         // Re-animate counters
         counterAnimated = false;
@@ -215,10 +216,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderAbout(about) {
         // Apply i18n translations
         const aboutT = I18n.getDataTranslation('about');
-        const paragraphs = aboutT?.paragraphs || about.paragraphs;
+        const paragraphs = (aboutT?.paragraphs && aboutT.paragraphs.length > 0) ? aboutT.paragraphs : about.paragraphs;
         const details = about.details.map((d, i) => {
             if (aboutT?.details?.[i]) {
-                return { ...d, label: aboutT.details[i].label, value: aboutT.details[i].value };
+                return {
+                    ...d,
+                    label: aboutT.details[i].label || d.label,
+                    value: aboutT.details[i].value || d.value
+                };
             }
             return d;
         });
@@ -235,21 +240,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderSkills(skills) {
-        document.getElementById('skillsGrid').innerHTML = skills.map(cat => `
+        const trans = I18n.getDataTranslation('skills') || {};
+        document.getElementById('skillsGrid').innerHTML = skills.map(cat => {
+            const trCat = trans[cat.id];
+            const title = (trCat && trCat.title) ? trCat.title : cat.title;
+            return `
             <div class="skill-category">
                 <div class="skill-category-header">
                     <i class="ph ${cat.icon}"></i>
-                    <h3>${esc(cat.title)}</h3>
+                    <h3>${esc(title)}</h3>
                 </div>
                 <div class="skill-tags">
                     ${cat.tags.map(t => `<span class="skill-tag" data-level="${t.level}">${esc(t.name)}</span>`).join('')}
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function renderProjects(projects) {
-        const visible = projects.filter(p => p.visible);
+        const trans = I18n.getDataTranslation('projects') || {};
+        const visible = projects.filter(p => p.visible).map(p => {
+            const trP = trans[p.id];
+            if (trP) {
+                return { ...p, title: trP.title || p.title, description: trP.description || p.description };
+            }
+            return p;
+        });
         const allTags = new Set();
         visible.forEach(p => p.tags.forEach(t => allTags.add(t)));
         const labels = {
@@ -357,7 +374,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             carousel.addEventListener('touchstart', e => {
                 startX = e.changedTouches[0].screenX;
                 isDown = true;
-            }, {passive:true});
+            }, { passive: true });
             carousel.addEventListener('touchend', e => {
                 if (!isDown) return;
                 isDown = false;
@@ -369,7 +386,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     currentIndex = (currentIndex > 0) ? currentIndex - 1 : total - 1;
                     updateCarousel();
                 }
-            }, {passive:true});
+            }, { passive: true });
         });
     }
 
@@ -377,30 +394,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Certificates
     // =============================
     function renderCertificates(certificates) {
+        const trans = I18n.getDataTranslation('certificates') || {};
         const grid = document.getElementById('certificatesGrid');
         if (!grid) return;
         if (!certificates || certificates.length === 0) {
-            grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">No certificates added yet.</p>';
+            grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">' + I18n.t('certificates.empty') + '</p>';
             return;
         }
-        grid.innerHTML = certificates.map(c => `
+        grid.innerHTML = certificates.map(c => {
+            const trC = trans[c.id];
+            const title = (trC && trC.title) ? trC.title : c.title;
+            const issuer = (trC && trC.issuer) ? trC.issuer : c.issuer;
+            const desc = (trC && trC.description) ? trC.description : c.description;
+            return `
             <div class="cert-card${c.image ? ' has-image' : ''}">
                 <div class="cert-card-glow"></div>
-                ${c.image ? `<div class="cert-image"><img src="${esc(c.image)}" alt="${esc(c.title)}" loading="lazy"></div>` : ''}
+                ${c.image ? `<div class="cert-image"><img src="${esc(c.image)}" alt="${esc(title)}" loading="lazy"></div>` : ''}
                 <div class="cert-icon"><i class="ph ${c.icon}"></i></div>
                 <div class="cert-info">
-                    <h3 class="cert-title">${esc(c.title)}</h3>
+                    <h3 class="cert-title">${esc(title)}</h3>
                     <div class="cert-issuer">
                         <i class="ph ph-buildings"></i>
-                        <span>${esc(c.issuer)}</span>
+                        <span>${esc(issuer)}</span>
                     </div>
                     <span class="cert-date"><i class="ph ph-calendar-blank"></i> ${esc(c.date)}</span>
-                    <p class="cert-desc">${esc(c.description)}</p>
+                    <p class="cert-desc">${esc(desc)}</p>
                     <div class="cert-tech">${(c.tech || []).map(t => `<span>${esc(t)}</span>`).join('')}</div>
                 </div>
-                ${c.credential ? `<a href="${esc(c.credential)}" target="_blank" rel="noopener" class="cert-link"><i class="ph ph-arrow-up-right"></i> View</a>` : ''}
+                ${c.credential ? `<a href="${esc(c.credential)}" target="_blank" rel="noopener" class="cert-link"><i class="ph ph-arrow-up-right"></i> ${I18n.t('certificates.view')}</a>` : ''}
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function renderContact(contact) {
@@ -433,7 +457,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderContribGraph(data);
         } catch (e) {
             const graph = document.getElementById('contribGraph');
-            graph.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;width:100%">Failed to load contribution data.</p>';
+            graph.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;width:100%">' + I18n.t('github.error') + '</p>';
         }
     }
 
@@ -891,13 +915,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="snake-container">
                 <div class="snake-header">
                     <div class="snake-title"><span class="logo-bracket">{</span><span style="color:var(--accent-primary)">🐍</span><span class="logo-bracket">}</span> Snake</div>
-                    <div class="snake-score">Skor: <span id="snakeScore">0</span></div>
+                    <div class="snake-score">Score: <span id="snakeScore">0</span></div>
                     <button class="snake-close" id="snakeClose"><i class="ph ph-x"></i></button>
                 </div>
                 <canvas id="snakeCanvas" width="400" height="400"></canvas>
                 <div class="snake-info">
-                    <span>Yön tuşları ile oyna</span>
-                    <span>ESC = Kapat</span>
+                    <span>Play with arrow keys</span>
+                    <span>ESC = Close</span>
                 </div>
             </div>
         `;
@@ -975,10 +999,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 15);
                 ctx.font = '14px "JetBrains Mono", monospace';
                 ctx.fillStyle = accent;
-                ctx.fillText(`Skor: ${score}`, canvas.width / 2, canvas.height / 2 + 15);
+                ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 15);
                 ctx.fillStyle = 'rgba(255,255,255,0.5)';
                 ctx.font = '12px "JetBrains Mono", monospace';
-                ctx.fillText('SPACE = Tekrar Oyna', canvas.width / 2, canvas.height / 2 + 45);
+                ctx.fillText('SPACE = Play Again', canvas.width / 2, canvas.height / 2 + 45);
             }
         }
 
@@ -1148,7 +1172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         overlay.className = 'secret-menu-overlay';
         overlay.innerHTML = `
             <div class="secret-menu">
-                <div class="secret-menu-title">🕹️ Gizli Menü</div>
+                <div class="secret-menu-title">🕹️ Secret Menu</div>
                 <div class="secret-menu-grid">
                     <button class="secret-menu-btn" data-action="snake">
                         <span class="emoji">🐍</span>
@@ -1172,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </button>
                 </div>
                 <button class="secret-menu-close">
-                    <i class="ph ph-x"></i> Kapat
+                    <i class="ph ph-x"></i> Close
                 </button>
             </div>
         `;
@@ -1207,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function launchMatrixRain() {
         const overlay = document.createElement('div');
         overlay.id = 'matrixOverlay';
-        overlay.innerHTML = `<canvas id="matrixCanvas"></canvas><div class="matrix-hint">Kapatmak için dokun</div><button class="snake-close" id="matrixClose" style="position:fixed;top:16px;right:16px;z-index:99999;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.6);color:rgba(255,255,255,0.7);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="ph ph-x"></i></button>`;
+        overlay.innerHTML = `<canvas id="matrixCanvas"></canvas><div class="matrix-hint">Tap to close</div><button class="snake-close" id="matrixClose" style="position:fixed;top:16px;right:16px;z-index:99999;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.6);color:rgba(255,255,255,0.7);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="ph ph-x"></i></button>`;
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
 
@@ -1276,7 +1300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <button class="snake-close" id="pongClose"><i class="ph ph-x"></i></button>
                 </div>
                 <canvas id="pongCanvas" width="500" height="350"></canvas>
-                <div class="snake-info"><span>↑ ↓ ile oyna</span><span>5 sayı = Galibiyet</span></div>
+                <div class="snake-info"><span>↑ ↓ to play</span><span>5 points = Victory</span></div>
             </div>`;
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
@@ -1340,10 +1364,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ctx.fillRect(0, 0, W, H);
                 ctx.fillStyle = '#fff';
                 ctx.font = 'bold 24px "Inter", sans-serif';
-                ctx.fillText(winner === 'player' ? '🎉 Kazandın!' : '😤 Kaybettin!', W / 2, H / 2 - 10);
+                ctx.fillText(winner === 'player' ? '🎉 You Win!' : '😤 You Lose!', W / 2, H / 2 - 10);
                 ctx.font = '12px "JetBrains Mono", monospace';
                 ctx.fillStyle = accent;
-                ctx.fillText('SPACE = Tekrar Oyna', W / 2, H / 2 + 25);
+                ctx.fillText('SPACE = Play Again', W / 2, H / 2 + 25);
             }
         }
 
@@ -1441,7 +1465,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Update info text for mobile
         const snakeInfoEl = overlay.querySelector('.snake-info');
         if (snakeInfoEl && window.innerWidth <= 768) {
-            snakeInfoEl.innerHTML = '<span>Dokunarak oyna</span><span>5 sayı = Galibiyet</span>';
+            snakeInfoEl.innerHTML = '<span>Tap to play</span><span>5 points = Victory</span>';
         }
 
         updatePong();
@@ -1457,11 +1481,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="snake-container">
                 <div class="snake-header">
                     <div class="snake-title"><span class="logo-bracket">{</span><span style="color:var(--accent-primary)">CD</span><span class="logo-bracket">}</span> Flappy</div>
-                    <div class="snake-score">Skor: <span id="flappyScore">0</span></div>
+                    <div class="snake-score">Score: <span id="flappyScore">0</span></div>
                     <button class="snake-close" id="flappyClose"><i class="ph ph-x"></i></button>
                 </div>
                 <canvas id="flappyCanvas" width="400" height="500"></canvas>
-                <div class="snake-info"><span>SPACE / Click = Zıpla</span><span>ESC = Kapat</span></div>
+                <div class="snake-info"><span>SPACE / Click = Jump</span><span>ESC = Close</span></div>
             </div>`;
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
@@ -1564,7 +1588,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!started && !flappyOver) {
                 ctx.fillStyle = 'rgba(255,255,255,0.6)';
                 ctx.font = '14px "JetBrains Mono", monospace';
-                ctx.fillText('SPACE / Click = Başla', W / 2, H / 2 + 60);
+                ctx.fillText('SPACE / Click = Start', W / 2, H / 2 + 60);
             }
             if (flappyOver) {
                 ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -1575,10 +1599,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ctx.fillText('Game Over!', W / 2, H / 2 - 15);
                 ctx.font = '14px "JetBrains Mono", monospace';
                 ctx.fillStyle = accent;
-                ctx.fillText(`Skor: ${score}`, W / 2, H / 2 + 15);
+                ctx.fillText(`Score: ${score}`, W / 2, H / 2 + 15);
                 ctx.fillStyle = 'rgba(255,255,255,0.5)';
                 ctx.font = '12px "JetBrains Mono", monospace';
-                ctx.fillText('SPACE = Tekrar Oyna', W / 2, H / 2 + 45);
+                ctx.fillText('SPACE = Play Again', W / 2, H / 2 + 45);
             }
         }
 

@@ -1,12 +1,5 @@
-/**
- * Admin Panel — Unified Single-Page Logic
- * Handles login, transitions, CRUD, GitHub API
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    // =============================
-    // Elements
-    // =============================
+
     const body = document.body;
     const otpStep1 = document.getElementById('otpStep1');
     const otpStep2 = document.getElementById('otpStep2');
@@ -22,15 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let otpTimerInterval = null;
     let cooldownInterval = null;
 
-    // =============================
-    // 1. View Transitions
-    // =============================
 
-    // Show login overlay (blur portfolio behind)
     window.showLogin = function () {
         body.classList.remove('show-admin');
         body.classList.add('show-login');
-        // Reset to step 1
         otpStep1.style.display = 'block';
         otpStep2.style.display = 'none';
         sendError.textContent = '';
@@ -38,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         otpDigits.forEach(d => d.value = '');
     };
 
-    // Show admin panel (slide from right)
     window.showAdmin = function () {
         body.classList.remove('show-login');
         body.classList.add('show-admin');
@@ -46,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCurrentPage();
     };
 
-    // Back to portfolio
     window.showPortfolio = function () {
         body.classList.remove('show-login');
         body.classList.remove('show-admin');
@@ -61,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cooldownInterval) { clearInterval(cooldownInterval); cooldownInterval = null; }
     }
 
-    // Check if already authenticated — if URL has #admin, go directly
     if (window.location.hash === '#admin') {
         if (PortfolioAuth.isAuthenticated()) {
             showAdmin();
@@ -70,19 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // =============================
-    // 2. OTP Login Flow
-    // =============================
-
-    // Step 1: Send OTP
     sendOtpBtn.addEventListener('click', async () => {
         sendError.textContent = '';
         sendOtpBtn.disabled = true;
-        sendOtpBtn.querySelector('span').textContent = 'Gönderiliyor...';
+        sendOtpBtn.querySelector('span').textContent = 'Sending...';
 
         try {
             await PortfolioAuth.sendOTP();
-            // Move to step 2
             otpStep1.style.display = 'none';
             otpStep2.style.display = 'block';
             otpDigits[0].focus();
@@ -96,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Step 2: OTP digit inputs — auto-advance, paste, backspace
     otpDigits.forEach((input, i) => {
         input.addEventListener('input', (e) => {
             const val = e.target.value.replace(/[^0-9]/g, '');
@@ -104,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val && i < otpDigits.length - 1) {
                 otpDigits[i + 1].focus();
             }
-            // Auto-submit when all filled
             if (getOtpValue().length === 6) {
                 verifyOtpForm.dispatchEvent(new Event('submit'));
             }
@@ -117,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Handle paste
         input.addEventListener('paste', (e) => {
             e.preventDefault();
             const paste = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6);
@@ -137,14 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(otpDigits).map(d => d.value).join('');
     }
 
-    // Submit OTP
     verifyOtpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         verifyError.textContent = '';
         const code = getOtpValue();
 
         if (code.length !== 6) {
-            verifyError.textContent = 'Lütfen 6 haneli kodu girin.';
+            verifyError.textContent = 'Please enter the 6-digit code.';
             return;
         }
 
@@ -166,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Resend OTP
     resendOtpBtn.addEventListener('click', async () => {
         if (PortfolioAuth.getCooldownRemaining() > 0) return;
         verifyError.textContent = '';
@@ -184,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // OTP expiry countdown timer (5 min)
     function startOtpTimer() {
         if (otpTimerInterval) clearInterval(otpTimerInterval);
         otpTimerInterval = setInterval(() => {
@@ -200,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // Resend cooldown timer (60s)
     function startCooldownTimer() {
         resendOtpBtn.disabled = true;
         if (cooldownInterval) clearInterval(cooldownInterval);
@@ -215,23 +187,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // Login back button
     document.getElementById('loginBackBtn').addEventListener('click', () => showPortfolio());
 
-    // Admin back button (sidebar logo)
     document.getElementById('adminBackBtn').addEventListener('click', () => showPortfolio());
 
-    // Preview button
     document.getElementById('previewBtn').addEventListener('click', () => showPortfolio());
 
-    // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
         PortfolioAuth.logout();
         showPortfolio();
         toast('Logged out', 'success');
     });
 
-    // Escape key closes login
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             if (body.classList.contains('show-login')) {
@@ -240,9 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // =============================
-    // 3. Sidebar Navigation
-    // =============================
     const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
     const topbarTitle = document.getElementById('topbarTitle');
     const pageTitles = {
@@ -280,9 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // =============================
-    // 4. Projects Page
-    // =============================
     function renderProjectsPage() {
         const data = PortfolioData.getData();
         const list = document.getElementById('projectsList');
@@ -383,10 +344,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openProjectModal(p = null) {
         const isEdit = !!p;
+        const translations = PortfolioData.getSection('translations') || { tr: {} };
+        if (!translations.tr.projects) translations.tr.projects = {};
+        const trData = (isEdit && p.id && translations.tr.projects[p.id]) ? translations.tr.projects[p.id] : { title: '', description: '' };
         const currentImages = (isEdit && p.images && Array.isArray(p.images)) ? [...p.images] : [];
         const html = `
-            <div class="form-group"><label>Title</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
-            <div class="form-group"><label>Description</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
+            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
+                <div class="translation-col">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;"><i class="ph ph-folder"></i> Content (EN)</h4>
+                    <div class="form-group"><label>Title</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
+                    <div class="form-group"><label>Description</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
+                </div>
+                <div class="translation-col translation-col-tr">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;"><i class="ph ph-translate"></i> Content (TR)</h4>
+                    <div class="form-group"><label>Title (TR)</label><input type="text" id="projTitleTr" value="${esc(trData.title)}"></div>
+                    <div class="form-group"><label>Description (TR)</label><textarea id="projDescTr" rows="3">${esc(trData.description)}</textarea></div>
+                </div>
+            </div>
             <div class="form-group"><label>Icon (e.g. ph-factory)</label><input type="text" id="projIcon" value="${isEdit ? esc(p.icon) : 'ph-folder'}"></div>
             <div class="form-group"><label>GitHub URL</label><input type="url" id="projGithub" value="${isEdit ? esc(p.github) : ''}"></div>
             <div class="form-group"><label>Technologies (comma separated)</label><input type="text" id="projTech" value="${isEdit ? p.tech.join(', ') : ''}"></div>
@@ -409,8 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="btn btn-primary btn-sm" id="saveProjectBtn"><i class="ph ph-check"></i> ${isEdit ? 'Update' : 'Add'}</button>
             </div>`;
         openModal(isEdit ? 'Edit Project' : 'New Project', html);
-        
-        // Image Upload Logic
+
         let uploadedImages = [...currentImages];
         const previewGrid = document.getElementById('imagePreviewGrid');
         const uploadZone = document.getElementById('imageUploadZone');
@@ -432,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
-        
+
         async function processFiles(files) {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
@@ -453,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         uploadZone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => processFiles(e.target.files));
-        
+
         uploadZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadZone.classList.add('drag-over');
@@ -487,6 +460,15 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             if (isEdit) { PortfolioData.updateProject(p.id, obj); }
             else { obj.id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); PortfolioData.addProject(obj); }
+
+            const translations = PortfolioData.getSection('translations') || { tr: {} };
+            if (!translations.tr.projects) translations.tr.projects = {};
+            translations.tr.projects[obj.id] = {
+                title: document.getElementById('projTitleTr').value.trim(),
+                description: document.getElementById('projDescTr').value.trim()
+            };
+            PortfolioData.saveSection('translations', translations);
+
             closeModal(); renderProjectsPage();
             toast(isEdit ? 'Updated' : 'Added', 'success');
         });
@@ -522,7 +504,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('addSkillCategoryBtn').addEventListener('click', () => {
-        const html = `<div class="form-group"><label>Category Name</label><input type="text" id="catTitle"></div>
+        const html = `
+            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
+                <div class="translation-col">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">EN</h4>
+                    <div class="form-group"><label>Category Name</label><input type="text" id="catTitle"></div>
+                </div>
+                <div class="translation-col translation-col-tr">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">TR</h4>
+                    <div class="form-group"><label>Category Name (TR)</label><input type="text" id="catTitleTr"></div>
+                </div>
+            </div>
             <div class="form-group"><label>Icon</label><input type="text" id="catIcon" value="ph-code"></div>
             <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
             <button class="btn btn-primary btn-sm" id="saveCatBtn"><i class="ph ph-check"></i> Add</button></div>`;
@@ -531,15 +523,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = document.getElementById('catTitle').value.trim();
             if (!title) return;
             const skills = PortfolioData.getSection('skills') || [];
-            skills.push({ id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'), icon: document.getElementById('catIcon').value.trim(), title, tags: [] });
+            const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            skills.push({ id, icon: document.getElementById('catIcon').value.trim(), title, tags: [] });
             PortfolioData.saveSection('skills', skills);
+
+            const translations = PortfolioData.getSection('translations') || { tr: {} };
+            if (!translations.tr.skills) translations.tr.skills = {};
+            translations.tr.skills[id] = { title: document.getElementById('catTitleTr').value.trim() };
+            PortfolioData.saveSection('translations', translations);
+
             closeModal(); renderSkillsPage(); toast('Added', 'success');
         });
     });
 
     window.editSkillCat = function (ci) {
         const s = PortfolioData.getSection('skills'); const cat = s[ci];
-        const html = `<div class="form-group"><label>Name</label><input type="text" id="catTitle" value="${esc(cat.title)}"></div>
+        const translations = PortfolioData.getSection('translations') || { tr: {} };
+        const trData = (translations.tr.skills && translations.tr.skills[cat.id]) ? translations.tr.skills[cat.id] : { title: '' };
+
+        const html = `
+            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
+                <div class="translation-col">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">EN</h4>
+                    <div class="form-group"><label>Name</label><input type="text" id="catTitle" value="${esc(cat.title)}"></div>
+                </div>
+                <div class="translation-col translation-col-tr">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">TR</h4>
+                    <div class="form-group"><label>Name (TR)</label><input type="text" id="catTitleTr" value="${esc(trData.title)}"></div>
+                </div>
+            </div>
             <div class="form-group"><label>Icon</label><input type="text" id="catIcon" value="${esc(cat.icon)}"></div>
             <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
             <button class="btn btn-primary btn-sm" id="saveCEBtn"><i class="ph ph-check"></i> Update</button></div>`;
@@ -547,7 +559,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('saveCEBtn').addEventListener('click', () => {
             s[ci].title = document.getElementById('catTitle').value.trim();
             s[ci].icon = document.getElementById('catIcon').value.trim();
-            PortfolioData.saveSection('skills', s); closeModal(); renderSkillsPage(); toast('Updated', 'success');
+            PortfolioData.saveSection('skills', s);
+
+            const trans = PortfolioData.getSection('translations') || { tr: {} };
+            if (!trans.tr.skills) trans.tr.skills = {};
+            trans.tr.skills[cat.id] = { title: document.getElementById('catTitleTr').value.trim() };
+            PortfolioData.saveSection('translations', trans);
+
+            closeModal(); renderSkillsPage(); toast('Updated', 'success');
         });
     };
     window.delSkillCat = function (ci) { if (!confirm('Are you sure you want to delete?')) return; const s = PortfolioData.getSection('skills'); s.splice(ci, 1); PortfolioData.saveSection('skills', s); renderSkillsPage(); toast('Deleted', 'success'); };
@@ -561,11 +580,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderAboutPage() {
         const about = PortfolioData.getSection('about');
         const translations = PortfolioData.getSection('translations') || { tr: { about: { paragraphs: [], details: [] } } };
-        const trAbout = translations.tr?.about || { paragraphs: about.paragraphs.map(()=>''), details: about.details.map(()=>({label:'', value:''})) };
-        
+        const trAbout = translations.tr?.about || { paragraphs: about.paragraphs.map(() => ''), details: about.details.map(() => ({ label: '', value: '' })) };
+
         // Match lengths if mismatched
         while (trAbout.paragraphs.length < about.paragraphs.length) trAbout.paragraphs.push('');
-        while (trAbout.details.length < about.details.length) trAbout.details.push({label:'', value:''});
+        while (trAbout.details.length < about.details.length) trAbout.details.push({ label: '', value: '' });
 
         document.getElementById('aboutEditor').innerHTML = `
             <div class="editor-card translation-grid">
@@ -607,15 +626,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveAboutBtn"><i class="ph ph-check"></i> Save</button></div>`;
 
-        document.getElementById('addParaBtn').addEventListener('click', () => { 
-            about.paragraphs.push(''); 
+        document.getElementById('addParaBtn').addEventListener('click', () => {
+            about.paragraphs.push('');
             trAbout.paragraphs.push('');
-            PortfolioData.saveSection('about', about); 
-            // Need to persist translations change early since renderAboutPage re-renders from state
+            PortfolioData.saveSection('about', about);
             if (!translations.tr) translations.tr = {};
             translations.tr.about = trAbout;
             PortfolioData.saveSection('translations', translations);
-            renderAboutPage(); 
+            renderAboutPage();
         });
 
         document.querySelectorAll('.remove-para-btn').forEach(btn => {
@@ -623,40 +641,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 const idx = parseInt(e.currentTarget.getAttribute('data-i'));
                 const enContent = document.querySelectorAll('.about-para')[idx].value.trim();
                 const trContent = document.querySelectorAll('.about-para-tr')[idx].value.trim();
-                
+
                 if (enContent || trContent) {
                     if (!confirm('Are you sure you want to delete this paragraph? (English and Turkish versions will be deleted)')) {
                         return;
                     }
                 }
-                
+
                 about.paragraphs.splice(idx, 1);
                 trAbout.paragraphs.splice(idx, 1);
-                
+
                 PortfolioData.saveSection('about', about);
                 if (!translations.tr) translations.tr = {};
                 translations.tr.about = trAbout;
                 PortfolioData.saveSection('translations', translations);
-                
+
                 renderAboutPage();
                 toast('Deleted', 'success');
             });
         });
-        
+
         document.getElementById('saveAboutBtn').addEventListener('click', () => {
             about.paragraphs = Array.from(document.querySelectorAll('.about-para')).map(e => e.value.trim());
             about.details = Array.from(document.querySelectorAll('.di')).map((el, i) => ({
-                icon: el.value.trim(), 
-                label: document.querySelectorAll('.dl')[i].value.trim(), 
+                icon: el.value.trim(),
+                label: document.querySelectorAll('.dl')[i].value.trim(),
                 value: document.querySelectorAll('.dv')[i].value.trim()
             }));
 
-            // Save translations
             if (!translations.tr) translations.tr = {};
             if (!translations.tr.about) translations.tr.about = {};
             translations.tr.about.paragraphs = Array.from(document.querySelectorAll('.about-para-tr')).map(e => e.value.trim());
             translations.tr.about.details = Array.from(document.querySelectorAll('.di')).map((el, i) => ({
-                label: document.querySelectorAll('.dl-tr')[i].value.trim(), 
+                label: document.querySelectorAll('.dl-tr')[i].value.trim(),
                 value: document.querySelectorAll('.dv-tr')[i].value.trim()
             }));
 
@@ -666,9 +683,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =============================
-    // 8. Hero Page
-    // =============================
     function renderHeroPage() {
         const hero = PortfolioData.getSection('hero');
         const translations = PortfolioData.getSection('translations') || { tr: { hero: {}, about: {}, contact: {} } };
@@ -714,7 +728,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 number: parseInt(el.value) || 0, label: document.querySelectorAll('.sl')[i].value.trim()
             }));
 
-            // Save translations
             if (!translations.tr) translations.tr = {};
             if (!translations.tr.hero) translations.tr.hero = {};
             translations.tr.hero.greeting = document.getElementById('hGreetTr').value.trim();
@@ -728,9 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =============================
-    // 8b. Certificates Page
-    // =============================
     function renderCertificatesPage() {
         const certs = PortfolioData.getSection('certificates') || [];
         const list = document.getElementById('certificatesList');
@@ -768,11 +778,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openCertModal(c = null, idx = -1) {
         const isE = !!c;
+        const translations = PortfolioData.getSection('translations') || { tr: {} };
+        if (!translations.tr.certificates) translations.tr.certificates = {};
+        const trData = (isE && c.id && translations.tr.certificates[c.id]) ? translations.tr.certificates[c.id] : { title: '', issuer: '', description: '' };
         const html = `
-            <div class="form-group"><label>Title</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
-            <div class="form-group"><label>Issuer</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
+            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
+                <div class="translation-col">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">Content (EN)</h4>
+                    <div class="form-group"><label>Title</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
+                    <div class="form-group"><label>Issuer</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
+                    <div class="form-group"><label>Description</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
+                </div>
+                <div class="translation-col translation-col-tr">
+                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">Content (TR)</h4>
+                    <div class="form-group"><label>Title (TR)</label><input type="text" id="certTitleTr" value="${esc(trData.title)}"></div>
+                    <div class="form-group"><label>Issuer (TR)</label><input type="text" id="certIssuerTr" value="${esc(trData.issuer)}"></div>
+                    <div class="form-group"><label>Description (TR)</label><textarea id="certDescTr" rows="3">${esc(trData.description)}</textarea></div>
+                </div>
+            </div>
             <div class="form-group"><label>Date</label><input type="text" id="certDate" value="${isE ? esc(c.date) : ''}"></div>
-            <div class="form-group"><label>Description</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
             <div class="form-group"><label>Icon (e.g. ph-robot)</label><input type="text" id="certIcon" value="${isE ? esc(c.icon) : 'ph-certificate'}"></div>
             <div class="form-group"><label>Credential URL</label><input type="url" id="certCred" value="${isE ? esc(c.credential || '') : ''}"></div>
             <div class="form-group"><label>Image URL (optional)</label><input type="url" id="certImage" value="${isE ? esc(c.image || '') : ''}" placeholder="https://... or assets/cert.jpg"></div>
@@ -796,13 +820,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!obj.title) { toast('Title is required', 'error'); return; }
             if (isE && idx >= 0) certs[idx] = obj; else certs.push(obj);
             PortfolioData.saveSection('certificates', certs);
+
+            const translations = PortfolioData.getSection('translations') || { tr: {} };
+            if (!translations.tr.certificates) translations.tr.certificates = {};
+            translations.tr.certificates[obj.id] = {
+                title: document.getElementById('certTitleTr').value.trim(),
+                issuer: document.getElementById('certIssuerTr').value.trim(),
+                description: document.getElementById('certDescTr').value.trim()
+            };
+            PortfolioData.saveSection('translations', translations);
+
             closeModal(); renderCertificatesPage(); toast(isE ? 'Updated' : 'Added', 'success');
         });
     }
 
-    // =============================
-    // 9. Contact Page
-    // =============================
     function renderContactPage() {
         const c = PortfolioData.getSection('contact');
         const translations = PortfolioData.getSection('translations') || { tr: { about: {}, contact: {}, hero: {} } };
@@ -840,7 +871,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 value: document.querySelectorAll('.cv')[i].value.trim(), url: document.querySelectorAll('.cu')[i].value.trim()
             }));
 
-            // Save translations
             if (!translations.tr) translations.tr = {};
             if (!translations.tr.contact) translations.tr.contact = {};
             translations.tr.contact.heading = document.getElementById('cHeadTr').value.trim();
@@ -852,9 +882,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =============================
-    // 10. Settings
-    // =============================
     document.getElementById('exportBtn').addEventListener('click', () => { PortfolioData.exportToJSON(); toast('Exported', 'success'); });
     document.getElementById('importFile').addEventListener('change', async (e) => {
         const f = e.target.files[0]; if (!f) return;
@@ -868,9 +895,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // =============================
-    // 11. Modal & Toast
-    // =============================
     const modalOv = document.getElementById('modalOverlay');
     function openModal(title, html) { document.getElementById('modalTitle').textContent = title; document.getElementById('modalBody').innerHTML = html; modalOv.classList.add('open'); }
     window.closeModal = function () { modalOv.classList.remove('open'); };
@@ -886,14 +910,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = '0.3s'; setTimeout(() => el.remove(), 300); }, 3000);
     }
 
-    // =============================
-    // 12. Utilities
-    // =============================
     function esc(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function iconForLang(l) { return { 'JavaScript': 'ph-file-js', 'Python': 'ph-snake', 'Java': 'ph-coffee', 'C#': 'ph-code', 'PHP': 'ph-globe', 'Jupyter Notebook': 'ph-notebook' }[l] || 'ph-folder'; }
     function tagsForLang(l) { return { 'JavaScript': ['web'], 'Python': ['python'], 'Java': ['java'], 'C#': ['csharp'], 'PHP': ['web'], 'Jupyter Notebook': ['python'] }[l] || []; }
 
-    // Compress base64 images client-side before saving to localStorage
     function compressImage(file, maxSize, quality) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();

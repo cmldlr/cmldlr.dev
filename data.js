@@ -91,7 +91,10 @@ const PortfolioData = (() => {
             tr: {
                 hero: { greeting: 'Merhaba, ben', description: 'Backend mimarileri ve yapay zeka entegrasyonlarına odaklanan <strong>Yazılım Mühendisi</strong>.', badge: 'Çalışmaya Açık' },
                 about: { paragraphs: [], details: [] },
-                contact: { heading: 'Birlikte çalışalım!', description: 'Yeni projeler, iş fırsatları veya sadece merhaba demek için benimle iletişime geçmekten çekinmeyin.' }
+                contact: { heading: 'Birlikte çalışalım!', description: 'Yeni projeler, iş fırsatları veya sadece merhaba demek için benimle iletişime geçmekten çekinmeyin.' },
+                projects: {},
+                certificates: {},
+                skills: {}
             }
         }
     };

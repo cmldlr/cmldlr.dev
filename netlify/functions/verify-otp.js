@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-// Ortak CORS header'ları
+// Common CORS headers
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -13,7 +13,7 @@ exports.handler = async (event, context) => {
         return { statusCode: 204, headers: CORS_HEADERS, body: '' };
     }
 
-    // Sadece POST isteklerine izin ver
+    // Only allow POST requests
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, headers: CORS_HEADERS, body: 'Method Not Allowed' };
     }
@@ -29,16 +29,16 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Süre kontrolü
+        // Expiration check
         if (Date.now() > expiresAtMs) {
             return { 
                 statusCode: 400, 
                 headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
-                body: JSON.stringify({ error: 'Bu kodun süresi dolmuş.' }) 
+                body: JSON.stringify({ error: 'This code has expired.' }) 
             };
         }
 
-        // Hash doğrulama
+        // Hash verification
         const secret = process.env.OTP_SECRET || 'default-secret-do-not-use-in-production';
         const expectedHash = crypto.createHmac('sha256', secret).update(email + code + expiresAtMs).digest('hex');
 
@@ -46,11 +46,11 @@ exports.handler = async (event, context) => {
             return { 
                 statusCode: 400, 
                 headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
-                body: JSON.stringify({ error: 'Geçersiz doğrulama kodu.' }) 
+                body: JSON.stringify({ error: 'Invalid verification code.' }) 
             };
         }
 
-        // Başarılı doğrulama
+        // Successful verification
         return {
             statusCode: 200,
             headers: {
@@ -59,7 +59,7 @@ exports.handler = async (event, context) => {
             },
             body: JSON.stringify({ 
                 success: true, 
-                message: 'Doğrulama başarılı' 
+                message: 'Verification successful' 
             })
         };
     } catch (error) {

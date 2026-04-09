@@ -41,19 +41,19 @@ exports.handler = async (event) => {
         const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
 
-        // Content type tespit
+        // Detect content type
         let contentType = 'image/jpeg';
         if (image.startsWith('data:image/png')) contentType = 'image/png';
         else if (image.startsWith('data:image/webp')) contentType = 'image/webp';
         else if (image.startsWith('data:image/gif')) contentType = 'image/gif';
 
-        // Dosya uzantısı
+        // File extension
         const ext = contentType.split('/')[1];
         const timestamp = Date.now();
         const safeName = filename.replace(/[^a-z0-9-_]/gi, '-').toLowerCase();
         const filePath = `projects/${safeName}-${timestamp}.${ext}`;
 
-        // Supabase Storage'a yükle
+        // Upload to Supabase Storage
         const uploadResp = await fetch(
             `${SUPABASE_URL}/storage/v1/object/images/${filePath}`,
             {
@@ -77,7 +77,7 @@ exports.handler = async (event) => {
             };
         }
 
-        // Public URL oluştur
+        // Generate public URL
         const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${filePath}`;
 
 

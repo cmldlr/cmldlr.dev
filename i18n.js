@@ -1,7 +1,3 @@
-/**
- * i18n — Internationalization System
- * Türkçe / English language support
- */
 
 const I18n = (() => {
     const LANG_KEY = 'portfolio_lang';

@@ -1,7 +1,7 @@
 const emailjs = require('@emailjs/nodejs');
 const crypto = require('crypto');
 
-// Ortak CORS header'ları
+// Common CORS headers
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -14,7 +14,7 @@ exports.handler = async (event, context) => {
         return { statusCode: 204, headers: CORS_HEADERS, body: '' };
     }
 
-    // Sadece POST isteklerine izin ver
+    // Only allow POST requests
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, headers: CORS_HEADERS, body: 'Method Not Allowed' };
     }
@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
             return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Email is required' }) };
         }
 
-        // 6 haneli rastgele kod üret (Node.js uyumlu)
+        // Generate 6-digit random code (Node.js compatible)
         let otp_code = '';
         for (let i = 0; i < 6; i++) {
             otp_code += crypto.randomInt(0, 10).toString();
@@ -55,7 +55,7 @@ exports.handler = async (event, context) => {
             );
         }
 
-        const expiresAtMs = Date.now() + (5 * 60 * 1000); // 5 dakika geçerlilik
+        const expiresAtMs = Date.now() + (5 * 60 * 1000); // 5 minutes validity
         const secret = process.env.OTP_SECRET || 'default-secret-do-not-use-in-production';
         const hash = crypto.createHmac('sha256', secret).update(email + otp_code + expiresAtMs).digest('hex');
 

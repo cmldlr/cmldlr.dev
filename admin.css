@@ -330,17 +330,21 @@ body.show-admin .admin-panel {
     .login-overlay {
         padding: 16px;
     }
+
     .login-card {
         padding: 32px 20px;
     }
+
     .otp-digit {
         width: 34px;
         height: 44px;
         font-size: 16px;
     }
+
     .otp-input-group {
         gap: 4px;
     }
+
     .input-wrapper input {
         font-size: 16px;
     }
@@ -953,6 +957,200 @@ body.show-admin .admin-panel {
     transition: var(--transition-fast);
 }
 
+
+.editor-card input,
+.editor-card textarea,
+.editor-card select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+.editor-card input:focus,
+.editor-card textarea:focus,
+.editor-card select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.editor-card textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.6;
+}
+
+.editor-card select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b8b9e'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ========== SKILL ADMIN ========== */
+.skill-admin-card {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+}
+
+.skill-admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.skill-admin-header h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skill-admin-header h4 i {
+    color: var(--accent-primary);
+}
+
+.skill-admin-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.skill-admin-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.skill-admin-tag select {
+    background: transparent;
+    border: none;
+    color: var(--accent-secondary);
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+}
+
+.skill-admin-tag button {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.skill-admin-tag button:hover {
+    color: var(--red);
+}
+
+/* ========== EXPERIENCE ========== */
+.exp-admin-card {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+}
+
+.exp-admin-card .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* ========== SETTINGS ========== */
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-card {
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.settings-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-card h4 i {
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+}
+
+.settings-card.settings-danger h4 i {
+    color: var(--red);
+}
+
+.settings-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.settings-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.settings-card .form-group {
+    margin-bottom: 12px;
+}
+
+.settings-card .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.settings-card input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
 .settings-card input:focus {
     border-color: var(--accent-primary);
     box-shadow: 0 0 0 3px var(--accent-glow);
@@ -980,7 +1178,7 @@ body.show-admin .admin-panel {
 
 .modal {
     width: 100%;
-    max-width: 600px;
+    max-width: 850px;
     max-height: 80vh;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -1261,26 +1459,32 @@ body.show-admin .admin-panel {
     background: rgba(0, 0, 0, 0.2);
     margin-bottom: 12px;
 }
-.image-upload-zone:hover, .image-upload-zone.drag-over {
+
+.image-upload-zone:hover,
+.image-upload-zone.drag-over {
     border-color: var(--accent-primary, #6c63ff);
     background: rgba(108, 99, 255, 0.05);
 }
+
 .image-upload-zone i {
     font-size: 2rem;
     color: var(--text-secondary);
     margin-bottom: 8px;
     display: block;
 }
+
 .image-upload-zone span {
     color: var(--text-muted);
     font-size: 0.9rem;
 }
+
 .image-preview-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 12px;
     margin-top: 12px;
 }
+
 .image-preview-item {
     position: relative;
     border-radius: 6px;
@@ -1289,11 +1493,13 @@ body.show-admin .admin-panel {
     background: #111;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .image-preview-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+
 .image-preview-item .remove-img-btn {
     position: absolute;
     top: 4px;
@@ -1311,6 +1517,7 @@ body.show-admin .admin-panel {
     font-size: 0.8rem;
     transition: 0.2s;
 }
+
 .image-preview-item .remove-img-btn:hover {
     transform: scale(1.1);
     background: rgba(255, 59, 48, 1);
