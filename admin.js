@@ -349,17 +349,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const trData = (isEdit && p.id && translations.tr.projects[p.id]) ? translations.tr.projects[p.id] : { title: '', description: '' };
         const currentImages = (isEdit && p.images && Array.isArray(p.images)) ? [...p.images] : [];
         const html = `
-            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
-                <div class="translation-col">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;"><i class="ph ph-folder"></i> Content (EN)</h4>
-                    <div class="form-group"><label>Title</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
-                    <div class="form-group"><label>Description</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
-                </div>
-                <div class="translation-col translation-col-tr">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;"><i class="ph ph-translate"></i> Content (TR)</h4>
-                    <div class="form-group"><label>Title (TR)</label><input type="text" id="projTitleTr" value="${esc(trData.title)}"></div>
-                    <div class="form-group"><label>Description (TR)</label><textarea id="projDescTr" rows="3">${esc(trData.description)}</textarea></div>
-                </div>
+            <div class="lang-tabs">
+                <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+            </div>
+            <div class="lang-pane active" data-lang="en">
+                <div class="form-group"><label>Title</label><input type="text" id="projTitle" value="${isEdit ? esc(p.title) : ''}"></div>
+                <div class="form-group"><label>Description</label><textarea id="projDesc" rows="3">${isEdit ? esc(p.description) : ''}</textarea></div>
+            </div>
+            <div class="lang-pane" data-lang="tr">
+                <div class="form-group"><label>Title (TR)</label><input type="text" id="projTitleTr" value="${esc(trData.title)}"></div>
+                <div class="form-group"><label>Description (TR)</label><textarea id="projDescTr" rows="3">${esc(trData.description)}</textarea></div>
             </div>
             <div class="form-group"><label>Icon (e.g. ph-factory)</label><input type="text" id="projIcon" value="${isEdit ? esc(p.icon) : 'ph-folder'}"></div>
             <div class="form-group"><label>GitHub URL</label><input type="url" id="projGithub" value="${isEdit ? esc(p.github) : ''}"></div>
@@ -383,6 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="btn btn-primary btn-sm" id="saveProjectBtn"><i class="ph ph-check"></i> ${isEdit ? 'Update' : 'Add'}</button>
             </div>`;
         openModal(isEdit ? 'Edit Project' : 'New Project', html);
+        initLangTabs();
 
         let uploadedImages = [...currentImages];
         const previewGrid = document.getElementById('imagePreviewGrid');
@@ -505,20 +506,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('addSkillCategoryBtn').addEventListener('click', () => {
         const html = `
-            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
-                <div class="translation-col">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">EN</h4>
-                    <div class="form-group"><label>Category Name</label><input type="text" id="catTitle"></div>
-                </div>
-                <div class="translation-col translation-col-tr">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">TR</h4>
-                    <div class="form-group"><label>Category Name (TR)</label><input type="text" id="catTitleTr"></div>
-                </div>
+            <div class="lang-tabs">
+                <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+            </div>
+            <div class="lang-pane active" data-lang="en">
+                <div class="form-group"><label>Category Name</label><input type="text" id="catTitle"></div>
+            </div>
+            <div class="lang-pane" data-lang="tr">
+                <div class="form-group"><label>Category Name (TR)</label><input type="text" id="catTitleTr"></div>
             </div>
             <div class="form-group"><label>Icon</label><input type="text" id="catIcon" value="ph-code"></div>
             <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
             <button class="btn btn-primary btn-sm" id="saveCatBtn"><i class="ph ph-check"></i> Add</button></div>`;
         openModal('New Category', html);
+        initLangTabs();
         document.getElementById('saveCatBtn').addEventListener('click', () => {
             const title = document.getElementById('catTitle').value.trim();
             if (!title) return;
@@ -542,20 +544,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const trData = (translations.tr.skills && translations.tr.skills[cat.id]) ? translations.tr.skills[cat.id] : { title: '' };
 
         const html = `
-            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
-                <div class="translation-col">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">EN</h4>
-                    <div class="form-group"><label>Name</label><input type="text" id="catTitle" value="${esc(cat.title)}"></div>
-                </div>
-                <div class="translation-col translation-col-tr">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">TR</h4>
-                    <div class="form-group"><label>Name (TR)</label><input type="text" id="catTitleTr" value="${esc(trData.title)}"></div>
-                </div>
+            <div class="lang-tabs">
+                <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+            </div>
+            <div class="lang-pane active" data-lang="en">
+                <div class="form-group"><label>Name</label><input type="text" id="catTitle" value="${esc(cat.title)}"></div>
+            </div>
+            <div class="lang-pane" data-lang="tr">
+                <div class="form-group"><label>Name (TR)</label><input type="text" id="catTitleTr" value="${esc(trData.title)}"></div>
             </div>
             <div class="form-group"><label>Icon</label><input type="text" id="catIcon" value="${esc(cat.icon)}"></div>
             <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
             <button class="btn btn-primary btn-sm" id="saveCEBtn"><i class="ph ph-check"></i> Update</button></div>`;
         openModal('Edit Category', html);
+        initLangTabs();
         document.getElementById('saveCEBtn').addEventListener('click', () => {
             s[ci].title = document.getElementById('catTitle').value.trim();
             s[ci].icon = document.getElementById('catIcon').value.trim();
@@ -587,9 +590,13 @@ document.addEventListener('DOMContentLoaded', () => {
         while (trAbout.details.length < about.details.length) trAbout.details.push({ label: '', value: '' });
 
         document.getElementById('aboutEditor').innerHTML = `
-            <div class="editor-card translation-grid">
-                <div class="translation-col" id="aboutEnParas">
-                    <h4><i class="ph ph-text-align-left"></i> Paragraphs (English / Default)</h4>
+            <div class="editor-card">
+                <div class="lang-tabs">
+                    <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                    <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+                </div>
+                <div class="lang-pane active" data-lang="en" id="aboutEnParas">
+                    <h4><i class="ph ph-text-align-left"></i> Paragraphs</h4>
                     ${about.paragraphs.map((p, i) => `
                     <div class="form-group" style="position:relative;">
                         <label>Paragraph ${i + 1}</label>
@@ -598,33 +605,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`).join('')}
                     <button class="btn btn-outline btn-sm" id="addParaBtn"><i class="ph ph-plus"></i> Add</button>
                 </div>
-                <div class="translation-col translation-col-tr" id="aboutTrParas">
-                    <h4><i class="ph ph-translate"></i> Paragraphs (Turkish Translation)</h4>
+                <div class="lang-pane" data-lang="tr" id="aboutTrParas">
+                    <h4><i class="ph ph-translate"></i> Paragraphs (TR)</h4>
                     ${trAbout.paragraphs.map((p, i) => `
                     <div class="form-group">
-                        <label style="color:var(--accent-secondary);">Paragraph ${i + 1} (TR)</label>
-                        <textarea class="about-para-tr" data-i="${i}" rows="4" style="border-color:var(--accent-secondary);">${esc((p || '').replace(/<\/?strong>/g, ''))}</textarea>
+                        <label>Paragraph ${i + 1} (TR)</label>
+                        <textarea class="about-para-tr" data-i="${i}" rows="4">${esc((p || '').replace(/<\/?strong>/g, ''))}</textarea>
                     </div>`).join('')}
                 </div>
             </div>
             <div class="editor-card">
                 <h4><i class="ph ph-identification-card"></i> Detail Cards</h4>
-                ${about.details.map((d, i) => `
-                <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; align-items: end;">
-                    <div><label>Icon</label><input type="text" class="di" data-i="${i}" value="${esc(d.icon)}"></div>
-                    <div>
-                        <label>Title (EN)</label><input type="text" class="dl" data-i="${i}" value="${esc(d.label)}">
-                        <label style="margin-top:5px; color:var(--accent-secondary); font-size: 0.75rem;">Title (TR)</label>
-                        <input type="text" class="dl-tr" data-i="${i}" value="${esc(trAbout.details[i]?.label || '')}" style="border-color:var(--accent-secondary);">
-                    </div>
-                    <div>
-                        <label>Value (EN)</label><input type="text" class="dv" data-i="${i}" value="${esc(d.value)}">
-                        <label style="margin-top:5px; color:var(--accent-secondary); font-size: 0.75rem;">Value (TR)</label>
-                        <input type="text" class="dv-tr" data-i="${i}" value="${esc(trAbout.details[i]?.value || '')}" style="border-color:var(--accent-secondary);">
-                    </div>
-                </div>`).join('')}
+                <div class="lang-tabs">
+                    <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                    <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+                </div>
+                <div class="lang-pane active" data-lang="en">
+                    ${about.details.map((d, i) => `
+                    <div class="form-group" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px; align-items: end;">
+                        <div><label>Icon</label><input type="text" class="di" data-i="${i}" value="${esc(d.icon)}"></div>
+                        <div><label>Title</label><input type="text" class="dl" data-i="${i}" value="${esc(d.label)}"></div>
+                        <div><label>Value</label><input type="text" class="dv" data-i="${i}" value="${esc(d.value)}"></div>
+                    </div>`).join('')}
+                </div>
+                <div class="lang-pane" data-lang="tr">
+                    ${about.details.map((d, i) => `
+                    <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px; align-items: end;">
+                        <div><label>Title (TR)</label><input type="text" class="dl-tr" data-i="${i}" value="${esc(trAbout.details[i]?.label || '')}"></div>
+                        <div><label>Value (TR)</label><input type="text" class="dv-tr" data-i="${i}" value="${esc(trAbout.details[i]?.value || '')}"></div>
+                    </div>`).join('')}
+                </div>
             </div>
             <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveAboutBtn"><i class="ph ph-check"></i> Save</button></div>`;
+        initLangTabs();
 
         document.getElementById('addParaBtn').addEventListener('click', () => {
             about.paragraphs.push('');
@@ -689,9 +702,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const trHero = translations.tr?.hero || { greeting: '', description: '', badge: '' };
 
         document.getElementById('heroEditor').innerHTML = `
-            <div class="editor-card translation-grid">
-                <div class="translation-col">
-                    <h4><i class="ph ph-star"></i> Content (English / Default)</h4>
+            <div class="editor-card">
+                <div class="lang-tabs">
+                    <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                    <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+                </div>
+                <div class="lang-pane active" data-lang="en">
                     <div class="form-group"><label>Greeting</label><input type="text" id="hGreet" value="${esc(hero.greeting)}"></div>
                     <div class="form-group"><label>Name</label><input type="text" id="hName" value="${esc(hero.name)}"></div>
                     <div class="form-group"><label>Description (HTML)</label><textarea id="hDesc" rows="3">${esc(hero.description)}</textarea></div>
@@ -699,10 +715,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="form-group"><label>Roles (one per line)</label><textarea id="hRoles" rows="4">${hero.roles.join('\n')}</textarea></div>
                     <div class="form-group"><label>CV URL (leave empty to hide button)</label><input type="url" id="hCvUrl" value="${esc(hero.cvUrl || '')}"></div>
                 </div>
-                <div class="translation-col translation-col-tr">
-                    <h4><i class="ph ph-translate"></i> Content (Turkish Translation)</h4>
+                <div class="lang-pane" data-lang="tr">
                     <div class="form-group"><label>Greeting (TR)</label><input type="text" id="hGreetTr" value="${esc(trHero.greeting)}"></div>
-                    <div class="form-group"><label>Name (TR) - Usually same</label><input type="text" disabled value="${esc(hero.name)}" style="opacity:0.5; background:var(--bg-secondary);"></div>
                     <div class="form-group"><label>Description (TR) (HTML)</label><textarea id="hDescTr" rows="3">${esc(trHero.description)}</textarea></div>
                     <div class="form-group"><label>Badge (TR)</label><input type="text" id="hBadgeTr" value="${esc(trHero.badge)}"></div>
                     <div class="form-group"><label>Roles (TR) (one per line)</label><textarea id="hRolesTr" rows="4">${(trHero.roles || hero.roles).join('\n')}</textarea></div>
@@ -716,6 +730,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`).join('')}
             </div>
             <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveHeroBtn"><i class="ph ph-check"></i> Save</button></div>`;
+        initLangTabs();
 
         document.getElementById('saveHeroBtn').addEventListener('click', () => {
             hero.greeting = document.getElementById('hGreet').value.trim();
@@ -782,19 +797,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!translations.tr.certificates) translations.tr.certificates = {};
         const trData = (isE && c.id && translations.tr.certificates[c.id]) ? translations.tr.certificates[c.id] : { title: '', issuer: '', description: '' };
         const html = `
-            <div class="editor-card translation-grid" style="margin-bottom:12px; padding:12px; border:1px solid var(--border-color); border-radius:8px;">
-                <div class="translation-col">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">Content (EN)</h4>
-                    <div class="form-group"><label>Title</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
-                    <div class="form-group"><label>Issuer</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
-                    <div class="form-group"><label>Description</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
-                </div>
-                <div class="translation-col translation-col-tr">
-                    <h4 style="margin-top:0; margin-bottom:8px; font-size:0.9rem;">Content (TR)</h4>
-                    <div class="form-group"><label>Title (TR)</label><input type="text" id="certTitleTr" value="${esc(trData.title)}"></div>
-                    <div class="form-group"><label>Issuer (TR)</label><input type="text" id="certIssuerTr" value="${esc(trData.issuer)}"></div>
-                    <div class="form-group"><label>Description (TR)</label><textarea id="certDescTr" rows="3">${esc(trData.description)}</textarea></div>
-                </div>
+            <div class="lang-tabs">
+                <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+            </div>
+            <div class="lang-pane active" data-lang="en">
+                <div class="form-group"><label>Title</label><input type="text" id="certTitle" value="${isE ? esc(c.title) : ''}"></div>
+                <div class="form-group"><label>Issuer</label><input type="text" id="certIssuer" value="${isE ? esc(c.issuer) : ''}"></div>
+                <div class="form-group"><label>Description</label><textarea id="certDesc" rows="3">${isE ? esc(c.description) : ''}</textarea></div>
+            </div>
+            <div class="lang-pane" data-lang="tr">
+                <div class="form-group"><label>Title (TR)</label><input type="text" id="certTitleTr" value="${esc(trData.title)}"></div>
+                <div class="form-group"><label>Issuer (TR)</label><input type="text" id="certIssuerTr" value="${esc(trData.issuer)}"></div>
+                <div class="form-group"><label>Description (TR)</label><textarea id="certDescTr" rows="3">${esc(trData.description)}</textarea></div>
             </div>
             <div class="form-group"><label>Date</label><input type="text" id="certDate" value="${isE ? esc(c.date) : ''}"></div>
             <div class="form-group"><label>Icon (e.g. ph-robot)</label><input type="text" id="certIcon" value="${isE ? esc(c.icon) : 'ph-certificate'}"></div>
@@ -804,6 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="modal-footer"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
             <button class="btn btn-primary btn-sm" id="saveCertBtn"><i class="ph ph-check"></i> ${isE ? 'Update' : 'Add'}</button></div>`;
         openModal(isE ? 'Edit Certificate' : 'New Certificate', html);
+        initLangTabs();
         document.getElementById('saveCertBtn').addEventListener('click', () => {
             const certs = PortfolioData.getSection('certificates') || [];
             const obj = {
@@ -840,14 +856,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const trContact = translations.tr?.contact || { heading: '', description: '' };
 
         document.getElementById('contactEditor').innerHTML = `
-            <div class="editor-card translation-grid">
-                <div class="translation-col">
-                    <h4><i class="ph ph-envelope"></i> Information (EN)</h4>
+            <div class="editor-card">
+                <div class="lang-tabs">
+                    <button class="lang-tab active" data-lang="en"><i class="ph ph-flag"></i> English</button>
+                    <button class="lang-tab" data-lang="tr"><i class="ph ph-translate"></i> Türkçe</button>
+                </div>
+                <div class="lang-pane active" data-lang="en">
                     <div class="form-group"><label>Heading</label><input type="text" id="cHead" value="${esc(c.heading)}"></div>
                     <div class="form-group"><label>Description</label><textarea id="cDesc" rows="3">${esc(c.description)}</textarea></div>
                 </div>
-                <div class="translation-col translation-col-tr">
-                    <h4><i class="ph ph-translate"></i> Information (TR)</h4>
+                <div class="lang-pane" data-lang="tr">
                     <div class="form-group"><label>Heading (TR)</label><input type="text" id="cHeadTr" value="${esc(trContact.heading)}"></div>
                     <div class="form-group"><label>Description (TR)</label><textarea id="cDescTr" rows="3">${esc(trContact.description)}</textarea></div>
                 </div>
@@ -862,6 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`).join('')}
             </div>
             <div class="editor-actions"><button class="btn btn-primary btn-sm" id="saveContactBtn"><i class="ph ph-check"></i> Save</button></div>`;
+        initLangTabs();
 
         document.getElementById('saveContactBtn').addEventListener('click', () => {
             c.heading = document.getElementById('cHead').value.trim();
@@ -901,6 +920,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalClose').addEventListener('click', closeModal);
     modalOv.addEventListener('click', (e) => { if (e.target === modalOv) closeModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modalOv.classList.contains('open')) closeModal(); });
+
+    function initLangTabs() {
+        document.querySelectorAll('.lang-tabs').forEach(tabBar => {
+            tabBar.querySelectorAll('.lang-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const lang = tab.getAttribute('data-lang');
+                    const container = tabBar.parentElement;
+                    // Switch active tab
+                    tabBar.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    // Switch active pane
+                    container.querySelectorAll('.lang-pane').forEach(p => p.classList.remove('active'));
+                    container.querySelector(`.lang-pane[data-lang="${lang}"]`)?.classList.add('active');
+                });
+            });
+        });
+    }
 
     function toast(msg, type = 'success') {
         const el = document.createElement('div');

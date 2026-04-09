@@ -1339,37 +1339,68 @@ body.show-admin .admin-panel {
     }
 }
 
-/* ========== TRANSLATION GRID ========== */
-.translation-grid {
+/* ========== LANGUAGE TABS (replaces translation-grid) ========== */
+.lang-tabs {
     display: flex;
-    flex-direction: row;
-    gap: 20px;
+    gap: 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.translation-col {
-    flex: 1;
-    min-width: 0;
+.lang-tab {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    position: relative;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.translation-col-tr {
-    border-left: 4px solid var(--accent-secondary);
-    padding-left: 20px;
+.lang-tab:hover {
+    color: var(--text-primary);
+}
+
+.lang-tab.active {
+    color: var(--accent-primary);
+}
+
+.lang-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-primary);
+    border-radius: 2px 2px 0 0;
+}
+
+.lang-tab i {
+    font-size: 1rem;
+}
+
+.lang-pane {
+    display: none;
+}
+
+.lang-pane.active {
+    display: block;
+    animation: langPaneIn 0.2s ease-out;
+}
+
+@keyframes langPaneIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
-    .translation-grid {
-        flex-direction: column;
-        gap: 32px;
-    }
-
-    .translation-col-tr {
-        border-left: none;
-        padding-left: 0;
-        border-top: 4px dashed var(--accent-secondary);
-        padding-top: 24px;
-    }
-
     .sidebar {
         position: fixed;
         left: 0;

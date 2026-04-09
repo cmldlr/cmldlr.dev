@@ -32,8 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const next = current === 'en' ? 'tr' : 'en';
         I18n.setLang(next);
         updateLangButton();
-        I18n.applyToDOM();
         renderAll();
+        I18n.applyToDOM();
+        // Re-animate stat counters after re-render
+        counterAnimated = false;
+        animateCounters();
     });
 
     // =============================
@@ -147,8 +150,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Initial Render
     // =============================
     await PortfolioData.init(); // Fetch from Supabase (falls back to localStorage/defaults)
-    I18n.applyToDOM();
     renderAll();
+    I18n.applyToDOM();
 
     function renderAll() {
         const data = PortfolioData.getData();
@@ -164,11 +167,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Expose for admin panel to call on return
     window.refreshPortfolio = function () {
-        I18n.applyToDOM();
         renderAll();
+        I18n.applyToDOM();
         // Re-animate counters
         counterAnimated = false;
-        if (statsSection) statsObserver.observe(statsSection);
+        animateCounters();
     };
 
     // =============================
@@ -203,12 +206,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionsEl.appendChild(cvBtn);
         }
 
-        document.getElementById('heroStats').innerHTML = hero.stats.map(s => `
+        document.getElementById('heroStats').innerHTML = hero.stats.map(s => {
+            const i18nKey = 'hero.stat.' + s.label.toLowerCase().replace(/\s+/g, '_');
+            return `
             <div class="stat">
                 <span class="stat-number" data-count="${s.number}">0</span>
-                <span class="stat-label">${esc(s.label)}</span>
-            </div>
-        `).join('');
+                <span class="stat-label" data-i18n="${i18nKey}">${esc(s.label)}</span>
+            </div>`;
+        }).join('');
 
         window._heroRoles = heroT?.roles || hero.roles;
     }

@@ -31,6 +31,9 @@ const I18n = (() => {
             'hero.cta.projects': 'Projelerimi Gör',
             'hero.cta.contact': 'İletişime Geç',
             'hero.cta.cv': 'CV İndir',
+            'hero.stat.open_source_projects': 'Açık Kaynak Proje',
+            'hero.stat.programming_languages': 'Programlama Dili',
+            'hero.stat.years_experience': 'Yıl Deneyim',
 
             // GitHub
             'github.contributions': 'son 1 yılda katkı',
@@ -97,6 +100,9 @@ const I18n = (() => {
             'hero.cta.projects': 'View My Projects',
             'hero.cta.contact': 'Get in Touch',
             'hero.cta.cv': 'Download CV',
+            'hero.stat.open_source_projects': 'Open Source Projects',
+            'hero.stat.programming_languages': 'Programming Languages',
+            'hero.stat.years_experience': 'Years Experience',
 
             // GitHub
             'github.contributions': 'contributions in the last year',
