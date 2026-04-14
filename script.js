@@ -246,7 +246,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderSkills(skills) {
         const trans = I18n.getDataTranslation('skills') || {};
-        document.getElementById('skillsGrid').innerHTML = skills.map(cat => {
+        const visibleSkills = skills.filter(cat => cat.visible !== false);
+        document.getElementById('skillsGrid').innerHTML = visibleSkills.map(cat => {
             const trCat = trans[cat.id];
             const title = (trCat && trCat.title) ? trCat.title : cat.title;
             return `
@@ -402,11 +403,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const trans = I18n.getDataTranslation('certificates') || {};
         const grid = document.getElementById('certificatesGrid');
         if (!grid) return;
-        if (!certificates || certificates.length === 0) {
+        const visibleCerts = (certificates || []).filter(c => c.visible !== false);
+        if (visibleCerts.length === 0) {
             grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">' + I18n.t('certificates.empty') + '</p>';
             return;
         }
-        grid.innerHTML = certificates.map(c => {
+        grid.innerHTML = visibleCerts.map(c => {
             const trC = trans[c.id];
             const title = (trC && trC.title) ? trC.title : c.title;
             const issuer = (trC && trC.issuer) ? trC.issuer : c.issuer;

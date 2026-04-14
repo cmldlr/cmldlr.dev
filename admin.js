@@ -481,9 +481,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSkillsPage() {
         const skills = PortfolioData.getSection('skills') || [];
         document.getElementById('skillsList').innerHTML = skills.map((cat, ci) => `
-            <div class="skill-admin-card">
+            <div class="skill-admin-card ${cat.visible === false ? 'hidden-item' : ''}">
                 <div class="skill-admin-header">
-                    <h4><i class="ph ${cat.icon}"></i> ${esc(cat.title)}</h4>
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <div class="visibility-toggle ${cat.visible !== false ? 'on' : ''}" data-type="skill" data-index="${ci}" title="${cat.visible !== false ? 'Hide' : 'Show'}"></div>
+                        <h4><i class="ph ${cat.icon}"></i> ${esc(cat.title)}</h4>
+                    </div>
                     <div>
                         <button class="btn-ghost" onclick="editSkillCat(${ci})"><i class="ph ph-pencil-simple"></i></button>
                         <button class="btn-ghost" onclick="delSkillCat(${ci})"><i class="ph ph-trash"></i></button>
@@ -502,6 +505,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `).join('');
+
+        // Attach visibility toggle handlers for skills
+        document.querySelectorAll('.visibility-toggle[data-type="skill"]').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const idx = parseInt(toggle.getAttribute('data-index'));
+                const s = PortfolioData.getSection('skills');
+                s[idx].visible = s[idx].visible === false ? true : false;
+                PortfolioData.saveSection('skills', s);
+                renderSkillsPage();
+                toast('Visibility updated', 'success');
+            });
+        });
     }
 
     document.getElementById('addSkillCategoryBtn').addEventListener('click', () => {
@@ -766,9 +781,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         list.innerHTML = certs.map((c, i) => `
-            <div class="exp-admin-card">
+            <div class="exp-admin-card ${c.visible === false ? 'hidden-item' : ''}">
                 <div class="skill-admin-header">
-                    <h4><i class="ph ${c.icon}"></i> ${esc(c.title)} <span style="color:var(--accent-secondary);font-size:0.8rem;font-family:var(--font-mono);margin-left:8px">${esc(c.date)}</span></h4>
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <div class="visibility-toggle ${c.visible !== false ? 'on' : ''}" data-type="cert" data-index="${i}" title="${c.visible !== false ? 'Hide' : 'Show'}"></div>
+                        <h4><i class="ph ${c.icon}"></i> ${esc(c.title)} <span style="color:var(--accent-secondary);font-size:0.8rem;font-family:var(--font-mono);margin-left:8px">${esc(c.date)}</span></h4>
+                    </div>
                     <div>
                         <button class="btn-ghost" onclick="editCert(${i})"><i class="ph ph-pencil-simple"></i></button>
                         <button class="btn-ghost" onclick="delCert(${i})"><i class="ph ph-trash"></i></button>
@@ -778,6 +796,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p style="color:var(--text-secondary);font-size:0.85rem">${esc(c.description).substring(0, 120)}...</p>
             </div>
         `).join('');
+
+        // Attach visibility toggle handlers for certificates
+        document.querySelectorAll('.visibility-toggle[data-type="cert"]').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const idx = parseInt(toggle.getAttribute('data-index'));
+                const c = PortfolioData.getSection('certificates');
+                c[idx].visible = c[idx].visible === false ? true : false;
+                PortfolioData.saveSection('certificates', c);
+                renderCertificatesPage();
+                toast('Visibility updated', 'success');
+            });
+        });
     }
 
     document.getElementById('addCertificateBtn').addEventListener('click', () => openCertModal());
@@ -831,7 +861,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: document.getElementById('certIcon').value.trim() || 'ph-certificate',
                 credential: document.getElementById('certCred').value.trim(),
                 image: document.getElementById('certImage').value.trim(),
-                tech: document.getElementById('certTech').value.split(',').map(s => s.trim()).filter(Boolean)
+                tech: document.getElementById('certTech').value.split(',').map(s => s.trim()).filter(Boolean),
+                visible: isE ? (c.visible !== false) : true
             };
             if (!obj.title) { toast('Title is required', 'error'); return; }
             if (isE && idx >= 0) certs[idx] = obj; else certs.push(obj);
