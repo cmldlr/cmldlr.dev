@@ -1797,11 +1797,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             skills: () => {
                 print('<span class="t-accent">━━━ Skills ━━━</span>');
-                data.skills.forEach(cat => {
-                    print(`\n  <span class="t-cmd">[${cat.category}]</span>`);
-                    cat.items.forEach(s => {
-                        const bar = '█'.repeat(Math.round(s.level / 10)) + '░'.repeat(10 - Math.round(s.level / 10));
-                        print(`    ${s.name.padEnd(16)} ${bar} ${s.level}%`);
+                const levelBars = { advanced: 8, intermediate: 5, beginner: 3 };
+                data.skills.filter(cat => cat.visible !== false).forEach(cat => {
+                    print(`\n  <span class="t-cmd">[${cat.title}]</span>`);
+                    cat.tags.forEach(s => {
+                        const val = levelBars[s.level] || 5;
+                        const bar = '█'.repeat(val) + '░'.repeat(10 - val);
+                        print(`    ${s.name.padEnd(16)} ${bar} ${s.level}`);
                     });
                 });
             },
